@@ -11,4 +11,7 @@ This the notion page: https://www.notion.so/RASD-Generic-34964b8f8e864f779214b84
 | 2023/11/14 | Chapter 2 written *Product Functions* paragraph.                                                                                | [RASD3](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument3.pdf) |
 | 2023/11/25 | Chapter 1 written *Documents Structure* paragraph. Chapter 2 almost complete, missing *Domain Class Diagram* and *Statecharts*. | [RASD4](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument4.pdf) |
 | 2023/11/26 | Chapter 2 written *Domain Class Diagram* and *Statecharts* paragraph.                                                           | [RASD5](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument5.pdf) |
-
+| 2023/11/27 | Chapter 3 written *Use Case*, *Sequence Diagram*, *Performance Requirement*, *Design Constraint* and *Software System Attributes* paragraph. | [RASD6](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument6.pdf) |
+| 2023/12/07 | Chapter 4 complete. | [RASD7](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument7.pdf) |
+| 2023/12/08 | Chapter 3 written *External Interface* paragraph. | [RASD8](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument8.pdf) |
+| 2023/12/11 | Chapter 3 written *Use Case Diagram* paragraph. | [RASD9](https://github.com/Dipa0219/ContiDiPaola/blob/main/RASD/RequirementsAnalysis_and_SpecificationDocument9.pdf) |
