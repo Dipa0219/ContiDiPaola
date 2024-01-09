@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+
+        <title>CODE KATA BATTLE</title>
+        <script src="JavaScript/utils.js" charset="utf-8" defer></script>
+        <script src="JavaScript/HomePage.js" charset="utf-8" defer></script>
+        <link rel="stylesheet" type="text/css" media="all" href="CSS/LoginStyle.css" />
+    </head>
+
+    <body>
+        <!--Parti che restano bloccate in alto-->
+        <div class="sticky">
+            <header>
+                <h1 class="title">CODE KATA BATTLE</h1>
+            </header>
+    
+            <nav>
+                <button class="loginbutton" onclick="openModal('login')">Login</button>
+                <button class="signupbutton" onclick="openModal('signup')">Signup</button>
+            </nav>
+            
+        </div>
+
+        <main>
+            <div class="slogan">PROGRAM YOUR PATH TO SUCCESS, ILLUMINATE YOUR FUTURE</div> <!--DA MODIFICARE - INVENTARE SLOGAN-->
+            <br><br>
+            <div class="slogan" style="font-size: x-large;">The application that transforms students into programming masters!</div>
+        </main>
+
+        <footer>
+            <p>Software Engineering 2</p>
+            <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
+        </footer>
+
+        <!--Pagina modale di login-->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Login</h3>
+                <p id="errormessage"></p>
+                <form action="#">
+                        <br>
+                        <label>Username:</label><br>
+                        <input id="username" name="username" type="text" required> <br><br>
+                        <label>Password: </label><br>
+                        <input type="password" name="password" required> <br><br>
+                        <input id="loginsubmit" type="button" value="login"class="submit">
+                </form>
+            </div>
+        </div>
+
+        <!--Pagina modale di signup-->
+        <div id="signupModal" class="modal">
+            <div class="modal-content">
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Signup</h3>
+                <!--Role-->
+                <form>
+                    Choose your role<br>
+                    <input type="radio" id="Educator" name="fav_language" value="Educator" checked="checked">
+                   <label for="Educator">Educator</label><br>
+                    <input type="radio" id="Student" name="fav_language" value="Student">
+                   <label for="Student">Student</label><br>
+                </form>
+                <br><br>
+                <!--Personal data 
+                        Name
+                        Surname
+                        Birthdate-->
+                <form>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name" placeholder="Name..." required><br><br>
+                    <label for="surname">Surname:</label><br>
+                    <input type="text" id="surname" name="surname" placeholder="Surname..." required><br><br>
+                    <label for="birthdate">Birthdate:</label><br>
+                    <input type="date" id="birthdate" name="birthdate" required><br><br>
+                </form>
+                <br><br>
+                <!--Username
+                    Email
+                    Password-->
+                <form>
+                    <label for="usernameSi">Username:</label><br>
+                    <input type="text" id="usernameSi" name="usernameSi" placeholder="Username..." required><br><br>
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" placeholder="Email..." required><br><br>
+                    <label for="passwordsi">Password:</label><br>
+                    <input type="password" id="passwordsi" name="passwordsi" required><br><br>
+                    <label for="confirmPassword">Confirm your Password:</label><br>
+                    <input type="password" id="confirmpassword" name="confirmPassword" required><br><br>
+                </form>
+                <br><br>
+                <!--User GitHub-->
+                <form>
+                    <label for="userGH">Insert your GitHub link:</label><br>
+                    <input type="link" id="userGH" name="userGH" placeholder="User GitHub..." required><br><br>
+                </form>
+                <br><br>
+                <!--Acceptance of privacy policy
+                    Submit registration-->
+                <form>
+                    
+                    <input type="checkbox" id="privacyPolicy" name="privacyPolicy" value="acceptePrivacyPolicy" required>
+                    <a href="" style="color: white;">Accepte Privacy Policy</a> <!--DA MODIFICARE-->
+                    
+                    
+                </form>
+                <br>
+                <input type="submit" value="Submit" class="submit">
+            </div>
+        </div>
+        
+
+        <!--Tutti gli script che ci servono-->
+        <script>
+            //apri pagina modale
+            function openModal(type) {
+                var modal = document.getElementById(type + 'Modal');
+                modal.style.display = 'flex';
+            }
+
+            //chiudi pagina modale
+            function closeModal() {
+                var modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    modal.style.display = 'none';
+                });
+            }
+        </script>
+    </body>
+</html>
