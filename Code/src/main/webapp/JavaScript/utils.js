@@ -6,8 +6,6 @@ function makeCall(method, url, formElement, cback) {
     req.open(method, url);
     if (formElement !== null) {
         var formData = new FormData(formElement)
-        console.log(formData.get("username"))
-        console.log(formData.get("password"))
         req.send(formData)
     } else {
         req.send();
