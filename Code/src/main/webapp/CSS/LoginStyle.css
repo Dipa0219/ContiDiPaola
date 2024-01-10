@@ -1,5 +1,4 @@
-
-
+/*All container style*/
 body{
     margin: 0;
     padding: 0;
@@ -32,8 +31,12 @@ nav{
     text-align: center;
 }
 
-
-main{
+.genericMain{
+    color: white;
+    padding: 2%;
+    flex: 1;
+}
+.loginMain{
     color: white;
     padding: 20%;
     flex: 1;
@@ -51,8 +54,17 @@ footer{
     bottom: 0;
 }
 
+
+/*All button style*/
 .loginbutton,
-.signupbutton{
+.signupbutton,
+.newTournament,
+.closeTournament,
+.joinTournament,
+.createBattle,
+.joinBattle,
+.modifyGrade,
+.addCollaborator{
     padding: 10px 20px;
     margin: 0 10px;
     background-color: #3498db;
@@ -64,10 +76,35 @@ footer{
 }
 
 .closemodalbutton{
-    background-color: red;
+    padding: 5px 10px;
+    margin: 0 5px;
     color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #999999;
+    background-color: red;
     float: right;
 }
+
+.logout,
+.submit{
+    padding: 5px 10px;
+    margin: 0 5px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #999999;
+}
+
+.divbutton{
+    text-align: center;
+}
+
+
+
 
 .slogan{
     text-align: center;
@@ -86,17 +123,6 @@ footer{
     top: 0;
 }
 
-.closemodalbutton{
-    padding: 5px 10px;
-    margin: 0 5px;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 1px 1px 1px #999999;
-    background-color: red;
-    float: right;
-}
 .modal {
     display: none;
     position: fixed;
@@ -124,17 +150,9 @@ footer{
     font-family: "Audiowide", sans-serif;
     text-shadow: 4px 4px 4px #999999;
 }
-.logout,
-.submit{
-    padding: 5px 10px;
-    margin: 0 5px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 1px 1px 1px #999999;
-}
+
+
+
 #logo {
     max-height: 50px;
     max-width: 50px;
@@ -204,6 +222,9 @@ footer{
     background-color: #3e8e41;
 }
 
+table{
+    width:80%
+}
 th{
     border: 2px solid #545b5e;
     border-radius: 12px;

@@ -1,106 +1,157 @@
 <!DOCTYPE html>
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Page</title>
-    <script src="JavaScript/utils.js" charset="utf-8" defer></script>
-    <link rel="stylesheet" type="text/css" media="all" href="CSS/LoginStyle.css" />
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <header>
-        <!--Logo-->
-        <div id="CKB-logo">
-            <img id="logo" src="logo.png" alt="CKB">
-        </div>
-        <!--Search Bar-->
-        <div class="search-bar">
-            <input type="text" placeholder="Find..."> <!--DA SISTEMARE-->
-        </div>
-        <!--Profile Image-->
-        <div class="dropdown"> <!--DA SISTEMARE-->
-            <div id="profile-circle">
-                <img id="profile-picture" src="user.png" alt="Student Picture">
+        <title>CodeKataBattle</title>
+        <link rel="icon" href="logo.png" type="image/gif" sizes="16x16">
+
+        <script src="JavaScript/utils.js" charset="utf-8" defer></script>
+        <link rel="stylesheet" type="text/css" media="all" href="CSS/LoginStyle.css" />
+    </head>
+
+
+
+    <body>
+        <!-- Header -->
+        <header>
+            <!-- Logo -->
+            <div id="CKB-logo">
+                <img id="logo" src="logo.png" alt="CKB"> <!--TODO DA SISTEMARE aggiungere redirect a UserHomePage -->
             </div>
-            <div class="dropdown-content"> <!--DA SISTEMARE-->
-                Goodmorning KKK<br><br>
-                <a href="">Show personal info</a>
-                <a href="">Notification</a>
-                <br>
-                <button class="logout">Logout</button>
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Find..."> <!-- TODO DA SISTEMARE-->
             </div>
+            <!--Profile Image with DropDown Content-->
+            <div class="dropdown">
+                <!-- Profile circle -->
+                <div id="profile-circle">
+                    <img id="profile-picture" src="user.png" alt="Student Picture">
+                </div>
+                <!-- DropDown Content -->
+                <div class="dropdown-content"> <!-- TODO DA SISTEMARE-->
+                    <div id="goodMorningUserDD">Goodmorning KKK</div>
+                    <br><br>
+                    <a href="">Show personal info</a>
+                    <a href="">Notification</a>
+                    <br>
+                    <button class="logout">Logout</button> <!-- TODO DA SISTEMARE -->
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Goodmorning -->
+        <h2 id="goodMorningUser" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
+
+        <!-- Manage Tournament Buttons -->
+        <div class="divbutton">
+            <button id="createTournament" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
+            <button id="addCollaborator" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
+            <button id="closeTournament" class="closeTournament">Close Tournament</button>
+
+            <button id="joinTournament" class="joinTournament">Join Tournament</button>
         </div>
-    </header>
+        <!-- Manage Battle Buttons -->
+        <div class="divbutton">
+            <button id="createBattle" class="newBattle" onclick="openModal('newBattle')">Create a Battle</button>
+            <button id="modifyGrade" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
 
-    <h2 id="studentName" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
+            <button id="joinBattleAlone" class="joinBattle">Join Battle Alone</button>
+            <button id="joinBattleAsTeam" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
+            <button id="selectTeam" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
+        </div>
 
-    <!--STUDENT HOME PAGE VERA E PROPRIA-->
-    <main>
-       <!--Nome Studente-->
-        <h3>This is your tournament</h3>
-        <!--Tutti i tornei dello studente-->
-        <table style="width:80%">
-            <tr>
-                <th>ID tournament</th>
-                <th>NAME tournament</th>
-                <th>Tournament OWNER</th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>XXX Tournament</th>
-                <th>XXX</th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>YYY Tournament</th>
-                <th>YYY</th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>ZZZ Tournament</th>
-                <th>ZZZ</th>
-            </tr>
-        </table>
-    </main>
 
-    <!--IN QUESTA SEZIONE VENGONO MOSTRATI I RISULATI DELLA SUA RICERCA-->
-    <main style="display: none;">
-        <!--Nome Studente-->
-        <h3>This is your result</h3>
-        <!--Tutti i tornei dello studente-->
-        <table style="width:80%">
-            <tr>
-                <th>ID tournament</th>
-                <th>NAME tournament</th>
-                <th>Tournament OWNER</th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>XXX Tournament</th>
-                <th>XXX</th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>YYY Tournament</th>
-                <th>YYY</th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>ZZZ Tournament</th>
-                <th>ZZZ</th>
-            </tr>
-        </table>
-    </main>
+        <!-- TODO Tournament Info -->
+        <div id="tournamentInfo" class="genericMain">
+            <h3>This is the XXX tournament</h3><br>
+            This tournament allows you to improve your skills in the XXX programming language.<br><br>
+            Registration Deadline: YYYY/MM/DD<br><br>
+            Submission Deadline: YYYY/MM/DD<br><br>
+        </div>
+        <!-- TODO Battle Info -->
+        <div id="battleInfo" class="genericMain">
+            <h3>This is the INTRODUCTION battle of the XXX tournament</h3><br>
+            This battle allows you to practice threads in java.<br><br>
+            Registration Deadline: YYYY/MM/DD<br><br>
+            Submission Deadline: YYYY/MM/AA<br><br>
+            Number of Team Member: between nn to NN
+            <br><br>
+        </div>
 
-    <footer>
-        <p>Software Engineering 2</p>
-        <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
-    </footer>
+        <!-- Tournament Table -->
+        <div id="tournamentTable" class="genericMain">
+            <h3 id="resultOrNot">This is your tournament</h3> <!--TODO vuoi cambiare la scritta quando mostriamo i risultati di ricerca? -->
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID tournament</th>
+                        <th>NAME tournament</th>
+                        <th>Tournament OWNER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="tournamentID">1</td>
+                        <td id="tournamentName">XXX Tournament</td>
+                        <td id="tournamentOwner">XXX</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Battle Table -->
+        <div id="battleTable" class="genericMain">
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                <tr>
+                    <th>ID battle</th>
+                    <th>NAME battle</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="battleID">1</td>
+                    <td id="battleName">XXX Battle</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Ranking Table -->
+        <div id="rankingTable" class="genericMain">
+            <h3>Ranking</h3>
+            <p id="started" style="color: red;">The battle has not yet started.<br>
+                The ranking of the battle once it has started will be shown here.
+            </p>
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Username</th>
+                    <th>Points</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="position">1</td>
+                    <td id="usernameRanking">XXX Tournament</td>
+                    <td id="pointsRanking">XXX</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <script>
 
-    </script>
-
-</body>
+        <!-- Footer -->
+        <footer>
+            <p>Software Engineering 2</p>
+            <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
+        </footer>
+    </body>
 </html>
