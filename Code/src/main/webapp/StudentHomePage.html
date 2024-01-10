@@ -13,7 +13,6 @@
     </head>
 
 
-
     <body>
         <!-- Header -->
         <header>
@@ -47,45 +46,62 @@
         <!-- Goodmorning -->
         <h2 id="goodMorningUser" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
 
-        <!-- Manage Tournament Buttons -->
-        <div class="divbutton">
-            <button id="createTournament" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
-            <button id="addCollaborator" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
-            <button id="closeTournament" class="closeTournament">Close Tournament</button>
 
-            <button id="joinTournament" class="joinTournament">Join Tournament</button>
-        </div>
-        <!-- Manage Battle Buttons -->
-        <div class="divbutton">
-            <button id="createBattle" class="newBattle" onclick="openModal('newBattle')">Create a Battle</button>
-            <button id="modifyGrade" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
-
-            <button id="joinBattleAlone" class="joinBattle">Join Battle Alone</button>
-            <button id="joinBattleAsTeam" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
-            <button id="selectTeam" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
+        <!-- Home Page buttons -->
+        <div id="homepageEducatorDiv" class="divbutton">
+            <button id="createTournamentButton" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
         </div>
 
+        <!-- Tournament Page buttons -->
+        <div id="tournamentPageStudentDiv" class="divbutton">
+            <button id="joinTournamentButton" class="joinTournament">Join Tournament</button>
+        </div>
+        <div id="tournamentPageEducatorDiv" class="divbutton">
+            <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')">Create a Battle</button>
+            <button id="addCollaboratorButton" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
+            <button id="closeTournamentButton" class="closeTournament">Close Tournament</button>
+        </div>
 
-        <!-- TODO Tournament Info -->
+        <!-- Battle Page buttons -->
+        <div id="battlePageStudentAloneDiv" class="divbutton">
+            <button id="joinBattleAloneButton" class="joinBattle">Join Battle Alone</button>
+        </div>
+        <div id="battlePageStudentTeamDiv" class="divbutton">
+            <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
+        </div>
+        <div id="battlePageStudentSelectTeamDiv" class="divbutton">
+            <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
+        </div>
+        <div id="battlePageEducatorModifyGradeDiv" class="divbutton">
+            <button id="modifyGradeButton" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
+        </div>
+
+        <!-- TODO quale delle 2 tipologie vuoi - io opterei per la seconda -->
+        <div id="homePageDiv" class="divbutton"></div>
+        <div id="tournamentPageDiv" class="divbutton"></div>
+        <div id="battlePageDiv" class="divbutton"></div>
+
+
+        <!-- Tournament Info -->
         <div id="tournamentInfo" class="genericMain">
-            <h3>This is the XXX tournament</h3><br>
-            This tournament allows you to improve your skills in the XXX programming language.<br><br>
-            Registration Deadline: YYYY/MM/DD<br><br>
-            Submission Deadline: YYYY/MM/DD<br><br>
+            <h3 id="tournamentNameLabel">This is the XXX tournament</h3>
+            <p id="tournamentDescriptionLabel">This tournament allows you to improve your skills in the XXX programming language.</p>
+            <p id="tournamentRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
         </div>
-        <!-- TODO Battle Info -->
+
+        <!-- Battle Info -->
         <div id="battleInfo" class="genericMain">
-            <h3>This is the INTRODUCTION battle of the XXX tournament</h3><br>
-            This battle allows you to practice threads in java.<br><br>
-            Registration Deadline: YYYY/MM/DD<br><br>
-            Submission Deadline: YYYY/MM/AA<br><br>
-            Number of Team Member: between nn to NN
-            <br><br>
+            <h3 id="battleNameLabel">This is the INTRODUCTION battle of the XXX tournament</h3>
+            <p id="battleDescriptionLabel"> This battle allows you to practice threads in java.</p>
+            <p id="battleRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
+            <p id="battleSubmissionDeadlineLabel">Submission Deadline: YYYY/MM/AA</p>
+            <p id="battleNumberTeamMemberLabel">Number of Team Member: between nn to NN</p>
         </div>
+
 
         <!-- Tournament Table -->
         <div id="tournamentTable" class="genericMain">
-            <h3 id="resultOrNot">This is your tournament</h3> <!--TODO vuoi cambiare la scritta quando mostriamo i risultati di ricerca? -->
+            <h3 id="tournamentTableType">This is your tournament:</h3> <!--TODO vuoi cambiare la scritta quando mostriamo i risultati di ricerca? -->
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -104,8 +120,10 @@
                 </tbody>
             </table>
         </div>
+
         <!-- Battle Table -->
         <div id="battleTable" class="genericMain">
+            <h3>Battle:</h3>
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -122,10 +140,11 @@
                 </tbody>
             </table>
         </div>
+
         <!-- Ranking Table -->
         <div id="rankingTable" class="genericMain">
-            <h3>Ranking</h3>
-            <p id="started" style="color: red;">The battle has not yet started.<br>
+            <h3>Ranking:</h3>
+            <p id="rankingStarted" style="color: red;">The battle has not yet started.<br>
                 The ranking of the battle once it has started will be shown here.
             </p>
             <!-- Tournament Table -->
