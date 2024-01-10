@@ -78,6 +78,7 @@ public class LoginManager extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Incorrect credentials");
         } else {
+            System.out.println(user.getId()+"\n");
             request.getSession().setAttribute("user", user.getId());
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");

@@ -5,6 +5,7 @@
         if (form.checkValidity()) {
             makeCall("POST", 'LoginManager', e.target.closest("form"),
                 function(x) {
+                    console.log("Entrato")
                     if (x.readyState === XMLHttpRequest.DONE) {
                         var message = x.responseText;
                         switch (x.status) {
