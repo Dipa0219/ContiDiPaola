@@ -148,12 +148,12 @@ footer{
 
 
 /*All header content style*/
-.logo {
+#logo {
     max-height: 50px;
     max-width: 50px;
 }
 
-.profile-circle {
+#profile-circle {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -161,7 +161,7 @@ footer{
     cursor: pointer;
 }
 
-.profile-picture {
+#profile-picture {
     width: 100%;
     height: 100%;
     object-fit: cover;

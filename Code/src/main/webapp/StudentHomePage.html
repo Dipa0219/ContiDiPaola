@@ -47,39 +47,28 @@
         <h2 id="goodMorningUser" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
 
 
-        <!-- Home Page buttons -->
-        <div id="homepageEducatorDiv" class="divbutton">
+        <!-- HomePage buttons -->
+        <div id="homePageDiv" class="divbutton">
             <button id="createTournamentButton" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
         </div>
 
         <!-- Tournament Page buttons -->
-        <div id="tournamentPageStudentDiv" class="divbutton">
+        <div id="tournamentPageDiv" class="divbutton">
             <button id="joinTournamentButton" class="joinTournament">Join Tournament</button>
-        </div>
-        <div id="tournamentPageEducatorDiv" class="divbutton">
+
             <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')">Create a Battle</button>
             <button id="addCollaboratorButton" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
             <button id="closeTournamentButton" class="closeTournament">Close Tournament</button>
         </div>
 
         <!-- Battle Page buttons -->
-        <div id="battlePageStudentAloneDiv" class="divbutton">
+        <div id="battlePageDiv" class="divbutton">
             <button id="joinBattleAloneButton" class="joinBattle">Join Battle Alone</button>
-        </div>
-        <div id="battlePageStudentTeamDiv" class="divbutton">
             <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
-        </div>
-        <div id="battlePageStudentSelectTeamDiv" class="divbutton">
             <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
-        </div>
-        <div id="battlePageEducatorModifyGradeDiv" class="divbutton">
+
             <button id="modifyGradeButton" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
         </div>
-
-        <!-- TODO quale delle 2 tipologie vuoi - io opterei per la seconda -->
-        <div id="homePageDiv" class="divbutton"></div>
-        <div id="tournamentPageDiv" class="divbutton"></div>
-        <div id="battlePageDiv" class="divbutton"></div>
 
 
         <!-- Tournament Info -->
