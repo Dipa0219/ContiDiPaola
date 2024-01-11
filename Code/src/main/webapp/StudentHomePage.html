@@ -161,5 +161,133 @@
             <p>Software Engineering 2</p>
             <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
         </footer>
+
+
+        <!-- New Tournament modal page -->
+        <div id="newTournamentModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageNewTournament"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Create New Tournament</h3>
+                <form action="#">
+                    <br>
+                    <label>Tournament name:</label><br>
+                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required><br><br>
+                    <label>Tournament Description:</label><br>
+                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text"><br><br>
+                    <label>Registration Deadline:</label><br>
+                    <input id="tournamentRegistrationDeadlineInput" name="tournamentRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <input id="createTournamentSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
+
+        <!-- Join Battle As Team modal page -->
+        <div id="joinBattleAsTeamModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageJoinBattleAsTeam"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Join Battle As a Team</h3>
+                <form action="#">
+                    <br>
+                    <label>choose your Team Mate:</label><br>
+                    <select id="teamMateInput" name="teamMateInput" size="4" multiple></select><br><br>
+                    <input id="joinBattleAsTeamSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
+
+        <!-- Select your Team -->
+        <div id="joinTeamModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageJoinTeam"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Select your Team</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose Team:</label><br>
+                    <select id="teamInput" name="teamInput" size="1"></select><br><br>
+                    <input id="joinTeamSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
+
+        <!-- Modify Grade modal page -->
+        <div id="modifyGradeModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageModifyGrade"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Modify the Grade</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose Team:</label><br>
+                    <select id="teamGradeInput" name="teamGradeInput" size="1" required></select><br><br>
+                    <label>Insert Grade:</label><br>
+                    <input id="teamGraduationInput" name="teamGraduationInput" type="number" min="0" max="31" required><br><br>
+                    <label>Insert Description:</label><br>
+                    <input id="gradeDescriptionInput" name="gradeDescriptionInput" type="text"><br><br>
+                    <input id="modifyGradeSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Battle modal page -->
+        <div id="createBattleModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageCreateBattle"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Create New Battle</h3>
+                <form action="#">
+                    <br>
+                    <label>Battle name:</label><br>
+                    <input id="battleNameInput" name="battleNameInput" type="text" required><br><br>
+                    <label>Battle Description:</label><br>
+                    <input id="battleDescriptionInput" name="battleDescriptionInput" type="text"><br><br>
+                    <label>Registration Deadline:</label><br>
+                    <input id="battleRegistrationDeadlineInput" name="battleRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <input id="createBattleSubmit" type="button" value="Submit" class="submit">
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Add Collaborator modal page -->
+        <div id="addCollaboratorModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageAddCollaborator"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Add collaborator:</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose your Collaborator:</label><br>
+                    <select id="collaboratorInput" name="collaboratorInput" size="1" required></select><br><br>
+                    <input id="addCollaboratorSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Script -->
+        <script>
+            //open modal page
+            function openModal(type) {
+                var modal = document.getElementById(type + 'Modal');
+                modal.style.display = 'flex';
+            }
+
+            //close modal page
+            function closeModal() {
+                var modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    modal.style.display = 'none';
+                });
+            }
+        </script>
     </body>
 </html>
