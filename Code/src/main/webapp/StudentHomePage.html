@@ -18,11 +18,13 @@
         <header>
             <!-- Logo -->
             <div id="CKB-logo">
-                <img id="logo" src="logo.png" alt="CKB"> <!--TODO DA SISTEMARE aggiungere redirect a UserHomePage -->
+                <a href="#" id="goToUserHomePage">
+                    <img id="logo" src="logo.png" alt="CKB">
+                </a>
             </div>
             <!-- Search Bar -->
             <div class="search-bar">
-                <input type="text" placeholder="Find..."> <!-- TODO DA SISTEMARE-->
+                <input id="searchTournament" type="text" placeholder="Find..." onkeypress="checkEnter(event)"> <!-- TODO aggiungere eventListener keypress -->
             </div>
             <!--Profile Image with DropDown Content-->
             <div class="dropdown">
@@ -31,13 +33,13 @@
                     <img id="profile-picture" src="user.png" alt="Student Picture">
                 </div>
                 <!-- DropDown Content -->
-                <div class="dropdown-content"> <!-- TODO DA SISTEMARE-->
+                <div class="dropdown-content">
                     <div id="goodMorningUserDD">Goodmorning KKK</div>
                     <br><br>
-                    <a href="">Show personal info</a>
-                    <a href="">Notification</a>
+                    <a href="#" id="goToShowPersonalInformation">Show personal info</a>
+                    <a href="#" id="goToNotification">Notification</a>
                     <br>
-                    <button class="logout">Logout</button> <!-- TODO DA SISTEMARE -->
+                    <button id="logoutButton" class="logout">Logout</button>
                 </div>
             </div>
         </header>
@@ -87,10 +89,39 @@
             <p id="battleNumberTeamMemberLabel">Number of Team Member: between nn to NN</p>
         </div>
 
+        <!-- Personal Information -->
+        <div id="personalInformationDiv" class="genericMain">
+            <h3>These are your personal information</h3><br><br>
+            <p id="roleUser"></p>
+
+            <form action="#">
+                <label id="nameUser"></label><br>
+                <input id="updateNameInput" name="updateNameInput" type="text"><br><br>
+                <label id="surnameUser"></label><br>
+                <input id="updateSurnameInput" name="updateSurnameInput" type="text"><br><br>
+                <label id="birthdateUser"></label><br>
+                <input id="updateBirthdateInput" name="updateBirthdateInput" type="date"><br><br>
+                <label id="usernameUser"></label><br>
+                <input id="updateUsernameInput" name="updateUsernameInput" type="text"><br><br>
+                <label id="emailUser"></label><br>
+                <input id="updateEmailInput" name="updateEmailInput" type="email"><br><br>
+                <label id="passwordUser">New Password:</label><br>
+                <input id="updatePasswordInput" name="updatePasswordInput" type="password"><br><br>
+                <label id="confirmPasswordUser"></label><br>
+                <input id="updateConfirmPasswordInput" name="updateConfirmPasswordInput" type="password"><br><br>
+
+                <br><br>
+                <p>If you want to change your personal information enter your current password to confirm.</p>
+                <label>Password:</label><br>
+                <input id="confirmationPasswordUser" name="confirmationPasswordUser" type="password" required>
+                <input id="updatePersonalInformationSubmit" type="button" value="Submit" class="submit">
+            </form>
+        </div>
+
 
         <!-- Tournament Table -->
-        <div id="tournamentTable" class="genericMain">
-            <h3 id="tournamentTableType">This is your tournament:</h3> <!--TODO vuoi cambiare la scritta quando mostriamo i risultati di ricerca? -->
+        <div id="tournamentTableType"></div> <!-- Type of tournament table -->
+        <div id="tournamentTableDiv" class="genericMain">
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -100,19 +131,13 @@
                         <th>Tournament OWNER</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td id="tournamentID">1</td>
-                        <td id="tournamentName">XXX Tournament</td>
-                        <td id="tournamentOwner">XXX</td>
-                    </tr>
-                </tbody>
+                <tbody id="tournamentTable"></tbody>
             </table>
         </div>
 
         <!-- Battle Table -->
-        <div id="battleTable" class="genericMain">
-            <h3>Battle:</h3>
+        <div id="battleTableType"></div> <!-- Type of battle table -->
+        <div id="battleTableDiv" class="genericMain">
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -121,17 +146,12 @@
                     <th>NAME battle</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <td id="battleID">1</td>
-                    <td id="battleName">XXX Battle</td>
-                </tr>
-                </tbody>
+                <tbody id="battleTable"></tbody>
             </table>
         </div>
 
         <!-- Ranking Table -->
-        <div id="rankingTable" class="genericMain">
+        <div id="rankingTableDiv" class="genericMain">
             <h3>Ranking:</h3>
             <p id="rankingStarted" style="color: red;">The battle has not yet started.<br>
                 The ranking of the battle once it has started will be shown here.
@@ -145,13 +165,23 @@
                     <th>Points</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="rankingTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Notification Table -->
+        <div id="notificationTableType"></div> <!-- Type of notification table -->
+        <div id="notificationTableDiv" class="genericMain">
+            <!-- Tournament Table -->
+            <table>
+                <thead>
                 <tr>
-                    <td id="position">1</td>
-                    <td id="usernameRanking">XXX Tournament</td>
-                    <td id="pointsRanking">XXX</td>
+                    <th>Time Notification</th>
+                    <th>Type</th>
+                    <th>Description</th>
                 </tr>
-                </tbody>
+                </thead>
+                <tbody id="notificationTable"></tbody>
             </table>
         </div>
 
@@ -288,6 +318,16 @@
                     modal.style.display = 'none';
                 });
             }
+
+            //TODO send searched tournament
+            function checkEnter(event) {
+                if (event.key === "Enter") {
+                    console.log("ciao")
+                    document.getElementById("searchTournament").value=""
+                }
+            }
+
+
         </script>
     </body>
 </html>
