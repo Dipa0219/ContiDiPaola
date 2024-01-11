@@ -1,5 +1,4 @@
-
-
+/*All container style*/
 body{
     margin: 0;
     padding: 0;
@@ -32,13 +31,22 @@ nav{
     text-align: center;
 }
 
+.genericMain{
+    color: white;
+    padding: 2%;
+    flex: 1;
+}
 
-main{
+.loginMain{
     color: white;
     padding: 20%;
     flex: 1;
     justify-content: center;
     align-items: center;
+}
+
+.divbutton{
+    text-align: center;
 }
 
 footer{
@@ -51,8 +59,17 @@ footer{
     bottom: 0;
 }
 
+
+/*All button style*/
 .loginbutton,
-.signupbutton{
+.signupbutton,
+.newTournament,
+.closeTournament,
+.joinTournament,
+.createBattle,
+.joinBattle,
+.modifyGrade,
+.addCollaborator{
     padding: 10px 20px;
     margin: 0 10px;
     background-color: #3498db;
@@ -61,29 +78,6 @@ footer{
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 2px 2px 2px #999999;
-}
-
-.closemodalbutton{
-    background-color: red;
-    color: white;
-    float: right;
-}
-
-.slogan{
-    text-align: center;
-    font-size: xx-large;
-    font-family: "Audiowide", sans-serif;
-    text-shadow: 3px 3px 3px #999999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/*Tiene fissa in alto le cose*/
-.sticky{
-    //position: '-webkit-sticky';
-    position: sticky;
-    top: 0;
 }
 
 .closemodalbutton{
@@ -97,6 +91,21 @@ footer{
     background-color: red;
     float: right;
 }
+
+.logout,
+.submit{
+    padding: 5px 10px;
+    margin: 0 5px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #999999;
+}
+
+
+/*All modal page style*/
 .modal {
     display: none;
     position: fixed;
@@ -118,23 +127,27 @@ footer{
     font-size: large;
 }
 
+
+/*All text style*/
 .title{
     text-align: center;
     font-size: 50px;
     font-family: "Audiowide", sans-serif;
     text-shadow: 4px 4px 4px #999999;
 }
-.logout,
-.submit{
-    padding: 5px 10px;
-    margin: 0 5px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 1px 1px 1px #999999;
+
+.slogan{
+    text-align: center;
+    font-size: xx-large;
+    font-family: "Audiowide", sans-serif;
+    text-shadow: 3px 3px 3px #999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+
+/*All header content style*/
 #logo {
     max-height: 50px;
     max-width: 50px;
@@ -159,6 +172,8 @@ footer{
     margin: 0 10px;
 }
 
+
+/*All dropdown style*/
 .dropbtn {
     background-color: #04AA6D;
     color: white;
@@ -204,7 +219,14 @@ footer{
     background-color: #3e8e41;
 }
 
-th{
+
+/*All table style*/
+table{
+    width:80%
+}
+
+th,
+td{
     border: 2px solid #545b5e;
     border-radius: 12px;
     padding: 5px;

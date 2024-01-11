@@ -1,107 +1,335 @@
 <!DOCTYPE html>
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Page</title>
-    <script src="JavaScript/utils.js" charset="utf-8" defer></script>
-    <script src="JavaScript/PageOrchestrator.js" charset="utf-8" defer></script>
-    <link rel="stylesheet" type="text/css" media="all" href="CSS/LoginStyle.css" />
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <header>
-        <!--Logo-->
-        <div id="CKB-logo">
-            <img id="logo" src="logo.png" alt="CKB">
-        </div>
-        <!--Search Bar-->
-        <div class="search-bar">
-            <input type="text" placeholder="Find..."> <!--DA SISTEMARE-->
-        </div>
-        <!--Profile Image-->
-        <div class="dropdown"> <!--DA SISTEMARE-->
-            <div id="profile-circle">
-                <img id="profile-picture" src="user.png" alt="Student Picture">
+        <title>CodeKataBattle</title>
+        <link rel="icon" href="logo.png" type="image/gif" sizes="16x16">
+
+        <script src="JavaScript/utils.js" charset="utf-8" defer></script>
+        <script src="JavaScript/PageOrchestrator.js" charset="utf-8" defer></script>
+
+        <link rel="stylesheet" type="text/css" media="all" href="CSS/LoginStyle.css" />
+    </head>
+
+
+    <body>
+        <!-- Header -->
+        <header>
+            <!-- Logo -->
+            <div id="CKB-logo">
+                <a href="#" id="goToUserHomePage">
+                    <img id="logo" src="logo.png" alt="CKB">
+                </a>
             </div>
-            <div class="dropdown-content"> <!--DA SISTEMARE-->
-                Goodmorning KKK<br><br>
-                <a href="">Show personal info</a>
-                <a href="">Notification</a>
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input id="searchTournament" type="text" placeholder="Find..." onkeypress="checkEnter(event)"> <!-- TODO aggiungere eventListener keypress -->
+            </div>
+            <!--Profile Image with DropDown Content-->
+            <div class="dropdown">
+                <!-- Profile circle -->
+                <div id="profile-circle">
+                    <img id="profile-picture" src="user.png" alt="Student Picture">
+                </div>
+                <!-- DropDown Content -->
+                <div class="dropdown-content">
+                    <div id="goodMorningUserDD">Goodmorning KKK</div>
+                    <br><br>
+                    <a href="#" id="goToShowPersonalInformation">Show personal info</a>
+                    <a href="#" id="goToNotification">Notification</a>
+                    <br>
+                    <button id="logoutButton" class="logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Goodmorning -->
+        <h2 id="goodMorningUser" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
+
+
+        <!-- HomePage buttons -->
+        <div id="homePageDiv" class="divbutton">
+            <button id="createTournamentButton" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
+        </div>
+
+        <!-- Tournament Page buttons -->
+        <div id="tournamentPageDiv" class="divbutton">
+            <button id="joinTournamentButton" class="joinTournament">Join Tournament</button>
+
+            <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')">Create a Battle</button>
+            <button id="addCollaboratorButton" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
+            <button id="closeTournamentButton" class="closeTournament">Close Tournament</button>
+        </div>
+
+        <!-- Battle Page buttons -->
+        <div id="battlePageDiv" class="divbutton">
+            <button id="joinBattleAloneButton" class="joinBattle">Join Battle Alone</button>
+            <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
+            <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
+
+            <button id="modifyGradeButton" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
+        </div>
+
+
+        <!-- Tournament Info -->
+        <div id="tournamentInfo" class="genericMain">
+            <h3 id="tournamentNameLabel">This is the XXX tournament</h3>
+            <p id="tournamentDescriptionLabel">This tournament allows you to improve your skills in the XXX programming language.</p>
+            <p id="tournamentRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
+        </div>
+
+        <!-- Battle Info -->
+        <div id="battleInfo" class="genericMain">
+            <h3 id="battleNameLabel">This is the INTRODUCTION battle of the XXX tournament</h3>
+            <p id="battleDescriptionLabel"> This battle allows you to practice threads in java.</p>
+            <p id="battleRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
+            <p id="battleSubmissionDeadlineLabel">Submission Deadline: YYYY/MM/AA</p>
+            <p id="battleNumberTeamMemberLabel">Number of Team Member: between nn to NN</p>
+        </div>
+
+        <!-- Personal Information -->
+        <div id="personalInformationDiv" class="genericMain">
+            <h3>These are your personal information</h3><br><br>
+            <p id="roleUser"></p>
+
+            <form action="#">
+                <label id="nameUser"></label><br>
+                <input id="updateNameInput" name="updateNameInput" type="text"><br><br>
+                <label id="surnameUser"></label><br>
+                <input id="updateSurnameInput" name="updateSurnameInput" type="text"><br><br>
+                <label id="birthdateUser"></label><br>
+                <input id="updateBirthdateInput" name="updateBirthdateInput" type="date"><br><br>
+                <label id="usernameUser"></label><br>
+                <input id="updateUsernameInput" name="updateUsernameInput" type="text"><br><br>
+                <label id="emailUser"></label><br>
+                <input id="updateEmailInput" name="updateEmailInput" type="email"><br><br>
+                <label id="passwordUser">New Password:</label><br>
+                <input id="updatePasswordInput" name="updatePasswordInput" type="password"><br><br>
+                <label id="confirmPasswordUser"></label><br>
+                <input id="updateConfirmPasswordInput" name="updateConfirmPasswordInput" type="password"><br><br>
+
+                <br><br>
+                <p>If you want to change your personal information enter your current password to confirm.</p>
+                <label>Password:</label><br>
+                <input id="confirmationPasswordUser" name="confirmationPasswordUser" type="password" required>
+                <input id="updatePersonalInformationSubmit" type="button" value="Submit" class="submit">
+            </form>
+        </div>
+
+
+        <!-- Tournament Table -->
+        <div id="tournamentTableType"></div> <!-- Type of tournament table -->
+        <div id="tournamentTableDiv" class="genericMain">
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID tournament</th>
+                        <th>NAME tournament</th>
+                        <th>Tournament OWNER</th>
+                    </tr>
+                </thead>
+                <tbody id="tournamentTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Battle Table -->
+        <div id="battleTableType"></div> <!-- Type of battle table -->
+        <div id="battleTableDiv" class="genericMain">
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                <tr>
+                    <th>ID battle</th>
+                    <th>NAME battle</th>
+                </tr>
+                </thead>
+                <tbody id="battleTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Ranking Table -->
+        <div id="rankingTableDiv" class="genericMain">
+            <h3>Ranking:</h3>
+            <p id="rankingStarted" style="color: red;">The battle has not yet started.<br>
+                The ranking of the battle once it has started will be shown here.
+            </p>
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Username</th>
+                    <th>Points</th>
+                </tr>
+                </thead>
+                <tbody id="rankingTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Notification Table -->
+        <div id="notificationTableType"></div> <!-- Type of notification table -->
+        <div id="notificationTableDiv" class="genericMain">
+            <!-- Tournament Table -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Time Notification</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody id="notificationTable"></tbody>
+            </table>
+        </div>
+
+
+        <!-- Footer -->
+        <footer>
+            <p>Software Engineering 2</p>
+            <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
+        </footer>
+
+
+        <!-- New Tournament modal page -->
+        <div id="newTournamentModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageNewTournament"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
-                <button class="logout">Logout</button>
+                <h3 style="text-align: center;">Create New Tournament</h3>
+                <form action="#">
+                    <br>
+                    <label>Tournament name:</label><br>
+                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required><br><br>
+                    <label>Tournament Description:</label><br>
+                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text"><br><br>
+                    <label>Registration Deadline:</label><br>
+                    <input id="tournamentRegistrationDeadlineInput" name="tournamentRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <input id="createTournamentSubmit" type="button" value="Submit" class="submit">
+                </form>
             </div>
         </div>
-    </header>
 
-    <h2 id="studentName" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
+        <!-- Join Battle As Team modal page -->
+        <div id="joinBattleAsTeamModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageJoinBattleAsTeam"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Join Battle As a Team</h3>
+                <form action="#">
+                    <br>
+                    <label>choose your Team Mate:</label><br>
+                    <select id="teamMateInput" name="teamMateInput" size="4" multiple></select><br><br>
+                    <input id="joinBattleAsTeamSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
 
-    <!--STUDENT HOME PAGE VERA E PROPRIA-->
-    <main>
-       <!--Nome Studente-->
-        <h3>This is your tournament</h3>
-        <!--Tutti i tornei dello studente-->
-        <table style="width:80%">
-            <tr>
-                <th>ID tournament</th>
-                <th>NAME tournament</th>
-                <th>Tournament OWNER</th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>XXX Tournament</th>
-                <th>XXX</th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>YYY Tournament</th>
-                <th>YYY</th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>ZZZ Tournament</th>
-                <th>ZZZ</th>
-            </tr>
-        </table>
-    </main>
+        <!-- Select your Team -->
+        <div id="joinTeamModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageJoinTeam"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Select your Team</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose Team:</label><br>
+                    <select id="teamInput" name="teamInput" size="1"></select><br><br>
+                    <input id="joinTeamSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
 
-    <!--IN QUESTA SEZIONE VENGONO MOSTRATI I RISULATI DELLA SUA RICERCA-->
-    <main style="display: none;">
-        <!--Nome Studente-->
-        <h3>This is your result</h3>
-        <!--Tutti i tornei dello studente-->
-        <table style="width:80%">
-            <tr>
-                <th>ID tournament</th>
-                <th>NAME tournament</th>
-                <th>Tournament OWNER</th>
-            </tr>
-            <tr>
-                <th>1</th>
-                <th>XXX Tournament</th>
-                <th>XXX</th>
-            </tr>
-            <tr>
-                <th>2</th>
-                <th>YYY Tournament</th>
-                <th>YYY</th>
-            </tr>
-            <tr>
-                <th>3</th>
-                <th>ZZZ Tournament</th>
-                <th>ZZZ</th>
-            </tr>
-        </table>
-    </main>
+        <!-- Modify Grade modal page -->
+        <div id="modifyGradeModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageModifyGrade"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Modify the Grade</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose Team:</label><br>
+                    <select id="teamGradeInput" name="teamGradeInput" size="1" required></select><br><br>
+                    <label>Insert Grade:</label><br>
+                    <input id="teamGraduationInput" name="teamGraduationInput" type="number" min="0" max="31" required><br><br>
+                    <label>Insert Description:</label><br>
+                    <input id="gradeDescriptionInput" name="gradeDescriptionInput" type="text"><br><br>
+                    <input id="modifyGradeSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
 
-    <footer>
-        <p>Software Engineering 2</p>
-        <p>&copy; Conti Alessandro &copy; Di Paola Antonio</p>
-    </footer>
+        <!-- Create Battle modal page -->
+        <div id="createBattleModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageCreateBattle"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Create New Battle</h3>
+                <form action="#">
+                    <br>
+                    <label>Battle name:</label><br>
+                    <input id="battleNameInput" name="battleNameInput" type="text" required><br><br>
+                    <label>Battle Description:</label><br>
+                    <input id="battleDescriptionInput" name="battleDescriptionInput" type="text"><br><br>
+                    <label>Registration Deadline:</label><br>
+                    <input id="battleRegistrationDeadlineInput" name="battleRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <input id="createBattleSubmit" type="button" value="Submit" class="submit">
+                </form>
 
-    <script>
+            </div>
+        </div>
 
-    </script>
+        <!-- Add Collaborator modal page -->
+        <div id="addCollaboratorModal" class="modal">
+            <div class="modal-content">
+                <p id="errormessageAddCollaborator"></p>
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <h3 style="text-align: center;">Add collaborator:</h3>
+                <form action="#">
+                    <br>
+                    <label>Choose your Collaborator:</label><br>
+                    <select id="collaboratorInput" name="collaboratorInput" size="1" required></select><br><br>
+                    <input id="addCollaboratorSubmit" type="button" value="Submit" class="submit">
+                </form>
+            </div>
+        </div>
 
-</body>
+
+        <!-- Script -->
+        <script>
+            //open modal page
+            function openModal(type) {
+                var modal = document.getElementById(type + 'Modal');
+                modal.style.display = 'flex';
+            }
+
+            //close modal page
+            function closeModal() {
+                var modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    modal.style.display = 'none';
+                });
+            }
+
+            //TODO send searched tournament
+            function checkEnter(event) {
+                if (event.key === "Enter") {
+                    console.log("ciao")
+                    document.getElementById("searchTournament").value=""
+                }
+            }
+
+
+        </script>
+    </body>
 </html>
