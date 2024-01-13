@@ -18,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
+import org.apache.commons.lang3.StringUtils;
 import it.polimi.tiw.jdbctest.bean.User;
 import it.polimi.tiw.jdbctest.DAO.UserDAO;
 
@@ -52,40 +53,34 @@ public class LoginManager extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String usrn = null;
         String pwd = null;
-        System.out.printf("ciao " + String.valueOf(request.getParameterMap().size())+"\n");
-        usrn = request.getParameter("username");
-        pwd = request.getParameter("password");
-        System.out.printf(usrn + " "+pwd+ "\n");
-        if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty() ) {
+        usrn = request.getParameter("LoginUsername");
+        pwd = request.getParameter("LoginPassword");
+        if (StringUtils.isAnyEmpty(usrn,pwd)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Credentials must be not null");
             return;
         }
         // query db to authenticate for user
         UserDAO userDao = new UserDAO(connection);
-        User user = null;
+        int userId=0;
         try {
-            user = userDao.checkUsername(usrn, pwd);
+            userId = userDao.checkUsername(usrn, pwd);
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Internal server error, retry later");
             return;
         }
-
         // If the user exists, add info to the session and go to home page, otherwise
         // return an error status code and message
-        if (user == null) {
+        if (userId == 0) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Incorrect credentials");
         } else {
-            System.out.println(user.getId()+"\n");
-            request.getSession().setAttribute("user", user.getId());
+            request.getSession().setAttribute("user", userId);
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            Gson gson = new GsonBuilder().create();
-            String json = gson.toJson(user);
-            response.getWriter().write(json);
+            response.getWriter().println(userId);
         }
     }
 }
