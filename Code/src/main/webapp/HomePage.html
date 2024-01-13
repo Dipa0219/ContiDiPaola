@@ -48,10 +48,12 @@
                 <p id="errormessage"></p>
                 <form action="#">
                         <br>
-                        <label>Username:</label><br>
-                        <input id="username" name="username" type="text" required> <br><br>
-                        <label>Password: </label><br>
-                        <input type="password" name="password" required> <br><br>
+                        <label>Username:<br>
+                        <input id="username" name="LoginUsername" type="text" required> <br><br>
+                        </label>
+                        <label>Password: <br>
+                        <input type="password" name="LoginPassword" required> <br><br>
+                        </label>
                         <input id="loginsubmit" type="button" value="login"class="submit">
                 </form>
             </div>
@@ -63,59 +65,50 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Signup</h3>
+
+                <div id="errormessagesignin" ></div>
                 <!--Role-->
                 <form>
                     Choose your role<br>
-                    <input type="radio" id="Educator" name="fav_language" value="Educator" checked="checked">
+                    <input type="radio" id="Educator" name="role" value="0" checked="checked">
                    <label for="Educator">Educator</label><br>
-                    <input type="radio" id="Student" name="fav_language" value="Student">
+                    <input type="radio" id="Student" name="role" value="1">
                    <label for="Student">Student</label><br>
-                </form>
                 <br><br>
                 <!--Personal data 
                         Name
                         Surname
                         Birthdate-->
-                <form>
                     <label for="name">Name:</label><br>
                     <input type="text" id="name" name="name" placeholder="Name..." required><br><br>
                     <label for="surname">Surname:</label><br>
                     <input type="text" id="surname" name="surname" placeholder="Surname..." required><br><br>
                     <label for="birthdate">Birthdate:</label><br>
                     <input type="date" id="birthdate" name="birthdate" required><br><br>
-                </form>
                 <br><br>
                 <!--Username
                     Email
                     Password-->
-                <form>
-                    <label for="usernameSi">Username:</label><br>
-                    <input type="text" id="usernameSi" name="usernameSi" placeholder="Username..." required><br><br>
+                    <label for="SignInUsername">Username:</label><br>
+                    <input type="text" id="SignInUsername" name="SignInUsername" placeholder="Username..." required><br><br>
                     <label for="email">Email:</label><br>
                     <input type="email" id="email" name="email" placeholder="Email..." required><br><br>
-                    <label for="passwordsi">Password:</label><br>
-                    <input type="password" id="passwordsi" name="passwordsi" required><br><br>
-                    <label for="confirmPassword">Confirm your Password:</label><br>
-                    <input type="password" id="confirmpassword" name="confirmPassword" required><br><br>
-                </form>
+                    <label for="SignInPassword">Password:</label><br>
+                    <input type="password" id="SignInPassword" name="SignInPassword" required><br><br>
+                    <label for="ConfirmPassword">Confirm your Password:</label><br>
+                    <input type="password" id="ConfirmPassword" name="ConfirmPassword" required><br><br>
                 <br><br>
                 <!--User GitHub-->
-                <form>
                     <label for="userGH">Insert your GitHub link:</label><br>
-                    <input type="link" id="userGH" name="userGH" placeholder="User GitHub..." required><br><br>
-                </form>
+                    <input type="text" id="userGH" name="userGH" placeholder="User GitHub..." required><br><br>
                 <br><br>
                 <!--Acceptance of privacy policy
                     Submit registration-->
-                <form>
-                    
                     <input type="checkbox" id="privacyPolicy" name="privacyPolicy" value="acceptePrivacyPolicy" required>
                     <a href="" style="color: white;">Accepte Privacy Policy</a> <!--DA MODIFICARE-->
-                    
-                    
+                    <input type="button" id="signinsubmit" value="Sign In" class="submit">
                 </form>
                 <br>
-                <input type="submit" value="Submit" class="submit">
             </div>
         </div>
         
