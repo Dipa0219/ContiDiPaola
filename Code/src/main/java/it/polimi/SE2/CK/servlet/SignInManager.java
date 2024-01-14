@@ -1,9 +1,7 @@
-package it.polimi.tiw.jdbctest.servlet;
+package it.polimi.SE2.CK.servlet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import it.polimi.tiw.jdbctest.DAO.UserDAO;
-import it.polimi.tiw.jdbctest.bean.User;
+import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.bean.User;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
@@ -21,7 +19,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 
 import static java.lang.Integer.getInteger;
 

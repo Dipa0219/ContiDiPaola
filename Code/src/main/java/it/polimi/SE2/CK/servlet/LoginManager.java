@@ -1,7 +1,4 @@
-package it.polimi.tiw.jdbctest.servlet;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+package it.polimi.SE2.CK.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -16,11 +13,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Enumeration;
 
+import it.polimi.SE2.CK.DAO.UserDAO;
 import org.apache.commons.lang3.StringUtils;
-import it.polimi.tiw.jdbctest.bean.User;
-import it.polimi.tiw.jdbctest.DAO.UserDAO;
 
 @WebServlet ("/LoginManager")
 @MultipartConfig

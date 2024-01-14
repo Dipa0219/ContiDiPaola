@@ -1,11 +1,11 @@
-package it.polimi.tiw.jdbctest.DAO;
+package it.polimi.SE2.CK.DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import it.polimi.tiw.jdbctest.bean.User;
+import it.polimi.SE2.CK.bean.User;
 
 public class UserDAO {
     private Connection con;
