@@ -1,4 +1,4 @@
-package it.polimi.tiw.jdbctest.bean;
+package it.polimi.SE2.CK.bean;
 
 import java.sql.Date;
 
