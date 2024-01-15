@@ -5,17 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
 
 public class UserDAO {
-    private Connection con;
+    private final Connection con;
 
     public UserDAO (Connection con) {
         this.con=con;
     }
 
-    public int checkUsername( String username, String password) throws SQLException {
-        int userId = 0;
+    public SessionUser checkUsername( String username, String password) throws SQLException {
+        SessionUser user = null;
         String query="SELECT * from user where username= ? and password = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -26,7 +27,10 @@ public class UserDAO {
             result = pstatement.executeQuery();
             while (result.next()) {
                 if (result.getString("username").equals(username)&& result.getString("password").equals(password)) {
-                    userId= result.getInt("idUser");
+                    user = new SessionUser();
+                    user.setId(result.getInt("idUser"));
+                    user.setUsername(result.getString("Username"));
+                    user.setRole(result.getInt("Role"));
                 }
             }
         } catch (SQLException e) {
@@ -48,13 +52,13 @@ public class UserDAO {
                 throw new SQLException(e1);
             }
         }
-        return userId;
+        return user;
     }
 
     public int createUser(User user) throws SQLException {
         String query1="SELECT * from new_schema.user where username= ? or email = ?";
-        ResultSet result = null;
-        PreparedStatement pstatement = null;
+        ResultSet result;
+        PreparedStatement pstatement;
         try {
             pstatement = con.prepareStatement(query1);
             pstatement.setString(1, user.getUsername());
@@ -68,7 +72,6 @@ public class UserDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new SQLException(e);
         }
         String query2="INSERT INTO `new_schema`.`user` " +

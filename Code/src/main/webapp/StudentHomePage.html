@@ -8,6 +8,8 @@
         <title>CodeKataBattle</title>
         <link rel="icon" href="logo.png" type="image/gif" sizes="16x16">
 
+
+        <script src="JavaScript/PersonalHomePage.js" charset="utf-8" defer></script>
         <script src="JavaScript/utils.js" charset="utf-8" defer></script>
         <script src="JavaScript/PageOrchestrator.js" charset="utf-8" defer></script>
 
@@ -52,12 +54,12 @@
 
 
         <!-- HomePage buttons -->
-        <div id="homePageDiv" class="divbutton">
+        <div id="homePageDiv" class="divbutton" style="display: none">
             <button id="createTournamentButton" class="newTournament" onclick="openModal('newTournament')">Create New Tournament</button>
         </div>
 
         <!-- Tournament Page buttons -->
-        <div id="tournamentPageDiv" class="divbutton">
+        <div id="tournamentPageDiv" class="divbutton" style="display: none">
             <button id="joinTournamentButton" class="joinTournament">Join Tournament</button>
 
             <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')">Create a Battle</button>
@@ -66,7 +68,7 @@
         </div>
 
         <!-- Battle Page buttons -->
-        <div id="battlePageDiv" class="divbutton">
+        <div id="battlePageDiv" class="divbutton" style="display: none">
             <button id="joinBattleAloneButton" class="joinBattle">Join Battle Alone</button>
             <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
             <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
@@ -76,14 +78,14 @@
 
 
         <!-- Tournament Info -->
-        <div id="tournamentInfo" class="genericMain">
+        <div id="tournamentInfo" class="genericMain" style="display: none">
             <h3 id="tournamentNameLabel">This is the XXX tournament</h3>
             <p id="tournamentDescriptionLabel">This tournament allows you to improve your skills in the XXX programming language.</p>
             <p id="tournamentRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
         </div>
 
         <!-- Battle Info -->
-        <div id="battleInfo" class="genericMain">
+        <div id="battleInfo" class="genericMain" style="display: none">
             <h3 id="battleNameLabel">This is the INTRODUCTION battle of the XXX tournament</h3>
             <p id="battleDescriptionLabel"> This battle allows you to practice threads in java.</p>
             <p id="battleRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
@@ -92,7 +94,7 @@
         </div>
 
         <!-- Personal Information -->
-        <div id="personalInformationDiv" class="genericMain">
+        <div id="personalInformationDiv" class="genericMain" style="display: none">
             <h3>These are your personal information</h3><br><br>
             <p id="roleUser"></p>
 
@@ -122,8 +124,8 @@
 
 
         <!-- Tournament Table -->
-        <div id="tournamentTableType"></div> <!-- Type of tournament table -->
-        <div id="tournamentTableDiv" class="genericMain">
+        <div id="tournamentTableType" style="display: none"></div> <!-- Type of tournament table -->
+        <div id="tournamentTableDiv" class="genericMain" style="display: none">
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -138,8 +140,8 @@
         </div>
 
         <!-- Battle Table -->
-        <div id="battleTableType"></div> <!-- Type of battle table -->
-        <div id="battleTableDiv" class="genericMain">
+        <div id="battleTableType" style="display: none"></div> <!-- Type of battle table -->
+        <div id="battleTableDiv" class="genericMain" style="display: none">
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -153,7 +155,7 @@
         </div>
 
         <!-- Ranking Table -->
-        <div id="rankingTableDiv" class="genericMain">
+        <div id="rankingTableDiv" class="genericMain" style="display: none">
             <h3>Ranking:</h3>
             <p id="rankingStarted" style="color: red;">The battle has not yet started.<br>
                 The ranking of the battle once it has started will be shown here.
@@ -172,8 +174,8 @@
         </div>
 
         <!-- Notification Table -->
-        <div id="notificationTableType"></div> <!-- Type of notification table -->
-        <div id="notificationTableDiv" class="genericMain">
+        <div id="notificationTableType" style="display: none"></div> <!-- Type of notification table -->
+        <div id="notificationTableDiv" class="genericMain" style="display: none">
             <!-- Tournament Table -->
             <table>
                 <thead>
@@ -187,7 +189,7 @@
             </table>
         </div>
 
-
+        <div class="genericMain"></div>
         <!-- Footer -->
         <footer>
             <p>Software Engineering 2</p>
