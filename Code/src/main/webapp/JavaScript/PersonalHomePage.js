@@ -42,7 +42,8 @@ function PersonalHomePage(user) {
             let linkText = document.createTextNode(tournament.id);
             anchor.appendChild(linkText);
             anchor.addEventListener("click", (e) => {
-                self.updateTournamentTable();
+                self.hide()
+                pageOrchestrator.showBattlePage(tournament.id)
             }, false);
             anchor.href = "#";
             tr.appendChild(td);
@@ -58,5 +59,11 @@ function PersonalHomePage(user) {
                 td.innerHTML= "ME"
             tr.appendChild(td);
         })
+    }
+
+    this.hide = function (){
+        homePageButton.style.display="none"
+        tournamentTableDiv.style.display="none"
+        tournamentTable.innerHTML=""
     }
 }

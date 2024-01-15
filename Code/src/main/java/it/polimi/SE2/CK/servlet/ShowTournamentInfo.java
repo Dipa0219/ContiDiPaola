@@ -3,7 +3,6 @@ package it.polimi.SE2.CK.servlet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
-import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 
 import javax.servlet.ServletContext;
@@ -21,9 +20,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-@WebServlet("/ShowTournament")
+@WebServlet("/ShowTournamentInfo")
 @MultipartConfig
-public class ShowTournament extends HttpServlet {
+public class ShowTournamentInfo extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
 
@@ -51,11 +50,11 @@ public class ShowTournament extends HttpServlet {
             response.getWriter().println("You can't access to this page");
             return;
         }
-        SessionUser user = (SessionUser) session.getAttribute("user");
+        int tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
-        ArrayList<Tournament> tournaments= null;
+        Tournament tournament= null;
         try {
-            tournaments= tournamentDAO.showTournamentByUserId(user.getId());
+            tournament= tournamentDAO.showTournamentById(tournamentId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -63,7 +62,7 @@ public class ShowTournament extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(tournaments);
+        String json = gson.toJson(tournament);
         response.getWriter().write(json);
     }
 

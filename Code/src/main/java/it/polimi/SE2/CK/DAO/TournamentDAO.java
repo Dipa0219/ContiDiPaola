@@ -17,7 +17,7 @@ public class TournamentDAO {
         this.con=con;
     }
 
-    public ArrayList<Tournament> showTournamentById (int userId) throws SQLException {
+    public ArrayList<Tournament> showTournamentByUserId (int userId) throws SQLException {
         ArrayList<Tournament> tournaments = new ArrayList<>();
         String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
                 "from tournament as t join t_subscription on idTournament=TournamentId join user as u on t.CreatorId= u.idUser\n" +
@@ -58,5 +58,48 @@ public class TournamentDAO {
             }
         }
         return tournaments;
+    }
+
+    public Tournament showTournamentById (int id) throws SQLException {
+        Tournament tournament = null;
+        ArrayList<Tournament> tournaments = new ArrayList<>();
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
+                "from tournament as t join user as u on t.CreatorId= u.idUser\n" +
+                "where t.idTournament = ?;";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                tournament= new Tournament();
+                tournament.setId(result.getInt("IdTournament"));
+                tournament.setName(result.getString("Name"));
+                tournament.setDescription(result.getString("Description"));
+                tournament.setCreatorId(result.getInt("CreatorId"));
+                tournament.setCreatorUsername(result.getString("Username"));
+                tournament.setRegDeadline(result.getTimestamp("RegDeadline"));
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return tournament;
     }
 }

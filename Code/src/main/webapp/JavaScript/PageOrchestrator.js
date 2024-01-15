@@ -12,11 +12,23 @@
 
     function PageOrchestrator(){
         let goodMorningUser = document.getElementById("goodMorningUser");
+        let goToUserHomePage =document.getElementById("goToUserHomePage")
 
         let personalHomePage = new PersonalHomePage(user);
-
+        let tournamentPage = new TournamentPage(user);
+        let actualPage= personalHomePage
         goodMorningUser.innerHTML="Goodmorning, " + user.username + "!"
+        goToUserHomePage.addEventListener("click", (e) => {
+            actualPage.hide()
+            personalHomePage.openPage()
+            actualPage= personalHomePage
+        }, false);
         personalHomePage.openPage()
+
+        this.showBattlePage = function (id) {
+            tournamentPage.openPage(id)
+            actualPage = tournamentPage
+        };
         /*let homePageButton = document.getElementById("homePageDiv");
         let tournamentPageButton=document.getElementById("tournamentPageDiv")
         let battlePageButton= document.getElementById("battlePageDiv")

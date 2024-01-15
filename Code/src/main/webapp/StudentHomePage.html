@@ -8,7 +8,7 @@
         <title>CodeKataBattle</title>
         <link rel="icon" href="logo.png" type="image/gif" sizes="16x16">
 
-
+        <script src="JavaScript/TournamentPage.js" charset="utf-8" defer></script>
         <script src="JavaScript/PersonalHomePage.js" charset="utf-8" defer></script>
         <script src="JavaScript/utils.js" charset="utf-8" defer></script>
         <script src="JavaScript/PageOrchestrator.js" charset="utf-8" defer></script>
@@ -60,18 +60,18 @@
 
         <!-- Tournament Page buttons -->
         <div id="tournamentPageDiv" class="divbutton" style="display: none">
-            <button id="joinTournamentButton" class="joinTournament">Join Tournament</button>
+            <button id="joinTournamentButton" class="joinTournament" style="display: none">Join Tournament</button>
 
-            <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')">Create a Battle</button>
-            <button id="addCollaboratorButton" class="addCollaborator" onclick="openModal('addCollaborator')">Add Collaborator</button>
-            <button id="closeTournamentButton" class="closeTournament">Close Tournament</button>
+            <button id="createBattleButton" class="createBattle" onclick="openModal('createBattle')" style="display: none">Create a Battle</button>
+            <button id="addCollaboratorButton" class="addCollaborator" onclick="openModal('addCollaborator')" style="display: none">Add Collaborator</button>
+            <button id="closeTournamentButton" class="closeTournament" style="display: none">Close Tournament</button>
         </div>
 
         <!-- Battle Page buttons -->
         <div id="battlePageDiv" class="divbutton" style="display: none">
-            <button id="joinBattleAloneButton" class="joinBattle">Join Battle Alone</button>
-            <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')">Join Battle As a Team</button>
-            <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')">Select your Team</button>
+            <button id="joinBattleAloneButton" class="joinBattle" style="display: none">Join Battle Alone</button>
+            <button id="joinBattleAsTeamButton" class="joinBattle" onclick="openModal('joinBattleAsTeam')" style="display: none">Join Battle As a Team</button>
+            <button id="selectTeamButton" class="joinBattle" onclick="openModal('joinTeam')" style="display: none">Select your Team</button>
 
             <button id="modifyGradeButton" class="modifyGrade" onclick="openModal('modifyGrade')" style="display: none;">Modify the Grade</button>
         </div>
