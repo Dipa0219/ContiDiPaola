@@ -68,9 +68,9 @@
                     }
                 }
             );
+            clearForm("signinForm")
         } else {
             form.reportValidity();
         }
-        clearForm("signinForm")
     });
 })();
