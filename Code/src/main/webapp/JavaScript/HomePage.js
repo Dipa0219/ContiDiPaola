@@ -28,6 +28,7 @@
         } else {
             form.reportValidity();
         }
+        clearForm("loginForm")
     });
 
     document.getElementById("signinsubmit").addEventListener('click', (e) => {
@@ -63,5 +64,6 @@
         } else {
             form.reportValidity();
         }
+        clearForm("signinForm")
     });
 })();

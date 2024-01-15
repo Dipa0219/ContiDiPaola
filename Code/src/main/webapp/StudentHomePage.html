@@ -303,33 +303,5 @@
                 </form>
             </div>
         </div>
-
-
-        <!-- Script -->
-        <script>
-            //open modal page
-            function openModal(type) {
-                var modal = document.getElementById(type + 'Modal');
-                modal.style.display = 'flex';
-            }
-
-            //close modal page
-            function closeModal() {
-                var modals = document.querySelectorAll('.modal');
-                modals.forEach(function(modal) {
-                    modal.style.display = 'none';
-                });
-            }
-
-            //TODO send searched tournament
-            function checkEnter(event) {
-                if (event.key === "Enter") {
-                    console.log("ciao")
-                    document.getElementById("searchTournament").value=""
-                }
-            }
-
-
-        </script>
     </body>
 </html>

@@ -45,8 +45,8 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Login</h3>
-                <p id="errormessage"></p>
-                <form action="#">
+                <p id="errormessage" style="color: red;"></p>
+                <form action="#" id="loginForm">
                         <br>
                         <label>Username:<br>
                         <input id="username" name="LoginUsername" type="text" required> <br><br>
@@ -66,9 +66,9 @@
                 <br>
                 <h3 style="text-align: center;">Signup</h3>
 
-                <div id="errormessagesignin" ></div>
+                <div id="errormessagesignin" style="color: red;"></div>
                 <!--Role-->
-                <form>
+                <form action="#" id="signinForm">
                     Choose your role<br>
                     <input type="radio" id="Educator" name="role" value="0" checked="checked">
                    <label for="Educator">Educator</label><br>
@@ -105,29 +105,12 @@
                 <!--Acceptance of privacy policy
                     Submit registration-->
                     <input type="checkbox" id="privacyPolicy" name="privacyPolicy" value="acceptePrivacyPolicy" required>
-                    <a href="" style="color: white;">Accepte Privacy Policy</a> <!--DA MODIFICARE-->
+                    <a href="" style="color: white;">Accepte Privacy Policy</a> <!--TODO DA MODIFICARE-->
+                    <br><br>
                     <input type="button" id="signinsubmit" value="Sign In" class="submit">
                 </form>
                 <br>
             </div>
         </div>
-        
-
-        <!--Tutti gli script che ci servono-->
-        <script>
-            //apri pagina modale
-            function openModal(type) {
-                var modal = document.getElementById(type + 'Modal');
-                modal.style.display = 'flex';
-            }
-
-            //chiudi pagina modale
-            function closeModal() {
-                var modals = document.querySelectorAll('.modal');
-                modals.forEach(function(modal) {
-                    modal.style.display = 'none';
-                });
-            }
-        </script>
     </body>
 </html>
