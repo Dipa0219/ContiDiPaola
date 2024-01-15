@@ -146,6 +146,10 @@ footer{
     align-items: center;
 }
 
+a{
+    color: orange;
+}
+
 
 /*All header content style*/
 #logo {
@@ -230,4 +234,5 @@ td{
     border: 2px solid #545b5e;
     border-radius: 12px;
     padding: 5px;
+    text-align: center;
 }

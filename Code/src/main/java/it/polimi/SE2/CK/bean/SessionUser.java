@@ -5,6 +5,18 @@ public class SessionUser {
     private String username;
     private int role;
 
+    public int getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
