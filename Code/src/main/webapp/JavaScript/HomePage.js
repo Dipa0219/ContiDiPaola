@@ -9,7 +9,7 @@
                         var message = x.responseText;
                         switch (x.status) {
                             case 200:
-                                sessionStorage.setItem('username',message);
+                                sessionStorage.setItem('user',message);
                                 window.location.href = "StudentHomePage.html";
                                 break;
                             case 400: // bad request
