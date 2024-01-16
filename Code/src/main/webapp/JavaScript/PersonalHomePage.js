@@ -19,13 +19,13 @@ function PersonalHomePage(user) {
                             self.updateTournamentTable(message)
                             break;
                         case 400: // bad request
-                            document.getElementById("errormessage").textContent = message;
+                            pageOrchestrator.showError(message);
                             break;
                         case 401: // unauthorized
-                            document.getElementById("errormessage").textContent = message;
+                            pageOrchestrator.showError(message);
                             break;
                         case 500: // server error
-                            document.getElementById("errormessage").textContent = message;
+                            pageOrchestrator.showError(message);
                             break;
                     }
                 }

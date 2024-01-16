@@ -1,7 +1,13 @@
 {
+    //obtains from the session all the useful user information
     var user = JSON.parse(sessionStorage.getItem('user'));
+
+    //creates the page orchestrator
     var pageOrchestrator = new PageOrchestrator();// main controller
     var self= this;
+
+    /*checks if the session is still active
+    * in case if it isn't it shows the HomePage*/
     window.addEventListener("load", () => {
         if (user == null) {
             window.location.href = "HomePage.html";
@@ -10,9 +16,13 @@
         } // display initial content
     }, false);
 
+    //It manages the interaction between all the different page
     function PageOrchestrator(){
         let goodMorningUser = document.getElementById("goodMorningUser");
         let goToUserHomePage =document.getElementById("goToUserHomePage")
+        let error= document.getElementById("error")
+        let errormessage= document.getElementById("errormessage")
+        let rollback =document.getElementById("rollback")
 
         let personalHomePage = new PersonalHomePage(user);
         let tournamentPage = new TournamentPage(user);
@@ -29,6 +39,17 @@
             tournamentPage.openPage(id)
             actualPage = tournamentPage
         };
+
+        this.showError=function (message){
+            actualPage.hide()
+            error.style.display=""
+            errormessage.innerHTML=message
+            rollback.addEventListener("click",(e)=>{
+                    error.style.display="none"
+                    actualPage.openPage()
+                }
+            )
+        }
         /*let homePageButton = document.getElementById("homePageDiv");
         let tournamentPageButton=document.getElementById("tournamentPageDiv")
         let battlePageButton= document.getElementById("battlePageDiv")

@@ -69,7 +69,8 @@ footer{
 .createBattle,
 .joinBattle,
 .modifyGrade,
-.addCollaborator{
+.addCollaborator,
+.rollback{
     padding: 10px 20px;
     margin: 0 10px;
     background-color: #3498db;

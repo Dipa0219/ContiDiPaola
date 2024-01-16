@@ -51,7 +51,10 @@
 
         <!-- Goodmorning -->
         <h2 id="goodMorningUser" style="text-align: center; color: white;">Goodmorning, KKK!</h2>
-
+        <div id="error" style="display: none;" >
+            <p id="errormessage" style="color: red; text-align: center"></p>
+            <button id="rollback" class="rollback">Come back to previous page</button>
+        </div>
 
         <!-- HomePage buttons -->
         <div id="homePageDiv" class="divbutton" style="display: none">
@@ -80,6 +83,7 @@
         <!-- Tournament Info -->
         <div id="tournamentInfo" class="genericMain" style="display: none">
             <h3 id="tournamentNameLabel">This is the XXX tournament</h3>
+            <p id="tournamentOwner"></p>
             <p id="tournamentDescriptionLabel">This tournament allows you to improve your skills in the XXX programming language.</p>
             <p id="tournamentRegistrationDeadlineLabel">Registration Deadline: YYYY/MM/DD</p>
         </div>
