@@ -3,6 +3,7 @@
 function TournamentPage(user) {
     //general
     let self=this
+    let tournamentId
 
     //big component
     let tournamentInfo = document.getElementById("tournamentInfo")
@@ -28,7 +29,10 @@ function TournamentPage(user) {
     })
 
     //show the page for the tournament with the given tournament id
-    this.openPage = function (tournamentId) {
+    this.openPage = function (id) {
+        if (id!=null) {
+            tournamentId = id
+        }
         tournamentInfo.style.display=""
         battleTableDiv.style.display=""
         tournamentPageDiv.style.display=""
@@ -99,6 +103,7 @@ function TournamentPage(user) {
     };
 
     this.updateBattleTable = function (battles){
+        battleTable.innerHTML=""
         battles.forEach(function (battle){
             let tr= document.createElement("tr");
             let td= document.createElement("td");
@@ -124,7 +129,6 @@ function TournamentPage(user) {
         tournamentInfo.style.display="none"
         battleTableDiv.style.display="none"
         tournamentPageDiv.style.display="none"
-        battleTable.innerHTML=""
 
         addCollaboratorButton.style.display="none"
         createBattleButton.style.display="none"
