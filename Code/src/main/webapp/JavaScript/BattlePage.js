@@ -1,3 +1,7 @@
+/*Function to organize the battle page which is the one shown after you click on a particular battle
+* It contains all the information regarding the battle chosen
+* and the button to allow the educator to modify the team evaluation.
+* It also contains the button to allow a student to join the chosen battle alone or as a team.*/
 function BattlePage(user){
     //general initialization
     let self= this
@@ -11,6 +15,9 @@ function BattlePage(user){
     let battleSubmissionDeadlineLabel = document.getElementById("battleSubmissionDeadlineLabel")
     let battleNumberTeamMemberLabel = document.getElementById("battleNumberTeamMemberLabel")
 
+    /*This is the method used to open the battle page
+   * First it decides which button must be shown
+   * Then with the makeCall function obtains all the tournament information and updates them*/
     this.openPage=function (id){
         battleId=id
         battleInfo.style.display=""
@@ -32,6 +39,8 @@ function BattlePage(user){
         )
     }
 
+    //This function is used to update the tournament information
+    //It obtains in input the battle information and adds them to the corresponding http element
     this.updateBattleInfo=function (battle){
         battleNameLabel.innerHTML="This is the "+battle.name +" battle of the "+battle.tournamentName +" tournament"
         if (battle.description!=null) {
@@ -45,6 +54,8 @@ function BattlePage(user){
         battleNumberTeamMemberLabel.innerHTML="Number of Team Member: between "+battle.minNumStudent +" to "+battle.maxNumStudent
     }
 
+
+    /*This function is used to hide all the element contained in this page*/
     this.hide=function (){
         battleInfo.style.display="none"
     }
