@@ -1,34 +1,43 @@
 
-
+/*Function to organize the tournament page which is the one shown after you click on a particular tournament
+* It contains all the information regarding the tournament chosen
+* and the button to allow the educator to create a new battle, to add a new collaborator and also to close a tournament
+* It also contains the button to allow a student to join the chosen tournament*/
 function TournamentPage(user) {
-    //general
+    //General initialization
     let self=this
     let tournamentId
 
-    //big component
+    //Initialization of all big element in the page
     let tournamentInfo = document.getElementById("tournamentInfo")
     let battleTableDiv = document.getElementById("battleTableDiv")
     let tournamentPageDiv =document.getElementById("tournamentPageDiv")
     let battleTable = document.getElementById("battleTable")
 
-    //student buttons
+    //Initialization of student button
     let joinTournamentButton = document.getElementById("joinTournamentButton")
-    //educator buttons
+
+    //Initialization of educator buttons
     let addCollaboratorButton =document.getElementById("addCollaboratorButton")
     let createBattleButton = document.getElementById("createBattleButton")
     let closeTournamentButton =document.getElementById("closeTournamentButton")
 
-    //tournamentInfo
+    //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
     let tournamentDescriptionLabel=document.getElementById("tournamentDescriptionLabel")
     let tournamentRegistrationDeadlineLabel = document.getElementById("tournamentRegistrationDeadlineLabel")
     let tournamentOwner = document.getElementById("tournamentOwner")
 
+    //TODO fix the tournament closure
+    //At the moment is only used to test the error page
     closeTournamentButton.addEventListener("click", (e) => {
         pageOrchestrator.showError("This function is not available for the moment")
     })
 
-    //show the page for the tournament with the given tournament id
+    /*This is the method used to open the tournament page
+    * First it decides which button must be shown
+    * Then with the makeCall function obtains all the tournament information and updates them
+    * In the end he obtains all the tournament in the battle with the second makeCall and adds them to the table*/
     this.openPage = function (id) {
         if (id!=null) {
             tournamentId = id
@@ -89,7 +98,8 @@ function TournamentPage(user) {
         )
     };
 
-    //updates all the div regarding the tournament information
+    //This function is used to update the tournament information
+    //It obtains in input the tournament information and adds them to the corresponding http element
     this.updateTournamentInfo= function (tournament){
         tournamentNameLabel.innerHTML="This is the "+ tournament.name + " tournament"
         tournamentOwner.innerHTML="Tournament created by " + tournament.creatorUsername
@@ -102,6 +112,9 @@ function TournamentPage(user) {
         tournamentRegistrationDeadlineLabel.innerHTML= "Registration Deadline:" + tournament.regDeadline
     };
 
+    /*This function is used to update the battle table
+    * It obtains in input the list of battle and add a new row in the
+    * table for each tournament contained in the list*/
     this.updateBattleTable = function (battles){
         battleTable.innerHTML=""
         battles.forEach(function (battle){
@@ -124,7 +137,7 @@ function TournamentPage(user) {
         })
     }
 
-    //hides everything referred to this page
+    /*This function is used to hide all the element contained in this page*/
     this.hide = function () {
         tournamentInfo.style.display="none"
         battleTableDiv.style.display="none"

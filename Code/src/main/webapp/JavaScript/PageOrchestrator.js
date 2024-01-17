@@ -26,6 +26,7 @@
 
         let personalHomePage = new PersonalHomePage(user);
         let tournamentPage = new TournamentPage(user);
+        let battlePage= new BattlePage(user)
         let actualPage= personalHomePage
         goodMorningUser.innerHTML="Goodmorning, " + user.username + "!"
         goToUserHomePage.addEventListener("click", (e) => {
@@ -35,11 +36,16 @@
         }, false);
         personalHomePage.openPage()
 
-        this.showBattlePage = function (id) {
-            tournamentPage.openPage(id)
+        /*This function is used to show the tournament page
+        * It updates the actual and then calls the openpage function*/
+        this.showTournamentPage = function (id) {
             actualPage = tournamentPage
+            tournamentPage.openPage(id)
         };
 
+        /*This function is used to show the error page
+        * In particular it hides the actual page, and the shows the error message
+        * that has just received with a button that allows to come back to the previous page*/
         this.showError=function (message){
             actualPage.hide()
             error.style.display=""
@@ -50,28 +56,5 @@
                 }
             )
         }
-        /*let homePageButton = document.getElementById("homePageDiv");
-        let tournamentPageButton=document.getElementById("tournamentPageDiv")
-        let battlePageButton= document.getElementById("battlePageDiv")
-        let tournamentInfo = document.getElementById("tournamentInfo")
-        let battleInfo = document.getElementById("battleInfo")
-        let personalInformationDiv = document.getElementById("personalInformationDiv")
-        let tournamentTableDiv= document.getElementById("tournamentTableDiv")
-        let battleTableDiv = document.getElementById("battleTableDiv")
-        let rankingTableDiv = document.getElementById("rankingTableDiv")
-        let notificationTableDiv= document.getElementById("notificationTableDiv")
-
-
-        if(user.role===1) {
-            homePageButton.style.display="none";
-        }
-        tournamentPageButton.style.display="none"
-        battlePageButton.style.display="none"
-        tournamentInfo.style.display="none"
-        battleInfo.style.display="none"
-        personalInformationDiv.style.display="none"
-        battleTableDiv.style.display="none"
-        rankingTableDiv.style.display="none"
-        notificationTableDiv.style.display="none"*/
     }
 }
