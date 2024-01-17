@@ -57,18 +57,13 @@ function TournamentPage(user) {
         makeCall("GET","ShowTournamentInfo?TournamentId="+ tournamentId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
-                    var message = JSON.parse(x.responseText);
+                    var message = x.responseText;
                     switch (x.status) {
                         case 200:
+                            message=JSON.parse(message)
                             self.updateTournamentInfo(message)
                             break;
-                        case 400: // bad request
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 401: // unauthorized
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 500: // server error
+                        default:
                             pageOrchestrator.showError(message);
                             break;
                     }
@@ -78,18 +73,13 @@ function TournamentPage(user) {
         makeCall("GET","ShowBattles?TournamentId="+ tournamentId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
-                    var message = JSON.parse(x.responseText);
+                    var message = x.responseText;
                     switch (x.status) {
                         case 200:
+                            message=JSON.parse(message)
                             self.updateBattleTable(message)
                             break;
-                        case 400: // bad request
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 401: // unauthorized
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 500: // server error
+                        default:
                             pageOrchestrator.showError(message);
                             break;
                     }
@@ -126,7 +116,7 @@ function TournamentPage(user) {
             anchor.appendChild(linkText);
             anchor.addEventListener("click", (e) => {
                 self.hide()
-                pageOrchestrator.showBattlePage(battle.id)
+                pageOrchestrator.showBattlePage(-1)
             }, false);
             anchor.href = "#";
             tr.appendChild(td);

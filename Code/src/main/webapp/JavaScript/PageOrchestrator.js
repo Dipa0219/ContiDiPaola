@@ -23,6 +23,7 @@
         let error= document.getElementById("error")
         let errormessage= document.getElementById("errormessage")
         let rollback =document.getElementById("rollback")
+        let errorFlag=0
 
         let personalHomePage = new PersonalHomePage(user);
         let tournamentPage = new TournamentPage(user);
@@ -31,6 +32,9 @@
         goodMorningUser.innerHTML="Goodmorning, " + user.username + "!"
         goToUserHomePage.addEventListener("click", (e) => {
             actualPage.hide()
+            if (errorFlag){
+                error.style.display="none"
+            }
             personalHomePage.openPage()
             actualPage= personalHomePage
         }, false);
@@ -39,18 +43,28 @@
         /*This function is used to show the tournament page
         * It updates the actual and then calls the openpage function*/
         this.showTournamentPage = function (id) {
-            actualPage = tournamentPage
             tournamentPage.openPage(id)
+            actualPage = tournamentPage
+        };
+
+        /*This function is used to show the battle page
+        * It updates the actual and then calls the openpage function*/
+        this.showBattlePage = function (id) {
+            battlePage.openPage(id)
+            actualPage = battlePage
         };
 
         /*This function is used to show the error page
         * In particular it hides the actual page, and the shows the error message
         * that has just received with a button that allows to come back to the previous page*/
+        //TODO try to fix button so that he receives only one call when an error occurs in two sequential MakeCall, if we don't find a solution give only the possibility to come back to the PersonalHomePage
         this.showError=function (message){
             actualPage.hide()
+            errorFlag=1
             error.style.display=""
             errormessage.innerHTML=message
             rollback.addEventListener("click",(e)=>{
+                    errorFlag=0
                     error.style.display="none"
                     actualPage.openPage()
                 }

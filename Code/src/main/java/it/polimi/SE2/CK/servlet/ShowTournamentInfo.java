@@ -50,13 +50,30 @@ public class ShowTournamentInfo extends HttpServlet {
             response.getWriter().println("You can't access to this page");
             return;
         }
-        int tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+        int tournamentId;
+        try {
+            tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+        }catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        if (tournamentId<=0){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
         Tournament tournament= null;
         try {
             tournament= tournamentDAO.showTournamentById(tournamentId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        if(tournament==null){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().println("There isn't any tournament with the given id, please try with an other one");
+            return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
