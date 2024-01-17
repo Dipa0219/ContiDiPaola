@@ -2,7 +2,9 @@ package it.polimi.SE2.CK.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.Tournament;
 
 import javax.servlet.ServletContext;
@@ -20,9 +22,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-@WebServlet("/ShowTournamentInfo")
+@WebServlet("/ShowBattleInfo")
 @MultipartConfig
-public class ShowTournamentInfo extends HttpServlet {
+public class ShowBattleInfo extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
 
@@ -50,36 +52,36 @@ public class ShowTournamentInfo extends HttpServlet {
             response.getWriter().println("You can't access to this page");
             return;
         }
-        int tournamentId;
+        int battleId;
         try {
-            tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+            battleId = Integer.parseInt(request.getParameter("BattleId"));
         }catch (Exception e){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
-        if (tournamentId<=0){
+        if (battleId<=0){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
-        TournamentDAO tournamentDAO= new TournamentDAO(connection);
-        Tournament tournament= null;
+        BattleDAO battleDAO= new BattleDAO(connection);
+        Battle battle= null;
         try {
-            tournament= tournamentDAO.showTournamentById(tournamentId);
+            battle= battleDAO.showBattleById(battleId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if(tournament==null){
+        if (battle==null){
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().println("There isn't any tournament with the given id, please try with an other one");
+            response.getWriter().println("There isn't any battle with the given id, please try with an other one");
             return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(tournament);
+        String json = gson.toJson(battle);
         response.getWriter().write(json);
     }
 

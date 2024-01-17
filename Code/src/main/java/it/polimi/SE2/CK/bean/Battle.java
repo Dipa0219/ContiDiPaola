@@ -10,6 +10,7 @@ public class Battle {
     Timestamp subDeadline;
     int minNumStudent;
     int maxNumStudent;
+    String tournamentName;
 
     public int getId() {
         return id;
@@ -39,6 +40,10 @@ public class Battle {
         return maxNumStudent;
     }
 
+    public String getTournamentName() {
+        return tournamentName;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -65,5 +70,9 @@ public class Battle {
 
     public void setMaxNumStudent(int maxNumStudent) {
         this.maxNumStudent = maxNumStudent;
+    }
+
+    public void setTournamentName(String tournamentName) {
+        this.tournamentName = tournamentName;
     }
 }

@@ -59,4 +59,48 @@ public class BattleDAO {
         }
         return battles;
     }
+
+    public Battle showBattleById(int battleId) throws SQLException {
+        Battle battle =null;
+        String query="select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName\n" +
+                "from new_schema.battle as b join new_schema.tournament as t on t.idTournament=b.TournamentId\n" +
+                "where Idbattle=?;";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, battleId);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                battle= new Battle();
+                battle.setId(result.getInt("Idbattle"));
+                battle.setName(result.getString("Name"));
+                battle.setDescription(result.getString("Description"));
+                battle.setRegDeadline(result.getTimestamp("RegDeadline"));
+                battle.setSubDeadline(result.getTimestamp("SubDeadline"));
+                battle.setMinNumStudent(result.getInt("MinNumStudent"));
+                battle.setMaxNumStudent(result.getInt("MaxNumStudent"));
+                battle.setTournamentName(result.getString("tournamentName"));
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return battle;
+    }
 }

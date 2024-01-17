@@ -57,8 +57,13 @@ public class ShowBattles extends HttpServlet {
         try {
             tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
         }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("An error is occurred with your request, please retry");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        if (tournamentId<=0){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("Internal error with the page, please try again");
             return;
         }
         BattleDAO battleDAO= new BattleDAO(connection);

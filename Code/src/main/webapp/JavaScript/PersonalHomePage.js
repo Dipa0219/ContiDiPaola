@@ -25,18 +25,13 @@ function PersonalHomePage(user) {
         tournamentTableDiv.style.display = ""
         makeCall("GET","ShowTournament",null, function(x) {
                 if (x.readyState === XMLHttpRequest.DONE) {
-                    var message = JSON.parse(x.responseText);
+                    var message = x.responseText;
                     switch (x.status) {
                         case 200:
+                            message=JSON.parse(message)
                             self.updateTournamentTable(message)
                             break;
-                        case 400: // bad request
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 401: // unauthorized
-                            pageOrchestrator.showError(message);
-                            break;
-                        case 500: // server error
+                        default:
                             pageOrchestrator.showError(message);
                             break;
                     }
