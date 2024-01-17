@@ -23,7 +23,7 @@ function PersonalHomePage(user) {
     function creationTournament(form){
         //Post in CreateTournament servlet
         if (form.checkValidity()) {
-            makeCall("POST", 'CreateTournament', e.target.closest("form"),
+            makeCall("POST", 'CreateTournament', form,
                 function (x) {
                     if (x.readyState === XMLHttpRequest.DONE) {
                         //server return message
@@ -77,7 +77,6 @@ function PersonalHomePage(user) {
     * Then with the makeCall function obtains all the necessary tournament
     * and then updates the tournament table*/
     this.openPage = function () {
-        console.log("Ciao")
         if (user.role !== 1) {
             homePageButton.style.display = "";
         }
