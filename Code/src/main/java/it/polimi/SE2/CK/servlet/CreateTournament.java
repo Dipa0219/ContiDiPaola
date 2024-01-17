@@ -32,10 +32,12 @@ import java.util.List;
 @MultipartConfig
 public class CreateTournament extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
     /**
      * A connection (session) with a specific database.
      */
     private Connection connection = null;
+
 
     /**
      * A convenience method which can be overridden so that there's no need to call super.init(config).
@@ -155,6 +157,13 @@ public class CreateTournament extends HttpServlet {
         sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline());
     }
 
+
+    /**
+     * Email all students enrolled on CKB.
+     *
+     * @param tournamentCreator the name of the educator that create the tournament.
+     * @param time the registration deadline.
+     */
     private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
         UserDAO userDAO=new UserDAO(connection);
         List<String> emailAccount=userDAO.allStudentEmail();
@@ -162,7 +171,6 @@ public class CreateTournament extends HttpServlet {
         String text=tournamentCreator + " created a new tournament. \n" +
                 "Hurry up, you only have until " + time +
                 "\nIf you are interested log on to the CKB platform now";
-        System.out.println(emailAccount);
 
         for (String s : emailAccount) {
             try {
