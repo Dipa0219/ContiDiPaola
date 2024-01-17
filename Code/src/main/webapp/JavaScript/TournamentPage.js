@@ -116,7 +116,7 @@ function TournamentPage(user) {
             anchor.appendChild(linkText);
             anchor.addEventListener("click", (e) => {
                 self.hide()
-                pageOrchestrator.showBattlePage(-1)
+                pageOrchestrator.showBattlePage(battle.id)
             }, false);
             anchor.href = "#";
             tr.appendChild(td);
