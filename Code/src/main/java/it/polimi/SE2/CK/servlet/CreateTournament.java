@@ -1,8 +1,11 @@
 package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.EmailManager;
+import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
@@ -20,6 +23,7 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Servlet that manage the creation of a tournament.
@@ -147,5 +151,27 @@ public class CreateTournament extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline());
+    }
+
+    private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
+        UserDAO userDAO=new UserDAO(connection);
+        List<String> emailAccount=userDAO.allStudentEmail();
+        String object="A new tournament has been created";
+        String text=tournamentCreator + " created a new tournament. \n" +
+                "Hurry up, you only have until " + time +
+                "\nIf you are interested log on to the CKB platform now";
+        System.out.println(emailAccount);
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
     }
 }

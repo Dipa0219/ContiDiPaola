@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
@@ -53,6 +55,35 @@ public class UserDAO {
             }
         }
         return user;
+    }
+
+    /**
+     * Database search for all student emails.
+     *
+     * @return the student emails.
+     */
+    public List<String> allStudentEmail(){
+        //search query
+        String query="Select Email " +
+                "FROM user " +
+                "WHERE Role = 1";
+        //statemente
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
     }
 
     public int createUser(User user) throws SQLException {
