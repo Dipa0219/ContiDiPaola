@@ -18,18 +18,26 @@
 
     //It manages the interaction between all the different page
     function PageOrchestrator(){
+        //initialize generic useful element
         let goodMorningUser = document.getElementById("goodMorningUser");
+        let goodMorningUserDD = document.getElementById("goodMorningUserDD")
+        let goToShowPersonalInformation = document.getElementById("goToShowPersonalInformation")
         let goToUserHomePage =document.getElementById("goToUserHomePage")
         let error= document.getElementById("error")
         let errormessage= document.getElementById("errormessage")
         let rollback =document.getElementById("rollback")
         let errorFlag=0
 
-        let personalHomePage = new PersonalHomePage(user);
-        let tournamentPage = new TournamentPage(user);
+        //initialiaze all the pages
+        let personalHomePage = new PersonalHomePage(user)
+        let tournamentPage = new TournamentPage(user)
         let battlePage= new BattlePage(user)
+        let personalInfoPage = new PersonalInfoPage(user)
         let actualPage= personalHomePage
+
+        //add first generale elements
         goodMorningUser.innerHTML="Goodmorning, " + user.username + "!"
+        goodMorningUserDD.innerHTML= "Goodmorning, " + user.username
         goToUserHomePage.addEventListener("click", (e) => {
             actualPage.hide()
             if (errorFlag){
@@ -38,6 +46,16 @@
             personalHomePage.openPage()
             actualPage= personalHomePage
         }, false);
+        goToShowPersonalInformation.addEventListener("click",(e) =>{
+            actualPage.hide()
+            if (errorFlag){
+                error.style.display="none"
+            }
+            personalInfoPage.openPage()
+            actualPage=personalInfoPage
+        },false)
+
+        //Calls the function to open the first page
         personalHomePage.openPage()
 
         /*This function is used to show the tournament page
