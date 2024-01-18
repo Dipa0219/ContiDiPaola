@@ -2,9 +2,9 @@ package it.polimi.SE2.CK.DAO;
 
 
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
@@ -159,7 +159,7 @@ public class TournamentDAO {
         //insert query
         String query = "INSERT INTO `tournament` " +
                 "(`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) " +
-                "VALUES (?, ?, ?, ?, 0)";
+                "VALUES (?, ?, ?, ?, ?)";
         //statement
         PreparedStatement preparedStatement = null;
 
@@ -169,6 +169,7 @@ public class TournamentDAO {
             preparedStatement.setString(2, tournament.getDescription());
             preparedStatement.setInt(3, tournament.getCreatorId());
             preparedStatement.setTimestamp(4, tournament.getRegDeadline());
+            preparedStatement.setInt(5, TournamentState.NOTSTARTED.getValue());
             preparedStatement.execute();
         }
         catch (SQLException e){

@@ -9,6 +9,7 @@ import java.util.List;
 
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 public class UserDAO {
     private final Connection con;
@@ -66,7 +67,7 @@ public class UserDAO {
         //search query
         String query="Select Email " +
                 "FROM user " +
-                "WHERE Role = 1";
+                "WHERE Role = ?";
         //statemente
         PreparedStatement preparedStatement = null;
         ResultSet resultSet;
@@ -74,6 +75,7 @@ public class UserDAO {
 
         try {
             preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.STUDENT.getValue());
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
