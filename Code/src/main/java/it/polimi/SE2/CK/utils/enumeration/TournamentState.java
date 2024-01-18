@@ -4,21 +4,21 @@ package it.polimi.SE2.CK.utils.enumeration;
  * Enumeration class that represent the tournament state.
  */
 public enum TournamentState {
-    NOTSTARTED(0),
-    ONGOING(1),
-    CLOSED(2);
+    NOTSTARTED("Not Started"),
+    ONGOING("Ongoing"),
+    CLOSED("Closed");
 
     /**
      * Enumeration value.
      */
-    private final int value;
+    private final String value;
 
     /**
      * Constructor.
      *
      * @param value the enumeration value.
      */
-    TournamentState(int value) {
+    TournamentState(String value) {
         this.value = value;
     }
 
@@ -27,7 +27,7 @@ public enum TournamentState {
      *
      * @return the tournament state value.
      */
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 }

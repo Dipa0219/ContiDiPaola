@@ -169,7 +169,7 @@ public class TournamentDAO {
             preparedStatement.setString(2, tournament.getDescription());
             preparedStatement.setInt(3, tournament.getCreatorId());
             preparedStatement.setTimestamp(4, tournament.getRegDeadline());
-            preparedStatement.setInt(5, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(5, TournamentState.NOTSTARTED.getValue());
             preparedStatement.execute();
         }
         catch (SQLException e){
@@ -205,7 +205,7 @@ public class TournamentDAO {
 
         try {
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, TournamentState.CLOSED.getValue());
+            preparedStatement.setString(1, TournamentState.CLOSED.getValue());
             preparedStatement.setInt(2, tournament.getId());
             preparedStatement.execute();
         }
