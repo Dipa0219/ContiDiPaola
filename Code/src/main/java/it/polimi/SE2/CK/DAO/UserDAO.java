@@ -88,6 +88,38 @@ public class UserDAO {
         return result;
     }
 
+    /**
+     * Database search for all student emails enrolled in a specific tournament.
+     *
+     * @param tournamentID the specific tournament.
+     * @return the student emails.
+     */
+    public List<String> allStudentTournamentEmail(int tournamentID){
+        //search query
+        String query="Select Email" +
+                "FROM user as u join t_subscription as ts on u.idUser=ts.UserId\n" +
+                "WHERE u.Role = ? and ts.TournamentId = ?;";
+        //statemente
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.STUDENT.getValue());
+            preparedStatement.setInt(2, tournamentID);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
     public int createUser(User user) throws SQLException {
         String query1="SELECT * from new_schema.user where username= ? or email = ?";
         ResultSet result;

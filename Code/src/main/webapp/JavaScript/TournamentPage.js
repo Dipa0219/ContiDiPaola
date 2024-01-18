@@ -21,7 +21,7 @@ function TournamentPage(user) {
     //Initialization of educator buttons
     let addCollaboratorButton =document.getElementById("addCollaboratorButton")
     let createBattleButton = document.getElementById("createBattleButton")
-    let closeTournamentButton =document.getElementById("closeTournamentButton")
+    let closeTournamentButton = document.getElementById("closeTournamentButton")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -29,11 +29,55 @@ function TournamentPage(user) {
     let tournamentRegistrationDeadlineLabel = document.getElementById("tournamentRegistrationDeadlineLabel")
     let tournamentOwner = document.getElementById("tournamentOwner")
 
-    //TODO fix the tournament closure
+
+    //Function that perform the closure of a tournament TODO
+    function closingTournament(form){
+        //Post in CloseTournament servlet
+        if (form.checkValidity()) {
+            makeCall("POST", 'CloseTournament', form,
+                function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        //server return message
+                        var message = x.responseText;
+                        let p= document.createElement("p")
+                        let closeModalMessage= document.getElementById("closeModalMessage")
+                        switch (x.status){
+                            case 200: //OK
+                                openModal("closeTournament")
+                                p.textContent="The tournament is closed"
+                                closeModalMessage.append(p);
+                                break;
+                            case 400: //BAD REQUEST
+                                openModal("closeTournament")
+                                p.textContent = message
+                                break;
+                            case 401: //UNAUTHORIZED
+                                openModal("closeTournament")
+                                p.textContent = message
+                                break;
+                            case 409: //CONFLICT
+                                openModal("closeTournament")
+                                p.textContent = message
+                                break;
+                            case 500: //INTERNAL SERVER ERROR
+                                openModal("closeTournament")
+                                p.textContent = message
+                                break;
+                        }
+                    }
+                })
+        }
+        else {
+            form.reportValidity();
+        }
+    }
+
     //At the moment is only used to test the error page
     closeTournamentButton.addEventListener("click", (e) => {
-        pageOrchestrator.showError("This function is not available for the moment")
+        var form = e.target.closest("form")
+        closingTournament(form)
     })
+
 
     /*This is the method used to open the tournament page
     * First it decides which button must be shown

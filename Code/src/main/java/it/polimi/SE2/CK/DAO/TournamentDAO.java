@@ -155,7 +155,7 @@ public class TournamentDAO {
      * @return true if the tournament has been added to the database.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean createTournament(Tournament tournament) throws SQLException{
+    public boolean createTournament(Tournament tournament) throws SQLException {
         //insert query
         String query = "INSERT INTO `tournament` " +
                 "(`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) " +
@@ -170,6 +170,43 @@ public class TournamentDAO {
             preparedStatement.setInt(3, tournament.getCreatorId());
             preparedStatement.setTimestamp(4, tournament.getRegDeadline());
             preparedStatement.setInt(5, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.execute();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            throw new SQLException();
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Update tournament phase in the database.
+     *
+     * @param tournament the tournament to update.
+     * @return true if the tournament has been closed.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean closeTournament(Tournament tournament) throws SQLException {
+        //update query
+        String query = "UPDATE `new_schema`.`tournament` " +
+                "SET `Phase` = ? " +
+                "WHERE (`idTournament` = ?)";
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(2, tournament.getId());
             preparedStatement.execute();
         }
         catch (SQLException e){
