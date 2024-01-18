@@ -99,18 +99,42 @@ public class CreateTournament extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+        if (tournamentName.length()>45){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("The max length of tournament name is 45 character");
+            return;
+        }
+        if (tournamentDescription.length()>200){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("The max length of tournament name is 200 character");
+            return;
+        }
 
         //transform string in date
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date parseDate;
+        //400 error
         try{
             parseDate = dateTimeFormatter.parse(registrationDeadline+":00");
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Insert a valid data");
+            return;
         }
         Timestamp tournamentRegistrationDeadline = new Timestamp(parseDate.getTime());
 
+        //get the actual date
+        Date currentDate = new Date();
+        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+        //400 error
+        if (tournamentRegistrationDeadline.before(currentTimestamp)){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Insert a valid data");
+            return;
+        }
+
         TournamentDAO tournamentDAO=new TournamentDAO(connection);
+        //500 error
         try {
             //409 error
             if (!tournamentDAO.checkTournamentByName(tournamentName)){
@@ -119,7 +143,9 @@ public class CreateTournament extends HttpServlet {
                 return;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
 
         //get session user
@@ -135,11 +161,14 @@ public class CreateTournament extends HttpServlet {
 
         //creation tournament on DB
         boolean result;
+        //500 error
         try {
             result = tournamentDAO.createTournament(tournament);
         }
         catch (SQLException e){
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
 
         //500 error
@@ -156,7 +185,6 @@ public class CreateTournament extends HttpServlet {
 
         sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline());
     }
-
 
     /**
      * Email all students enrolled on CKB.

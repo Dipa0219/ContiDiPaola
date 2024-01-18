@@ -113,6 +113,7 @@ public class TournamentDAO {
 
     /**
      * Check the existence of a tournament with the specified name.
+     *
      * @param name the tournament name to search.
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
@@ -147,9 +148,9 @@ public class TournamentDAO {
         return result;
     }
 
-    //TODO usa orario di Londra
     /**
      * Inserts a tournament in the database.
+     *
      * @param tournament the tournament to insert.
      * @return true if the tournament has been added to the database.
      * @throws SQLException An exception that provides information on a database access error or other errors.

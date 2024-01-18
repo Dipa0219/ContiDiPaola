@@ -211,10 +211,10 @@
                 <h3 style="text-align: center;">Create New Tournament</h3>
                 <form action="#" id="createTournamentForm">
                     <br>
-                    <label>Tournament name: *</label><br>
-                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required><br><br>
-                    <label>Tournament Description:</label><br>
-                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text"><br><br>
+                    <label>Tournament name (max 45 character): *</label><br>
+                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required maxlength="45"><br><br>
+                    <label>Tournament Description (max 200 character):</label><br>
+                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text" maxlength="200"><br><br>
                     <label>Registration Deadline: *</label><br>
                     <input id="tournamentRegistrationDeadlineInput" name="tournamentRegistrationDeadlineInput" type="datetime-local" required><br><br>
                     <input id="createTournamentSubmit" type="button" value="Submit" class="submit">
