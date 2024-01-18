@@ -158,8 +158,8 @@ public class TournamentDAO {
     public boolean createTournament(Tournament tournament) throws SQLException{
         //insert query
         String query = "INSERT INTO `tournament` " +
-                "(`Name`, `Description`, `CreatorId`, `RegDeadline`) " +
-                "VALUES (?, ?, ?, ?);";
+                "(`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) " +
+                "VALUES (?, ?, ?, ?, 0)";
         //statement
         PreparedStatement preparedStatement = null;
 
