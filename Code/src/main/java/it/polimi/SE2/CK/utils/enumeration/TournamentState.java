@@ -6,7 +6,7 @@ package it.polimi.SE2.CK.utils.enumeration;
 public enum TournamentState {
     NOTSTARTED(0),
     ONGOING(1),
-    ENDED(2);
+    CLOSED(2);
 
     /**
      * Enumeration value.

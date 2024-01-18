@@ -205,7 +205,7 @@ public class TournamentDAO {
 
         try {
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(1, TournamentState.CLOSED.getValue());
             preparedStatement.setInt(2, tournament.getId());
             preparedStatement.execute();
         }
