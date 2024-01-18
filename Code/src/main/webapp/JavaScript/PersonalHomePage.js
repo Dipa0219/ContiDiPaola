@@ -21,6 +21,14 @@ function PersonalHomePage(user) {
 
     //Function that perform the creation of a tournament
     function creationTournament(form){
+        //check registration deadline is after the current one
+        var now = new Date()
+        var insertedDate = new Date(registrationDeadlineInput.value)
+        if (insertedDate <= now){
+            document.getElementById("errormessageNewTournament").textContent = "Insert a valid data"
+            form.preventDefault()
+        }
+
         //Post in CreateTournament servlet
         if (form.checkValidity()) {
             makeCall("POST", 'CreateTournament', form,

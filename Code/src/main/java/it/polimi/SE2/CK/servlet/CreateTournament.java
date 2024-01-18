@@ -24,6 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Servlet that manage the creation of a tournament.
@@ -183,7 +185,10 @@ public class CreateTournament extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline());
+        //send email to all student
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline()));
+        executor.shutdownNow();
     }
 
     /**
