@@ -11,6 +11,7 @@ function TournamentPage(user) {
     //Initialization of all big element in the page
     let tournamentInfo = document.getElementById("tournamentInfo")
     let battleTableDiv = document.getElementById("battleTableDiv")
+    let battleTableType = document.getElementById("battleTableType")
     let tournamentPageDiv =document.getElementById("tournamentPageDiv")
     let battleTable = document.getElementById("battleTable")
 
@@ -107,7 +108,9 @@ function TournamentPage(user) {
     * table for each tournament contained in the list*/
     this.updateBattleTable = function (battles){
         battleTable.innerHTML=""
+        let flag=0
         battles.forEach(function (battle){
+            flag =1
             let tr= document.createElement("tr");
             let td= document.createElement("td");
             let anchor = document.createElement("a");
@@ -125,6 +128,12 @@ function TournamentPage(user) {
             td.innerHTML= battle.name;
             tr.appendChild(td);
         })
+
+        if(flag===0){
+            battleTableDiv.style.display="none"
+            battleTableType.style.display=""
+            battleTableType.innerHTML="You haven't subscribed to any tournament"
+        }
     }
 
     /*This function is used to hide all the element contained in this page*/

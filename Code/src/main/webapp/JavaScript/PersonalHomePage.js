@@ -10,6 +10,7 @@ function PersonalHomePage(user) {
     let homePageButton = document.getElementById("homePageDiv");
 
     //Tournament table initialization
+    let tournamentTableType =document.getElementById("tournamentTableType")
     let tournamentTableDiv = document.getElementById("tournamentTableDiv");
     let tournamentTable= document.getElementById("tournamentTable")
 
@@ -44,10 +45,12 @@ function PersonalHomePage(user) {
     * It obtains in input the list of tournaments and add a new row in the
     * table for each tournament contained in the list*/
     this.updateTournamentTable = function (tournaments){
+        let flag=0
         tournamentTable.innerHTML=""
-        tournaments.forEach(function (tournament){
-            let tr= document.createElement("tr");
-            let td= document.createElement("td");
+        tournaments.forEach(function (tournament) {
+            flag=1
+            let tr = document.createElement("tr");
+            let td = document.createElement("td");
             let anchor = document.createElement("a");
             td.appendChild(anchor);
             let linkText = document.createTextNode(tournament.id);
@@ -59,22 +62,27 @@ function PersonalHomePage(user) {
             anchor.href = "#";
             tr.appendChild(td);
             tournamentTable.appendChild(tr);
-            td= document.createElement("td");
-            td.innerHTML= tournament.name;
+            td = document.createElement("td");
+            td.innerHTML = tournament.name;
             tr.appendChild(td);
-            td= document.createElement("td");
-            if(tournament.creatorUsername !== user.username){
-                td.innerHTML= tournament.creatorUsername;
-            }
-            else
-                td.innerHTML= "ME"
+            td = document.createElement("td");
+            if (tournament.creatorUsername !== user.username) {
+                td.innerHTML = tournament.creatorUsername;
+            } else
+                td.innerHTML = "ME"
             tr.appendChild(td);
         })
+        if(flag===0){
+            tournamentTableDiv.style.display="none"
+            tournamentTableType.style.display=""
+            tournamentTableType.innerHTML="You haven't subscribed to any tournament"
+        }
     }
 
     /*This function is used to hide all the element contained in this page*/
     this.hide = function (){
         homePageButton.style.display="none"
         tournamentTableDiv.style.display="none"
+        tournamentTableType.innerHTML=""
     }
 }
