@@ -48,6 +48,7 @@ function TournamentPage(user) {
                             openModal("closeTournament")
                             p.textContent = "The tournament is closed"
                             closeModalMessage.append(p);
+                            //TODO
 
                             // createBattleButton.style.display = "none"
                             // addCollaboratorButton.style.display = "none"
