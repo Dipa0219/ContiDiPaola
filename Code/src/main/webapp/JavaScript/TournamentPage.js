@@ -46,33 +46,31 @@ function TournamentPage(user) {
                     switch (x.status){
                         case 200: //OK
                             openModal("closeTournament")
-                            p.textContent = "The tournament is closed"
-                            closeModalMessage.append(p);
-                            //TODO
+                            closeModalMessage.innerHTML="The tournament is closed";
 
-                            // createBattleButton.style.display = "none"
-                            // addCollaboratorButton.style.display = "none"
-                            // closeTournamentButton.style.display = "none"
+                            createBattleButton.style.display = "none"
+                            addCollaboratorButton.style.display = "none"
+                            closeTournamentButton.style.display = "none"
                             break;
                         case 400: //BAD REQUEST
                             openModal("closeTournament")
-                            p.textContent = message
+                            closeModalMessage.innerHTML = message
                             break;
                         case 401: //UNAUTHORIZED
                             openModal("closeTournament")
-                            p.textContent = message
+                            closeModalMessage.innerHTML = message
                             break;
                         case 406: //NOT ACCEPTABLE
                             openModal("closeTournament")
-                            p.textContent = message
+                            closeModalMessage.innerHTML = message
                             break;
                         case 409: //CONFLICT
                             openModal("closeTournament")
-                            p.textContent = message
+                            closeModalMessage.innerHTML = message
                             break;
                         case 500: //INTERNAL SERVER ERROR
                             openModal("closeTournament")
-                            p.textContent = message
+                            closeModalMessage.innerHTML = message
                             break;
                     }
                 }
@@ -151,7 +149,18 @@ function TournamentPage(user) {
             tournamentDescriptionLabel.innerHTML =""
         }
         tournamentRegistrationDeadlineLabel.innerHTML= "Registration Deadline:" + tournament.regDeadline
+
+        hideTournamentButton(tournament)
     };
+
+    //This function is used to hide the tournament button if requests
+    function hideTournamentButton(tournament) {
+        if (tournament.phase !== "Ongoing"){
+            createBattleButton.style.display = "none"
+            addCollaboratorButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
+        }
+    }
 
     /*This function is used to update the battle table
     * It obtains in input the list of battle and add a new row in the

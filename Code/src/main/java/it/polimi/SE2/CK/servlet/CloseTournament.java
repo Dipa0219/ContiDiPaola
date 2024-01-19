@@ -107,9 +107,8 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
-        System.out.println(tournament.getPhase());
-        //406 error TODO
-        if (tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
+        //406 error
+        if (!tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             response.getWriter().println("The tournament has already been closed");
             return;
