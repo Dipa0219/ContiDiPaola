@@ -6,6 +6,7 @@ import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class manage the interaction with the database that manage the tournament data.
@@ -155,7 +156,7 @@ public class TournamentDAO {
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean checkUserInTournament (int tournamentID, int userID) throws SQLException {
+    public boolean checkUserInTournament(int tournamentID, int userID) throws SQLException {
         //search query
         String query = "SELECT * " +
                 "FROM new_schema.t_subscription " +
@@ -172,6 +173,43 @@ public class TournamentDAO {
         catch (SQLException e){
             return false;
         }
+    }
+
+    /**
+     * Database search for all educator usernames not in a specific tournament.
+     *
+     * @param tournamentID the tournament to search.
+     * @return list of all educator username not in a tournament.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> showEducatorNotInTournament(int tournamentID) throws SQLException {
+        //search query
+        String query = "SELECT u.Username " +
+                "FROM user as u " +
+                "WHERE u.Role = 0 and not exists (" +
+                    "SELECT * " +
+                    "FROM t_subscription as ts " +
+                    "WHERE ts.UserId = u.idUser and ts.TournamentId = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        ArrayList<String> result;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentID);
+            resultSet = preparedStatement.executeQuery();
+
+            result = new ArrayList<>();
+            while (resultSet.next()){
+                result.add(resultSet.getString("Username"));
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+
+        return result;
     }
 
     /**

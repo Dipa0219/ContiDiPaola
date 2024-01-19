@@ -77,9 +77,39 @@ function TournamentPage(user) {
             })
     }
 
-    //At the moment is only used to test the error page
+    //Adding the click listener
     closeTournamentButton.addEventListener("click", (e) => {
         closingTournament()
+    })
+
+    //Adding the click listener - show the educator that can be added as collaborato
+    addCollaboratorButton.addEventListener("click", (e) => {
+        console.log(tournamentId)
+        makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            message=JSON.parse(message)
+                            var collaboratorInput = document.getElementById("collaboratorInput")
+                            console.log(message)
+                            console.log(message[0])
+
+                            for (let i = 0; i < message.length; i++) {
+                                var option = document.createElement("option")
+                                option.text = message[i]
+                                option.value = message[i]
+                                collaboratorInput.add(option)
+                            }
+
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            })
     })
 
 
