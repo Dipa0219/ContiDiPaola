@@ -211,14 +211,14 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Create New Tournament</h3>
-                <form action="#">
+                <form action="#" id="createTournamentForm">
                     <br>
-                    <label>Tournament name:</label><br>
-                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required><br><br>
-                    <label>Tournament Description:</label><br>
-                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text"><br><br>
-                    <label>Registration Deadline:</label><br>
-                    <input id="tournamentRegistrationDeadlineInput" name="tournamentRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <label>Tournament name (max 45 character): *</label><br>
+                    <input id="tournamentNameInput" name="tournamentNameInput" type="text" required maxlength="45"><br><br>
+                    <label>Tournament Description (max 200 character):</label><br>
+                    <input id="tournamentDescriptionInput" name="tournamentDescriptionInput" type="text" maxlength="200"><br><br>
+                    <label>Registration Deadline: *</label><br>
+                    <input id="tournamentRegistrationDeadlineInput" name="tournamentRegistrationDeadlineInput" type="datetime-local" required><br><br>
                     <input id="createTournamentSubmit" type="button" value="Submit" class="submit">
                 </form>
             </div>
@@ -233,7 +233,7 @@
                 <h3 style="text-align: center;">Join Battle As a Team</h3>
                 <form action="#">
                     <br>
-                    <label>choose your Team Mate:</label><br>
+                    <label>choose your Teammate:</label><br>
                     <select id="teamMateInput" name="teamMateInput" size="4" multiple></select><br><br>
                     <input id="joinBattleAsTeamSubmit" type="button" value="Submit" class="submit">
                 </form>

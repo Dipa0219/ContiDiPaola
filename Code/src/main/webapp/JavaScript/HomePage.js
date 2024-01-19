@@ -40,20 +40,15 @@
                         var message = x.responseText;
                         switch (x.status) {
                             case 200:
-                                console.log("ciao")
                                 closeModal()
-                                console.log("ciao")
                                 openModal("otherInformation")
-                                console.log("ciao")
                                 let p= document.createElement("p")
                                 let p1= document.createElement("p")
                                 let signinmessage= document.getElementById("otherInformation")
-                                console.log("ciao")
                                 p.textContent="We are sending you a confirmation email"
                                 signinmessage.append(p);
                                 p1.textContent="Please check your email"
                                 signinmessage.append(p1);
-                                console.log("ciao")
                                 break;
                             case 400: // bad request
                                 document.getElementById("errormessagesignin").textContent = message;
