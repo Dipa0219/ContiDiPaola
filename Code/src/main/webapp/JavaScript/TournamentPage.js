@@ -31,51 +31,56 @@ function TournamentPage(user) {
 
 
     //Function that perform the closure of a tournament TODO
-    function closingTournament(form){
+    function closingTournament(){
+        var requestData = {tournamentID: tournamentId}
+        console.log(tournamentId)
         //Post in CloseTournament servlet
-        if (form.checkValidity()) {
-            makeCall("POST", 'CloseTournament', form,
-                function (x) {
-                    if (x.readyState === XMLHttpRequest.DONE) {
-                        //server return message
-                        var message = x.responseText;
-                        let p= document.createElement("p")
-                        let closeModalMessage= document.getElementById("closeModalMessage")
-                        switch (x.status){
-                            case 200: //OK
-                                openModal("closeTournament")
-                                p.textContent="The tournament is closed"
-                                closeModalMessage.append(p);
-                                break;
-                            case 400: //BAD REQUEST
-                                openModal("closeTournament")
-                                p.textContent = message
-                                break;
-                            case 401: //UNAUTHORIZED
-                                openModal("closeTournament")
-                                p.textContent = message
-                                break;
-                            case 409: //CONFLICT
-                                openModal("closeTournament")
-                                p.textContent = message
-                                break;
-                            case 500: //INTERNAL SERVER ERROR
-                                openModal("closeTournament")
-                                p.textContent = message
-                                break;
-                        }
+        makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
+            function (x) {
+                console.log("sono qui")
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    //server return message
+                    var message = x.responseText;
+                    let p= document.createElement("p")
+                    let closeModalMessage= document.getElementById("closeTournamentMessage")
+                    switch (x.status){
+                        case 200: //OK
+                            openModal("closeTournament")
+                            p.textContent = "The tournament is closed"
+                            closeModalMessage.append(p);
+
+                            // createBattleButton.style.display = "none"
+                            // addCollaboratorButton.style.display = "none"
+                            // closeTournamentButton.style.display = "none"
+                            break;
+                        case 400: //BAD REQUEST
+                            openModal("closeTournament")
+                            p.textContent = message
+                            break;
+                        case 401: //UNAUTHORIZED
+                            openModal("closeTournament")
+                            p.textContent = message
+                            break;
+                        case 406: //NOT ACCEPTABLE
+                            openModal("closeTournament")
+                            p.textContent = message
+                            break;
+                        case 409: //CONFLICT
+                            openModal("closeTournament")
+                            p.textContent = message
+                            break;
+                        case 500: //INTERNAL SERVER ERROR
+                            openModal("closeTournament")
+                            p.textContent = message
+                            break;
                     }
-                })
-        }
-        else {
-            form.reportValidity();
-        }
+                }
+            })
     }
 
     //At the moment is only used to test the error page
     closeTournamentButton.addEventListener("click", (e) => {
-        var form = e.target.closest("form")
-        closingTournament(form)
+        closingTournament()
     })
 
 

@@ -5,6 +5,7 @@ import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,6 +85,8 @@ public class CloseTournament extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
+        boolean result;
+
         //the user is authorized or not - 401 error
         if(session.isNew() || session.getAttribute("user")==null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -91,15 +94,54 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
-        //TODO come faccio a recuperare il torneo in cui mi trovo
-
+        //retrieve tournament information
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
+        tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        //500 error
+        try {
+            tournament = tournamentDAO.showTournamentById(tournament.getId());
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
+        System.out.println(tournament.getPhase());
+        //406 error
+        if (tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.getWriter().println("The tournament has already been closed");
+            return;
+        }
+
+        //close tournament
+        //500 error
+        try {
+            result = tournamentDAO.closeTournament(tournament.getId());
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //500 error
+        if (!result){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //200 ok
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
         //send email to all student
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        Tournament finalTournament = tournament;
         executor.submit(() ->
-                sendEmailToAllStudentEnrolledInTournament(tournament));
+                sendEmailToAllStudentEnrolledInTournament(finalTournament));
         executor.shutdownNow();
     }
 

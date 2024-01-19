@@ -9,6 +9,7 @@ public class Tournament {
     int creatorId;
     String creatorUsername;
     Timestamp regDeadline;
+    String phase;
 
     public int getId() {
         return id;
@@ -34,6 +35,10 @@ public class Tournament {
         return regDeadline;
     }
 
+    public String getPhase() {
+        return phase;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -56,5 +61,9 @@ public class Tournament {
 
     public void setRegDeadline(Timestamp regDeadline) {
         this.regDeadline = regDeadline;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
     }
 }

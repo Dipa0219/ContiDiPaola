@@ -71,7 +71,7 @@ public class TournamentDAO {
     public Tournament showTournamentById (int id) throws SQLException {
         Tournament tournament = null;
         ArrayList<Tournament> tournaments = new ArrayList<>();
-        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, t.Phase, u.username\n" +
                 "from tournament as t join user as u on t.CreatorId= u.idUser\n" +
                 "where t.idTournament = ?";
         ResultSet result = null;
@@ -88,6 +88,7 @@ public class TournamentDAO {
                 tournament.setCreatorId(result.getInt("CreatorId"));
                 tournament.setCreatorUsername(result.getString("Username"));
                 tournament.setRegDeadline(result.getTimestamp("RegDeadline"));
+                tournament.setPhase(result.getString("Phase"));
             }
         } catch (SQLException e) {
             throw new SQLException(e);
@@ -192,11 +193,11 @@ public class TournamentDAO {
     /**
      * Update tournament phase in the database.
      *
-     * @param tournament the tournament to update.
+     * @param tournamentID the tournament id to update.
      * @return true if the tournament has been closed.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean closeTournament(Tournament tournament) throws SQLException {
+    public boolean closeTournament(int tournamentID) throws SQLException {
         //update query
         String query = "UPDATE `new_schema`.`tournament` " +
                 "SET `Phase` = ? " +
@@ -206,7 +207,7 @@ public class TournamentDAO {
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.CLOSED.getValue());
-            preparedStatement.setInt(2, tournament.getId());
+            preparedStatement.setInt(2, tournamentID);
             preparedStatement.execute();
         }
         catch (SQLException e){
