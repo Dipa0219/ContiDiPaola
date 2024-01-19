@@ -126,12 +126,11 @@ public class TournamentDAO {
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        boolean result;
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, name);
-            result = preparedStatement.execute();
+            return preparedStatement.execute();
         }
         catch (SQLException e){
             throw new SQLException();
@@ -146,7 +145,33 @@ public class TournamentDAO {
                 return false;
             }
         }
-        return result;
+    }
+
+    /**
+     * Check the user's presence in the specified tournament.
+     *
+     * @param tournamentID the tournament to check.
+     * @param userID the user to check.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkUserInTournament (int tournamentID, int userID) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM new_schema.t_subscription " +
+                "WHERE TournamentID = ? and UserID = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentID);
+            preparedStatement.setInt(2, userID);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e){
+            return false;
+        }
     }
 
     /**

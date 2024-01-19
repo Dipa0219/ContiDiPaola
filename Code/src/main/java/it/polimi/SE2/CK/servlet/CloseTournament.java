@@ -6,8 +6,8 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import jakarta.mail.MessagingException;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -21,9 +21,6 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -85,16 +82,16 @@ public class CloseTournament extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        boolean result;
 
-        //the user is authorized or not - 401 error
+        //the user is authorized or not
+        //401 error
         if(session.isNew() || session.getAttribute("user")==null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("You can't access to this page");
             return;
         }
 
-        //retrieve tournament information
+        //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
         tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
@@ -107,6 +104,39 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
+        //user is an educator
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        UserDAO userDAO = new UserDAO(connection);
+        //500 error
+        try {
+            //401 error
+            if (userDAO.getUserRole(user.getId()) != UserRole.EDUCATOR){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //user is in the tournament
+        //500 error
+        try {
+            //401 error
+            if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //tournament is in Ongoing phase
         //406 error
         if (!tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -115,6 +145,7 @@ public class CloseTournament extends HttpServlet {
         }
 
         //close tournament
+        boolean result;
         //500 error
         try {
             result = tournamentDAO.closeTournament(tournament.getId());
