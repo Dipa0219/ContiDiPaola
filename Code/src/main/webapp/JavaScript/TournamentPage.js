@@ -104,16 +104,16 @@ function TournamentPage(user) {
                                 location.reload();
                                 break;
                             case 400: //BAD REQUEST
-                                document.getElementById("errormessageNewTournament").textContent = message;
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
                                 break;
                             case 401: //UNAUTHORIZED
-                                document.getElementById("errormessageNewTournament").textContent = message;
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
                                 break;
                             case 409: //CONFLICT
-                                document.getElementById("errormessageNewTournament").textContent = message;
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
                                 break;
                             case 500: //INTERNAL SERVER ERROR
-                                document.getElementById("errormessageNewTournament").textContent = message;
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
                                 break;
                         }
                     }

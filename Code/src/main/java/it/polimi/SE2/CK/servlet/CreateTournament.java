@@ -199,7 +199,12 @@ public class CreateTournament extends HttpServlet {
      */
     private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
         UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount=userDAO.allStudentEmail();
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allStudentEmail();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         String object="A new tournament has been created";
         String text=tournamentCreator + " created a new tournament. \n" +
                 "Hurry up, you only have until " + time +

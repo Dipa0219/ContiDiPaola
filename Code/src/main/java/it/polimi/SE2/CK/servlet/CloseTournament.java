@@ -182,7 +182,12 @@ public class CloseTournament extends HttpServlet {
      */
     private void sendEmailToAllStudentEnrolledInTournament(Tournament tournament){
         UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount=userDAO.allStudentTournamentEmail(tournament.getId());
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allStudentTournamentEmail(tournament.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         String object = "A tournament has been closed";
         String text = tournament.getCreatorUsername() + " closed the " + tournament.getName() + " tournament. \n" +
                 "The final rankings are available on the tournament page.";

@@ -3,6 +3,7 @@ package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -134,7 +135,7 @@ public class TournamentDAO {
             return preparedStatement.execute();
         }
         catch (SQLException e){
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -143,7 +144,7 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException(e);
             }
         }
     }
@@ -173,6 +174,15 @@ public class TournamentDAO {
         catch (SQLException e){
             return false;
         }
+        finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
     }
 
     /**
@@ -192,7 +202,7 @@ public class TournamentDAO {
                     "WHERE ts.UserId = u.idUser and ts.TournamentId = ?)";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         ArrayList<String> result;
 
         try{
@@ -207,6 +217,22 @@ public class TournamentDAO {
         }
         catch (SQLException e){
             return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -237,8 +263,7 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -247,7 +272,7 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException();
             }
         }
         return true;
@@ -274,8 +299,7 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -284,9 +308,57 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException();
             }
         }
+        return true;
+    }
+
+    public boolean addCollaborator(int tournamentID, List<String> collaboratorUsername) throws SQLException {
+        //insert query
+        String query = "INSERT INTO t_subscription " +
+                "('', '') " +
+                "VALUES (?, ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        UserDAO userDAO = new UserDAO(con);
+
+        try {
+            //start transaction
+            con.setAutoCommit(false);
+
+            preparedStatement = con.prepareStatement(query);
+            for (String s : collaboratorUsername) {
+                preparedStatement.setInt(1, tournamentID);
+                preparedStatement.setInt(2, userDAO.getUserID(s));
+                preparedStatement.execute();
+            }
+
+            //end transaction
+            con.commit();
+        }
+        catch (SQLException e){
+            try {
+                //transaction error ==> rollback
+                con.rollback();
+            }
+            catch (SQLException e1){
+                return false;
+            }
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+
+
         return true;
     }
 }

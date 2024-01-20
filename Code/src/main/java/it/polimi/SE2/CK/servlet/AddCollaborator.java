@@ -143,49 +143,58 @@ public class AddCollaborator extends HttpServlet {
         //collaborator list
         ArrayList<String> collaboratorList = (ArrayList<String>) request.getAttribute("CollaboratorList");
         UserDAO userDAO = new UserDAO(connection);
-        //TODO controllare che tutti i collaboratori siano educaotor
+        //500 error
+        for (String s : collaboratorList) {
+            try {
+                //selected collaborator is a user
+                //400 error
+                if (userDAO.getUserID(s) == -1) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().println("You can't access to this page");
+                    return;
+                }
+                //selected collaborator is an educator
+                //409 error
+                if (!userDAO.getUserRole(userDAO.getUserID(s)).equals(UserRole.EDUCATOR)) {
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().println("You can't access to this page");
+                    return;
+                }
+                //selected collaborator not is in the tournament
+                //409 error
+                if (tournamentDAO.checkUserInTournament(tournament.getId(), userDAO.getUserID(s))){
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().println("You can't access to this page");
+                    return;
+                }
+            } catch (SQLException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().println("The server do not respond");
+                return;
+            }
+        }
 
-        //TODO controllare che tutti i collaborator non siano già nel torneo
+        //add collaborator
+        boolean result;
+        //500 error
+        try {
+            result = tournamentDAO.addCollaborator(tournament.getId(), collaboratorList);
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
-        //TODO transaction per aggiungere i collaborator
-
-
-//        boolean result;
-//        //500 error
-//        if (!result){
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            response.getWriter().println("The server do not respond");
-//            return;
-//        }
+        //500 error
+        if (!result){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-    }
-
-    /**
-     * Email all students enrolled on CKB.
-     *
-     * @param tournamentCreator the name of the educator that create the tournament.
-     * @param time the registration deadline.
-     */
-    private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount=userDAO.allStudentEmail();
-        String object="A new tournament has been created";
-        String text=tournamentCreator + " created a new tournament. \n" +
-                "Hurry up, you only have until " + time +
-                "\nIf you are interested log on to the CKB platform now";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
     }
 }
