@@ -21,7 +21,7 @@ function TournamentPage(user) {
     //Initialization of educator buttons
     let addCollaboratorButton =document.getElementById("addCollaboratorButton")
     let createBattleButton = document.getElementById("createBattleButton")
-    let closeTournamentButton =document.getElementById("closeTournamentButton")
+    let closeTournamentButton = document.getElementById("closeTournamentButton")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -29,11 +29,59 @@ function TournamentPage(user) {
     let tournamentRegistrationDeadlineLabel = document.getElementById("tournamentRegistrationDeadlineLabel")
     let tournamentOwner = document.getElementById("tournamentOwner")
 
-    //TODO fix the tournament closure
+
+    //Function that perform the closure of a tournament TODO
+    function closingTournament(){
+        var requestData = {tournamentID: tournamentId}
+        console.log(tournamentId)
+        //Post in CloseTournament servlet
+        makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
+            function (x) {
+                console.log("sono qui")
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    //server return message
+                    var message = x.responseText;
+                    let p= document.createElement("p")
+                    let closeModalMessage= document.getElementById("closeTournamentMessage")
+                    switch (x.status){
+                        case 200: //OK
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML="The tournament is closed";
+
+                            createBattleButton.style.display = "none"
+                            addCollaboratorButton.style.display = "none"
+                            closeTournamentButton.style.display = "none"
+                            break;
+                        case 400: //BAD REQUEST
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 401: //UNAUTHORIZED
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 406: //NOT ACCEPTABLE
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 409: //CONFLICT
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 500: //INTERNAL SERVER ERROR
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                    }
+                }
+            })
+    }
+
     //At the moment is only used to test the error page
     closeTournamentButton.addEventListener("click", (e) => {
-        pageOrchestrator.showError("This function is not available for the moment")
+        closingTournament()
     })
+
 
     /*This is the method used to open the tournament page
     * First it decides which button must be shown
@@ -101,7 +149,18 @@ function TournamentPage(user) {
             tournamentDescriptionLabel.innerHTML =""
         }
         tournamentRegistrationDeadlineLabel.innerHTML= "Registration Deadline:" + tournament.regDeadline
+
+        hideTournamentButton(tournament)
     };
+
+    //This function is used to hide the tournament button if requests
+    function hideTournamentButton(tournament) {
+        if (tournament.phase !== "Ongoing"){
+            createBattleButton.style.display = "none"
+            addCollaboratorButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
+        }
+    }
 
     /*This function is used to update the battle table
     * It obtains in input the list of battle and add a new row in the

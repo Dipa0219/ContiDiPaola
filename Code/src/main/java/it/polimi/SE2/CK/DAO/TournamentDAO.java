@@ -71,7 +71,7 @@ public class TournamentDAO {
     public Tournament showTournamentById (int id) throws SQLException {
         Tournament tournament = null;
         ArrayList<Tournament> tournaments = new ArrayList<>();
-        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, t.Phase, u.username\n" +
                 "from tournament as t join user as u on t.CreatorId= u.idUser\n" +
                 "where t.idTournament = ?";
         ResultSet result = null;
@@ -88,6 +88,7 @@ public class TournamentDAO {
                 tournament.setCreatorId(result.getInt("CreatorId"));
                 tournament.setCreatorUsername(result.getString("Username"));
                 tournament.setRegDeadline(result.getTimestamp("RegDeadline"));
+                tournament.setPhase(result.getString("Phase"));
             }
         } catch (SQLException e) {
             throw new SQLException(e);
@@ -125,12 +126,11 @@ public class TournamentDAO {
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        boolean result;
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, name);
-            result = preparedStatement.execute();
+            return preparedStatement.execute();
         }
         catch (SQLException e){
             throw new SQLException();
@@ -145,7 +145,33 @@ public class TournamentDAO {
                 return false;
             }
         }
-        return result;
+    }
+
+    /**
+     * Check the user's presence in the specified tournament.
+     *
+     * @param tournamentID the tournament to check.
+     * @param userID the user to check.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkUserInTournament (int tournamentID, int userID) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM new_schema.t_subscription " +
+                "WHERE TournamentID = ? and UserID = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentID);
+            preparedStatement.setInt(2, userID);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e){
+            return false;
+        }
     }
 
     /**
@@ -155,7 +181,7 @@ public class TournamentDAO {
      * @return true if the tournament has been added to the database.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean createTournament(Tournament tournament) throws SQLException{
+    public boolean createTournament(Tournament tournament) throws SQLException {
         //insert query
         String query = "INSERT INTO `tournament` " +
                 "(`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) " +
@@ -169,7 +195,44 @@ public class TournamentDAO {
             preparedStatement.setString(2, tournament.getDescription());
             preparedStatement.setInt(3, tournament.getCreatorId());
             preparedStatement.setTimestamp(4, tournament.getRegDeadline());
-            preparedStatement.setInt(5, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(5, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.execute();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            throw new SQLException();
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Update tournament phase in the database.
+     *
+     * @param tournamentID the tournament id to update.
+     * @return true if the tournament has been closed.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean closeTournament(int tournamentID) throws SQLException {
+        //update query
+        String query = "UPDATE `new_schema`.`tournament` " +
+                "SET `Phase` = ? " +
+                "WHERE (`idTournament` = ?)";
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.CLOSED.getValue());
+            preparedStatement.setInt(2, tournamentID);
             preparedStatement.execute();
         }
         catch (SQLException e){
