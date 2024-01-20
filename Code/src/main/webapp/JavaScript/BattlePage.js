@@ -7,7 +7,13 @@ function BattlePage(user){
     let self= this
     let battleId
 
+    let battlePageDiv= document.getElementById("battlePageDiv")
     let battleInfo= document.getElementById("battleInfo")
+
+    let joinBattleAloneButton = document.getElementById("joinBattleAloneButton")
+    let joinBattleAsTeamButton = document.getElementById("joinBattleAsTeamButton")
+    let selectTeamButton = document.getElementById("selectTeamButton")
+    let modifyGradeButton = document.getElementById("modifyGradeButton")
 
     let battleNameLabel= document.getElementById("battleNameLabel")
     let battleDescriptionLabel = document.getElementById("battleDescriptionLabel")
@@ -21,6 +27,15 @@ function BattlePage(user){
     this.openPage=function (id){
         battleId=id
         battleInfo.style.display=""
+        battlePageDiv.style.display=""
+        if (user.role===1){
+            joinBattleAloneButton.style.display=""
+            joinBattleAsTeamButton.style.display=""
+            selectTeamButton.style.display=""
+        }
+        else if (user.role===0) {
+            modifyGradeButton.style.display = ""
+        }
         makeCall("GET","ShowBattleInfo?BattleId="+ battleId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
@@ -58,5 +73,10 @@ function BattlePage(user){
     /*This function is used to hide all the element contained in this page*/
     this.hide=function (){
         battleInfo.style.display="none"
+        battlePageDiv.style.display="none"
+        joinBattleAloneButton.style.display="none"
+        joinBattleAsTeamButton.style.display="none"
+        selectTeamButton.style.display="none"
+        modifyGradeButton.style.display = "none"
     }
 }
