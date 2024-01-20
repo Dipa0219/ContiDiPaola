@@ -5,6 +5,8 @@ import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,9 +34,9 @@ import java.util.concurrent.Executors;
 /**
  * Servlet that manage the creation of a tournament.
  */
-@WebServlet("/CreateTournament")
+@WebServlet("/AddCollaborator")
 @MultipartConfig
-public class CreateTournament extends HttpServlet {
+public class AddCollaborator extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -91,57 +95,43 @@ public class CreateTournament extends HttpServlet {
             return;
         }
 
-        String tournamentName = request.getParameter("tournamentNameInput");
-        String tournamentDescription = request.getParameter("tournamentDescriptionInput");
-        String registrationDeadline = request.getParameter("tournamentRegistrationDeadlineInput");
-
-        //400 error
-        if (StringUtils.isAnyEmpty(tournamentName, registrationDeadline)) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("All fields with an asterisk are required");
-            return;
-        }
-        if (tournamentName.length()>45){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("The max length of tournament name is 45 character");
-            return;
-        }
-        if (tournamentDescription.length()>200){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("The max length of tournament name is 200 character");
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        //user is an educator
+        //401 error
+        if (user.getRole() != UserRole.EDUCATOR.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't access to this page");
             return;
         }
 
-        //transform string in date
-        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Date parseDate;
-        //400 error
-        try{
-            parseDate = dateTimeFormatter.parse(registrationDeadline+":00");
-        } catch (ParseException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
-            return;
-        }
-        Timestamp tournamentRegistrationDeadline = new Timestamp(parseDate.getTime());
-
-        //get the actual date
-        Date currentDate = new Date();
-        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
-        //400 error
-        if (tournamentRegistrationDeadline.before(currentTimestamp)){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
-            return;
-        }
-
-        TournamentDAO tournamentDAO=new TournamentDAO(connection);
+        //existence of tournament
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
+        Tournament tournament = new Tournament();
+        tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
         //500 error
         try {
-            //409 error
-            if (!tournamentDAO.checkTournamentByName(tournamentName)){
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-                response.getWriter().println("Existing tournament name, choose another one");
+            tournament = tournamentDAO.showTournamentById(tournament.getId());
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //tournament is in Closed phase
+        //406 error
+        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.getWriter().println("The tournament has already been closed");
+            return;
+        }
+
+        //user is in the tournament
+        //500 error
+        try {
+            //401 error
+            if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
                 return;
             }
         } catch (SQLException e) {
@@ -150,24 +140,57 @@ public class CreateTournament extends HttpServlet {
             return;
         }
 
-        //get session user
-        SessionUser user = (SessionUser) session.getAttribute("user");
+        //collaborator list
+        String collaborator = request.getParameter("CollaboratorList");
+        String[] collaboratorsList = collaborator.split(",");
+        ArrayList<String> collaboratorList = new ArrayList<>(Arrays.asList(collaboratorsList));
 
-        //sets the new tournament data
-        Tournament tournament=new Tournament();
-        tournament.setCreatorId(user.getId());
-        tournament.setCreatorUsername(user.getUsername());
-        tournament.setName(tournamentName);
-        tournament.setDescription(tournamentDescription);
-        tournament.setRegDeadline(tournamentRegistrationDeadline);
+        //empty collaborator list
+        //400 error
+        if (collaboratorList.isEmpty()){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Choose a collaborator");
+            return;
+        }
 
-        //creation tournament on DB
+        UserDAO userDAO = new UserDAO(connection);
+        //500 error
+        for (String s : collaboratorList) {
+            try {
+                //selected collaborator is a user
+                //400 error
+                if (userDAO.getUserID(s) == -1) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().println("You have not selected a valid user");
+                    return;
+                }
+                //selected collaborator is an educator
+                //409 error
+                if (!userDAO.getUserRole(userDAO.getUserID(s)).equals(UserRole.EDUCATOR)) {
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().println("You have not selected an educator");
+                    return;
+                }
+                //selected collaborator not is in the tournament
+                //409 error
+                if (!tournamentDAO.checkUserInTournament(tournament.getId(), userDAO.getUserID(s))){
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().println("You have selected an educator already in the tournament");
+                    return;
+                }
+            } catch (SQLException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().println("The server do not respond");
+                return;
+            }
+        }
+
+        //add collaborator
         boolean result;
         //500 error
         try {
-            result = tournamentDAO.createTournament(tournament);
-        }
-        catch (SQLException e){
+            result = tournamentDAO.addCollaborator(tournament.getId(), collaboratorList);
+        } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
@@ -184,40 +207,5 @@ public class CreateTournament extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        //send email to all student
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline()));
-        executor.shutdownNow();
-    }
-
-    /**
-     * Email all students enrolled on CKB.
-     *
-     * @param tournamentCreator the name of the educator that create the tournament.
-     * @param time the registration deadline.
-     */
-    private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount= null;
-        try {
-            emailAccount = userDAO.allStudentEmail();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String object="A new tournament has been created";
-        String text=tournamentCreator + " created a new tournament. \n" +
-                "Hurry up, you only have until " + time +
-                "\nIf you are interested log on to the CKB platform now";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
     }
 }

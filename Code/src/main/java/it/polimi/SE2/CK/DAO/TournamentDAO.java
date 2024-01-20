@@ -3,9 +3,11 @@ package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class manage the interaction with the database that manage the tournament data.
@@ -133,7 +135,7 @@ public class TournamentDAO {
             return preparedStatement.execute();
         }
         catch (SQLException e){
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -142,7 +144,7 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException(e);
             }
         }
     }
@@ -155,7 +157,7 @@ public class TournamentDAO {
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean checkUserInTournament (int tournamentID, int userID) throws SQLException {
+    public boolean checkUserInTournament(int tournamentID, int userID) throws SQLException {
         //search query
         String query = "SELECT * " +
                 "FROM new_schema.t_subscription " +
@@ -172,6 +174,68 @@ public class TournamentDAO {
         catch (SQLException e){
             return false;
         }
+        finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+    }
+
+    /**
+     * Database search for all educator usernames not in a specific tournament.
+     *
+     * @param tournamentID the tournament to search.
+     * @return list of all educator username not in a tournament.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> showEducatorNotInTournament(int tournamentID) throws SQLException {
+        //search query
+        String query = "SELECT u.Username " +
+                "FROM user as u " +
+                "WHERE u.Role = 0 and not exists (" +
+                    "SELECT * " +
+                    "FROM t_subscription as ts " +
+                    "WHERE ts.UserId = u.idUser and ts.TournamentId = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<String> result;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentID);
+            resultSet = preparedStatement.executeQuery();
+
+            result = new ArrayList<>();
+            while (resultSet.next()){
+                result.add(resultSet.getString("Username"));
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -199,8 +263,7 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -209,7 +272,7 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException();
             }
         }
         return true;
@@ -236,8 +299,7 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
+            return false;
         }
         finally {
             try {
@@ -246,9 +308,65 @@ public class TournamentDAO {
                 }
             }
             catch (SQLException e){
-                return false;
+                throw new SQLException();
             }
         }
+        return true;
+    }
+
+    /**
+     * Insert a collaborator for a tournament in the database.
+     *
+     * @param tournamentID the tournament selected.
+     * @param collaboratorUsernameList the collaborators' username.
+     * @return true if the collaborators has been added to the database.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean addCollaborator(int tournamentID, List<String> collaboratorUsernameList) throws SQLException {
+        //insert query
+        String query = "INSERT INTO `new_schema`.`t_subscription` " +
+                "(`TournamentId`, `UserId`) " +
+                "VALUES (?, ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        UserDAO userDAO = new UserDAO(con);
+
+        try {
+            //start transaction
+            con.setAutoCommit(false);
+
+            preparedStatement = con.prepareStatement(query);
+            for (String s : collaboratorUsernameList) {
+                preparedStatement.setInt(1, tournamentID);
+                preparedStatement.setInt(2, userDAO.getUserID(s));
+                preparedStatement.execute();
+            }
+
+            //end transaction
+            con.commit();
+        }
+        catch (SQLException e){
+            try {
+                //transaction error ==> rollback
+                con.rollback();
+            }
+            catch (SQLException e1){
+                return false;
+            }
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+
+
         return true;
     }
 }

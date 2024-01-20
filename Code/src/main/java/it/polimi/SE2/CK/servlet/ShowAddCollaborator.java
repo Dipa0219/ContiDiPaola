@@ -1,13 +1,14 @@
 package it.polimi.SE2.CK.servlet;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
-import it.polimi.SE2.CK.utils.EmailManager;
-import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
-import jakarta.mail.MessagingException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -18,26 +19,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
-import java.sql.*;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-/**
- * Servlet that manage the creation of a tournament.
- */
-@WebServlet("/CloseTournament")
+@WebServlet("/ShowAddCollaborator")
 @MultipartConfig
-public class CloseTournament extends HttpServlet {
+public class ShowAddCollaborator extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * A connection (session) with a specific database.
      */
     private Connection connection = null;
-
 
     /**
      * A convenience method which can be overridden so that there's no need to call super.init(config).
@@ -46,7 +42,7 @@ public class CloseTournament extends HttpServlet {
      */
     public void init() throws ServletException {
         try {
-            ServletContext context=getServletContext();
+            ServletContext context = getServletContext();
             String driver = context.getInitParameter("dbDriver");
             String url = context.getInitParameter("dbUrl");
             String user = context.getInitParameter("dbUser");
@@ -68,19 +64,7 @@ public class CloseTournament extends HttpServlet {
      * @param response object that contains the response the client has made of the servlet
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        response.getWriter().println("Request non acceptable");
-    }
-
-    /**
-     * Called by the server (via the service method) to allow a servlet to handle a POST request.
-     *
-     * @param request object that contains the request the client has made of the servlet
-     * @param response object that contains the response the client has made of the servlet
-     * @throws IOException if an input or output error is detected when the servlet handles the GET request
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
         //the user is authorized or not
@@ -94,7 +78,7 @@ public class CloseTournament extends HttpServlet {
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
-        tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());
@@ -136,27 +120,13 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
-        //tournament is in Ongoing phase
-        //406 error
-        if (!tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.getWriter().println("The tournament has already been closed");
-            return;
-        }
-
-        //close tournament
-        boolean result;
+        //get educator not in tournament
+        ArrayList<String> educatorNotInTournament = new ArrayList<>();
         //500 error
-        try {
-            result = tournamentDAO.closeTournament(tournament.getId());
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
+        try{
+            educatorNotInTournament = (ArrayList<String>) tournamentDAO.showEducatorNotInTournament(tournament.getId());
         }
-
-        //500 error
-        if (!result){
+        catch (SQLException e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
@@ -166,40 +136,20 @@ public class CloseTournament extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        //send email to all student
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Tournament finalTournament = tournament;
-        executor.submit(() ->
-                sendEmailToAllStudentEnrolledInTournament(finalTournament));
-        executor.shutdownNow();
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(educatorNotInTournament);
+        response.getWriter().write(json);
     }
 
     /**
-     * Email all students enrolled on CKB.
+     * Called by the server (via the service method) to allow a servlet to handle a POST request.
      *
-     * @param tournament the interested tournament.
+     * @param request object that contains the request the client has made of the servlet
+     * @param response object that contains the response the client has made of the servlet
+     * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
-    private void sendEmailToAllStudentEnrolledInTournament(Tournament tournament){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount= null;
-        try {
-            emailAccount = userDAO.allStudentTournamentEmail(tournament.getId());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String object = "A tournament has been closed";
-        String text = tournament.getCreatorUsername() + " closed the " + tournament.getName() + " tournament. \n" +
-                "The final rankings are available on the tournament page.";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        response.getWriter().println("Request non acceptable");
     }
 }

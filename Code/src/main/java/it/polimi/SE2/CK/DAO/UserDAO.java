@@ -62,8 +62,9 @@ public class UserDAO {
      * Database search for all student emails.
      *
      * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public List<String> allStudentEmail(){
+    public List<String> allStudentEmail() throws SQLException {
         //search query
         String query="Select Email " +
                 "FROM user " +
@@ -93,8 +94,9 @@ public class UserDAO {
      *
      * @param tournamentID the specific tournament.
      * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public List<String> allStudentTournamentEmail(int tournamentID){
+    public List<String> allStudentTournamentEmail(int tournamentID) throws SQLException {
         //search query
         String query="Select Email" +
                 "FROM user as u join t_subscription as ts on u.idUser=ts.UserId\n" +
@@ -121,13 +123,45 @@ public class UserDAO {
     }
 
     /**
+     * Retrieves the user's ID from the database.
+     *
+     * @param username the username to search.
+     * @return the user ID or -1 if the username is not in the database.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public int getUserID(String username) throws SQLException {
+        //search query
+        String query = "SELECT idUser " +
+                "FROM user " +
+                "WHERE username = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        int result = -1;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result = resultSet.getInt("idUser");
+            }
+        }
+        catch (SQLException e){
+            return -1;
+        }
+        return result;
+    }
+
+    /**
      * Retrieves the user's role from the database.
      *
      * @param userID the interested user id.
      * @return the user role.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public UserRole getUserRole (int userID) throws SQLException {
+    public UserRole getUserRole(int userID) throws SQLException {
         //select query
         String query = "SELECT Role " +
                 "FROM new_schema.user " +
@@ -160,7 +194,9 @@ public class UserDAO {
     }
 
     public int createUser(User user) throws SQLException {
-        String query1="SELECT * from new_schema.user where username= ? or email = ?";
+        String query1="SELECT * " +
+                "from new_schema.user " +
+                "where username= ? or email = ?";
         ResultSet result;
         PreparedStatement pstatement;
         try {

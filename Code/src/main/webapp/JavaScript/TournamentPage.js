@@ -22,6 +22,7 @@ function TournamentPage(user) {
     let addCollaboratorButton =document.getElementById("addCollaboratorButton")
     let createBattleButton = document.getElementById("createBattleButton")
     let closeTournamentButton = document.getElementById("closeTournamentButton")
+    let addCollaboratorSubmit = document.getElementById("addCollaboratorSubmit")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -30,14 +31,11 @@ function TournamentPage(user) {
     let tournamentOwner = document.getElementById("tournamentOwner")
 
 
-    //Function that perform the closure of a tournament TODO
+    //Function that perform the closure of a tournament
     function closingTournament(){
-        var requestData = {tournamentID: tournamentId}
-        console.log(tournamentId)
         //Post in CloseTournament servlet
         makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
             function (x) {
-                console.log("sono qui")
                 if (x.readyState === XMLHttpRequest.DONE) {
                     //server return message
                     var message = x.responseText;
@@ -77,9 +75,53 @@ function TournamentPage(user) {
             })
     }
 
-    //At the moment is only used to test the error page
+    //Adding the click listener
     closeTournamentButton.addEventListener("click", (e) => {
         closingTournament()
+    })
+
+    addCollaboratorSubmit.addEventListener("click", (e) => {
+        var collaboratorList = []
+        //Create Tournament Form reference
+        var form = e.target.closest("form")
+        if (form.checkValidity()){
+            //catch all collaborator
+            var collaborator = document.getElementById("collaboratorInput")
+            for (let i = 0; i < collaborator.options.length; i++) {
+                if (collaborator.options[i].selected){
+                    collaboratorList.push(collaborator.options[i].value)
+                }
+            }
+
+            makeCall("POST", 'AddCollaborator?TournamentID=' + tournamentId + '&CollaboratorList=' + collaboratorList, form,
+                function (x){
+                    if (x.readyState === XMLHttpRequest.DONE){
+                        //server return message
+                        var message = x.responseText
+                        switch (x.status){
+                            case 200: //OK
+                                closeModal();
+                                break;
+                            case 400: //BAD REQUEST
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
+                                break;
+                            case 401: //UNAUTHORIZED
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
+                                break;
+                            case 409: //CONFLICT
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
+                                break;
+                            case 500: //INTERNAL SERVER ERROR
+                                document.getElementById("errormessageAddCollaborator").textContent = message;
+                                break;
+                        }
+                    }
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("addCollaboratorForm")
     })
 
 
@@ -135,6 +177,34 @@ function TournamentPage(user) {
                 }
             }
         )
+        //add collaborator option or hide the add collaborator button
+        makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            message=JSON.parse(message)
+                            var collaboratorInput = document.getElementById("collaboratorInput")
+
+                            if (message.length === 0){
+                                addCollaboratorButton.style.display = "none"
+                            }
+                            else {
+                                for (let i = 0; i < message.length; i++) {
+                                    var option = document.createElement("option")
+                                    option.text = message[i]
+                                    option.value = message[i]
+                                    collaboratorInput.add(option)
+                                }
+                            }
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            })
     };
 
     //This function is used to update the tournament information
@@ -157,8 +227,10 @@ function TournamentPage(user) {
     function hideTournamentButton(tournament) {
         if (tournament.phase !== "Ongoing"){
             createBattleButton.style.display = "none"
-            addCollaboratorButton.style.display = "none"
             closeTournamentButton.style.display = "none"
+        }
+        else if (tournament.phase === "Ended"){
+            addCollaboratorButton.style.display = "none"
         }
     }
 
