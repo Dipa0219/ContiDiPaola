@@ -132,7 +132,7 @@ function TournamentPage(user) {
         if(flag===0){
             battleTableDiv.style.display="none"
             battleTableType.style.display=""
-            battleTableType.innerHTML="You haven't subscribed to any tournament"
+            battleTableType.innerHTML="It hasn't been created any battle for this tournament"
         }
     }
 
@@ -141,6 +141,7 @@ function TournamentPage(user) {
         tournamentInfo.style.display="none"
         battleTableDiv.style.display="none"
         tournamentPageDiv.style.display="none"
+        battleTableType.style.display="none"
 
         addCollaboratorButton.style.display="none"
         createBattleButton.style.display="none"

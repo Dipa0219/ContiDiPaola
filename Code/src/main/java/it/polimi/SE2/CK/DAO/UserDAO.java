@@ -135,4 +135,45 @@ public class UserDAO {
         }
         return 0;
     }
+
+    public User getUserById(int id) throws SQLException {
+        User user = null;
+        String query="SELECT * from user where idUser=?";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                user = new User();
+                user.setId(result.getInt("idUser"));
+                user.setName(result.getString("name"));
+                user.setSurname(result.getString("surname"));
+                user.setBirthdate(result.getDate("birthdate"));
+                user.setUsername(result.getString("Username"));
+                user.setEmail(result.getString("email"));
+                user.setRole(result.getInt("Role"));
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return user;
+    }
 }
