@@ -9,7 +9,7 @@
     /*checks if the session is still active
     * in case if it isn't it shows the HomePage*/
     window.addEventListener("load", () => {
-        if (user == null) {
+        if (user.id == null) {
             window.location.href = "HomePage.html";
         } else {
             //pageOrchestrator.start(); // initialize the components
@@ -20,9 +20,14 @@
     function PageOrchestrator(){
         //initialize generic useful element
         let goodMorningUser = document.getElementById("goodMorningUser");
+
+        //initialize header elements
         let goodMorningUserDD = document.getElementById("goodMorningUserDD")
         let goToShowPersonalInformation = document.getElementById("goToShowPersonalInformation")
         let goToUserHomePage =document.getElementById("goToUserHomePage")
+        let logoutButton = document.getElementById("logoutButton")
+
+        //initialize error element
         let error= document.getElementById("error")
         let errormessage= document.getElementById("errormessage")
         let rollback =document.getElementById("rollback")
@@ -54,9 +59,35 @@
             personalInfoPage.openPage()
             actualPage=personalInfoPage
         },false)
+        logoutButton.addEventListener("click",(e) => {
+            actualPage.hide()
+            if(errorFlag){
+                error.style.display="none"
+            }
+            this.logout()
+        })
 
         //Calls the function to open the first page
         personalHomePage.openPage()
+
+        this.logout = function (){
+            makeCall("POST", "Logout", null,
+            function (x){
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        let message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                sessionStorage.removeItem("user")
+                                window.location.href = "HomePage.html";
+                                break;
+                            default:
+                                pageOrchestrator.showError(message);
+                                break;
+                        }
+                    }
+                }
+            )
+        }
 
         /*This function is used to show the tournament page
         * It updates the actual and then calls the openpage function*/
