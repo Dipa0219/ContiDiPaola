@@ -314,10 +314,18 @@ public class TournamentDAO {
         return true;
     }
 
-    public boolean addCollaborator(int tournamentID, List<String> collaboratorUsername) throws SQLException {
+    /**
+     * Insert a collaborator for a tournament in the database.
+     *
+     * @param tournamentID the tournament selected.
+     * @param collaboratorUsernameList the collaborators' username.
+     * @return true if the collaborators has been added to the database.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean addCollaborator(int tournamentID, List<String> collaboratorUsernameList) throws SQLException {
         //insert query
-        String query = "INSERT INTO t_subscription " +
-                "('', '') " +
+        String query = "INSERT INTO `new_schema`.`t_subscription` " +
+                "(`TournamentId`, `UserId`) " +
                 "VALUES (?, ?)";
         //statement
         PreparedStatement preparedStatement = null;
@@ -328,7 +336,7 @@ public class TournamentDAO {
             con.setAutoCommit(false);
 
             preparedStatement = con.prepareStatement(query);
-            for (String s : collaboratorUsername) {
+            for (String s : collaboratorUsernameList) {
                 preparedStatement.setInt(1, tournamentID);
                 preparedStatement.setInt(2, userDAO.getUserID(s));
                 preparedStatement.execute();

@@ -31,12 +31,11 @@ function TournamentPage(user) {
     let tournamentOwner = document.getElementById("tournamentOwner")
 
 
-    //Function that perform the closure of a tournament TODO
+    //Function that perform the closure of a tournament
     function closingTournament(){
         //Post in CloseTournament servlet
         makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
             function (x) {
-                console.log("sono qui")
                 if (x.readyState === XMLHttpRequest.DONE) {
                     //server return message
                     var message = x.responseText;
@@ -86,14 +85,15 @@ function TournamentPage(user) {
         //Create Tournament Form reference
         var form = e.target.closest("form")
         if (form.checkValidity()){
+            //catch all collaborator
             var collaborator = document.getElementById("collaboratorInput")
             for (let i = 0; i < collaborator.options.length; i++) {
                 if (collaborator.options[i].selected){
-                    collaboratorList.push(collaborator.options[i])
+                    collaboratorList.push(collaborator.options[i].value)
                 }
             }
 
-            makeCall("POST", 'AddCollaborator?TournamentID=' + tournamentId + '&CollaboratorList' + collaboratorList, form,
+            makeCall("POST", 'AddCollaborator?TournamentID=' + tournamentId + '&CollaboratorList=' + collaboratorList, form,
                 function (x){
                     if (x.readyState === XMLHttpRequest.DONE){
                         //server return message
@@ -101,7 +101,6 @@ function TournamentPage(user) {
                         switch (x.status){
                             case 200: //OK
                                 closeModal();
-                                location.reload();
                                 break;
                             case 400: //BAD REQUEST
                                 document.getElementById("errormessageAddCollaborator").textContent = message;
@@ -228,8 +227,10 @@ function TournamentPage(user) {
     function hideTournamentButton(tournament) {
         if (tournament.phase !== "Ongoing"){
             createBattleButton.style.display = "none"
-            addCollaboratorButton.style.display = "none"
             closeTournamentButton.style.display = "none"
+        }
+        else if (tournament.phase === "Ended"){
+            addCollaboratorButton.style.display = "none"
         }
     }
 

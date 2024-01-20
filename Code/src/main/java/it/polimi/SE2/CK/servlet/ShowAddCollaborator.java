@@ -78,7 +78,6 @@ public class ShowAddCollaborator extends HttpServlet {
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
-        System.out.println(request.getParameter("TournamentId"));
         tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
         //500 error
         try {
@@ -133,6 +132,7 @@ public class ShowAddCollaborator extends HttpServlet {
             return;
         }
 
+        //200 ok
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
