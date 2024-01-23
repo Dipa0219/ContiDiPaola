@@ -89,6 +89,13 @@
             )
         }
 
+        this.showPersonalHomePage= function (){
+            actualPage.hide()
+            if(errorFlag){
+                error.style.display="none"
+            }
+            actualPage=personalHomePage
+        }
         /*This function is used to show the tournament page
         * It updates the actual and then calls the openpage function*/
         this.showTournamentPage = function (id) {
