@@ -68,7 +68,6 @@ public class SearchTournament extends HttpServlet {
         }
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
         String keyword= request.getParameter("searchTournament");
-        System.out.println(keyword);
         ArrayList<Tournament> tournaments = null;
         try {
             tournaments= tournamentDAO.showAllTournamentsByString(keyword);

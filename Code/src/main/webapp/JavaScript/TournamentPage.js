@@ -225,6 +225,26 @@ function TournamentPage(user) {
                     }
                 })
         }
+        else if (user.role===1){
+            //add collaborator option or hide the add collaborator button
+            makeCall("GET", 'ShowJoinTournament?TournamentId=' + tournamentId, null,
+                function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                message= JSON.parse(message)
+                                if (!message){
+                                    joinTournamentButton.style.display="none"
+                                }
+                                break;
+                            default:
+                                pageOrchestrator.showError(message);
+                                break;
+                        }
+                    }
+                })
+        }
     };
 
     //This function is used to update the tournament information
@@ -245,12 +265,18 @@ function TournamentPage(user) {
 
     //This function is used to hide the tournament button if requests
     function hideTournamentButton(tournament) {
-        if (tournament.phase !== "Ongoing"){
-            createBattleButton.style.display = "none"
-            closeTournamentButton.style.display = "none"
+        if (tournament.phase === "Ongoing"){
+            joinTournamentButton.style.display="none"
         }
         else if (tournament.phase === "Ended"){
             addCollaboratorButton.style.display = "none"
+            joinTournamentButton.style.display="none"
+            createBattleButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
+        }
+        else if (tournament.phase === "Not Started"){
+            createBattleButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
         }
     }
 

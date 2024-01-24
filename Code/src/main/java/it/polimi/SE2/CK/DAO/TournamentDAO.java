@@ -459,6 +459,13 @@ public class TournamentDAO {
         }
         finally {
             try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
                 if (preparedStatement != null){
                     preparedStatement.close();
                 }
@@ -468,5 +475,42 @@ public class TournamentDAO {
             }
         }
         return true;
+    }
+
+    public boolean checkJoinTournament(int tournamentId, int userId) throws SQLException {
+        String query = "select *" +
+                "from t_subscription " +
+                "where TournamentId=? and UserId=?";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, tournamentId);
+            pstatement.setInt(2,userId);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null){
+                    pstatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+            return true;
     }
 }

@@ -21,25 +21,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-@WebServlet("/JoinTournament")
+@WebServlet("/ShowJoinTournament")
 @MultipartConfig
-public class JoinTournament extends HttpServlet {
+public class ShowJoinTournament extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * A connection (session) with a specific database.
-     */
     private Connection connection = null;
 
-
-    /**
-     * A convenience method which can be overridden so that there's no need to call super.init(config).
-     *
-     * @throws ServletException if an exception occurs that interrupts the servlet's normal operation
-     */
     public void init() throws ServletException {
         try {
-            ServletContext context=getServletContext();
+            ServletContext context = getServletContext();
             String driver = context.getInitParameter("dbDriver");
             String url = context.getInitParameter("dbUrl");
             String user = context.getInitParameter("dbUser");
@@ -55,24 +45,13 @@ public class JoinTournament extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        response.getWriter().println("Request non acceptable");
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         if(session.isNew() || session.getAttribute("user")==null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("You can't access to this page");
             return;
         }
-        TournamentDAO tournamentDAO= new TournamentDAO(connection);
         SessionUser user = (SessionUser) session.getAttribute("user");
-        if (user.getRole()==0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Educator are not allowed to join tournament in this way, please try again");
-            return;
-        }
         int tournamentId;
         try {
             tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
@@ -86,20 +65,24 @@ public class JoinTournament extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+        System.out.println(tournamentId);
+        TournamentDAO tournamentDAO= new TournamentDAO(connection);
         Boolean resp;
         try {
-            resp=tournamentDAO.joinTournament(user.getId(),tournamentId);
+            resp = tournamentDAO.checkJoinTournament(tournamentId,user.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-        if(!resp){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You have already joined this tournament");
-            return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(resp);
+        response.getWriter().write(json);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        response.getWriter().println("Request non acceptable");
     }
 }
-
