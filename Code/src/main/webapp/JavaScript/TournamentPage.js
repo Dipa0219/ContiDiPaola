@@ -126,6 +126,24 @@ function TournamentPage(user) {
         clearForm("addCollaboratorForm")
     })
 
+    joinTournamentButton.addEventListener("click", (e)=>{
+        makeCall("POST","JoinTournament?TournamentId="+ tournamentId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            joinTournamentButton.style.display="none"
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            }
+        )
+    })
+
 
     /*This is the method used to open the tournament page
     * First it decides which button must be shown
@@ -144,6 +162,7 @@ function TournamentPage(user) {
             closeTournamentButton.style.display=""
         }
         else if (user.role===1) {
+            //TODO verify if we have to show this button
             joinTournamentButton.style.display = ""
         }
 
@@ -182,6 +201,26 @@ function TournamentPage(user) {
         if (user.role===0) {
             //add collaborator option or hide the add collaborator button
             showAddCollaborator();
+        }
+        else if (user.role===1){
+            //add collaborator option or hide the add collaborator button
+            makeCall("GET", 'ShowJoinTournament?TournamentId=' + tournamentId, null,
+                function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                message= JSON.parse(message)
+                                if (!message){
+                                    joinTournamentButton.style.display="none"
+                                }
+                                break;
+                            default:
+                                pageOrchestrator.showError(message);
+                                break;
+                        }
+                    }
+                })
         }
     };
 
@@ -237,12 +276,18 @@ function TournamentPage(user) {
 
     //This function is used to hide the tournament button if requests
     function hideTournamentButton(tournament) {
-        if (tournament.phase !== "Ongoing"){
-            createBattleButton.style.display = "none"
-            closeTournamentButton.style.display = "none"
+        if (tournament.phase === "Ongoing"){
+            joinTournamentButton.style.display="none"
         }
         else if (tournament.phase === "Ended"){
             addCollaboratorButton.style.display = "none"
+            joinTournamentButton.style.display="none"
+            createBattleButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
+        }
+        else if (tournament.phase === "Not Started"){
+            createBattleButton.style.display = "none"
+            closeTournamentButton.style.display = "none"
         }
     }
 

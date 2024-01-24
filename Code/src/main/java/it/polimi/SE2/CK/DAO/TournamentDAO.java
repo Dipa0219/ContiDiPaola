@@ -369,4 +369,148 @@ public class TournamentDAO {
 
         return true;
     }
+
+    public ArrayList<Tournament> showAllTournamentsByString (String string) throws SQLException {
+        ArrayList<Tournament> tournaments = new ArrayList<>();
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
+                "from tournament as t join user as u on t.CreatorId = u.idUser;";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                if(result.getString("Name").contains(string) ){
+                    Tournament tournament = new Tournament();
+                    tournament.setId(result.getInt("IdTournament"));
+                    tournament.setName(result.getString("Name"));
+                    tournament.setDescription(result.getString("Description"));
+                    tournament.setCreatorId(result.getInt("CreatorId"));
+                    tournament.setCreatorUsername(result.getString("Username"));
+                    tournament.setRegDeadline(result.getTimestamp("RegDeadline"));
+                    tournaments.add(tournament);
+                } else if (result.getString("Description")!=null) {
+                    if(result.getString("Description").contains(string)){
+                        Tournament tournament = new Tournament();
+                        tournament.setId(result.getInt("IdTournament"));
+                        tournament.setName(result.getString("Name"));
+                        tournament.setDescription(result.getString("Description"));
+                        tournament.setCreatorId(result.getInt("CreatorId"));
+                        tournament.setCreatorUsername(result.getString("Username"));
+                        tournament.setRegDeadline(result.getTimestamp("RegDeadline"));
+                        tournaments.add(tournament);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return tournaments;
+    }
+
+    public boolean joinTournament(int userId, int tournamentId) throws SQLException {
+        String query = "select *" +
+                "from t_subscription " +
+                "where TournamentId=? and UserId=?";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, tournamentId);
+            pstatement.setInt(2,userId);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        //insert query
+        query = "INSERT INTO `t_subscription` " +
+                "(`TournamentId`, `UserId`) " +
+                "VALUES (?, ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentId);
+            preparedStatement.setInt(2, userId);
+            preparedStatement.execute();
+        }
+        catch (SQLException e){
+            return false;
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+        return true;
+    }
+
+    public boolean checkJoinTournament(int tournamentId, int userId) throws SQLException {
+        String query = "select *" +
+                "from t_subscription " +
+                "where TournamentId=? and UserId=?";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, tournamentId);
+            pstatement.setInt(2,userId);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null){
+                    pstatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+            return true;
+    }
 }
