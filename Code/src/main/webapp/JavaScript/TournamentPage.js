@@ -100,6 +100,8 @@ function TournamentPage(user) {
                         var message = x.responseText
                         switch (x.status){
                             case 200: //OK
+                                clearForm("addCollaboratorForm");
+                                showAddCollaborator();
                                 closeModal();
                                 break;
                             case 400: //BAD REQUEST
@@ -179,34 +181,40 @@ function TournamentPage(user) {
         )
         if (user.role===0) {
             //add collaborator option or hide the add collaborator button
-            makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
-                function (x) {
-                    if (x.readyState === XMLHttpRequest.DONE) {
-                        var message = x.responseText;
-                        switch (x.status) {
-                            case 200:
-                                message = JSON.parse(message)
-                                var collaboratorInput = document.getElementById("collaboratorInput")
-
-                                if (message.length === 0) {
-                                    addCollaboratorButton.style.display = "none"
-                                } else {
-                                    for (let i = 0; i < message.length; i++) {
-                                        var option = document.createElement("option")
-                                        option.text = message[i]
-                                        option.value = message[i]
-                                        collaboratorInput.add(option)
-                                    }
-                                }
-                                break;
-                            default:
-                                pageOrchestrator.showError(message);
-                                break;
-                        }
-                    }
-                })
+            showAddCollaborator();
         }
     };
+
+    //This function add collaborator option or hide the add collaborator button
+    function showAddCollaborator() {
+        makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
+            function (x) {
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            message = JSON.parse(message)
+                            var collaboratorInput = document.getElementById("collaboratorInput")
+
+                            if (message.length === 0) {
+                                addCollaboratorButton.style.display = "none"
+                            } else {
+                                collaboratorInput.innerHTML='';
+                                for (let i = 0; i < message.length; i++) {
+                                    var option = document.createElement("option")
+                                    option.text = message[i]
+                                    option.value = message[i]
+                                    collaboratorInput.add(option)
+                                }
+                            }
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            })
+    }
 
     //This function is used to update the tournament information
     //It obtains in input the tournament information and adds them to the corresponding http element

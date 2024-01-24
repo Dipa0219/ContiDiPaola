@@ -117,7 +117,7 @@ public class AddCollaborator extends HttpServlet {
             return;
         }
 
-        //tournament is in Closed phase
+        //tournament is in not in Closed phase
         //406 error
         if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
