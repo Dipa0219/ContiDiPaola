@@ -8,6 +8,7 @@ import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import javax.servlet.ServletContext;
@@ -88,6 +89,14 @@ public class ShowAddCollaborator extends HttpServlet {
             return;
         }
 
+        //tournament is in not in Closed phase
+        //401 error
+        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("The tournament has already been closed");
+            return;
+        }
+
         //user is an educator
         SessionUser user = (SessionUser) session.getAttribute("user");
         UserDAO userDAO = new UserDAO(connection);
@@ -110,7 +119,6 @@ public class ShowAddCollaborator extends HttpServlet {
         try {
             //401 error
             if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
-                System.out.println("Sono quiiii");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().println("You can't access to this page");
                 return;

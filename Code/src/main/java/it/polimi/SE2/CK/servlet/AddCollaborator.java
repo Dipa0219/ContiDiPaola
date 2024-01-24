@@ -173,7 +173,7 @@ public class AddCollaborator extends HttpServlet {
                 }
                 //selected collaborator not is in the tournament
                 //409 error
-                if (!tournamentDAO.checkUserInTournament(tournament.getId(), userDAO.getUserID(s))){
+                if (tournamentDAO.checkUserInTournament(tournament.getId(), userDAO.getUserID(s))){
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
                     response.getWriter().println("You have selected an educator already in the tournament");
                     return;

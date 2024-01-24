@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -75,6 +76,16 @@ public class ShowTournamentInfo extends HttpServlet {
             response.getWriter().println("There isn't any tournament with the given id, please try with an other one");
             return;
         }
+
+        //tournament is in not in Closed phase
+        //401 error
+        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("The tournament has already been closed");
+            return;
+        }
+
+
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
