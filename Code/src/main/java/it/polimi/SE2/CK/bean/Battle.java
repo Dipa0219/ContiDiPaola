@@ -1,5 +1,7 @@
 package it.polimi.SE2.CK.bean;
 
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
+
 import java.sql.Timestamp;
 
 public class Battle {
@@ -11,6 +13,9 @@ public class Battle {
     int minNumStudent;
     int maxNumStudent;
     String tournamentName;
+    TournamentState phase;
+    String gitHubBattleRepository;
+
 
     public int getId() {
         return id;
@@ -44,6 +49,14 @@ public class Battle {
         return tournamentName;
     }
 
+    public TournamentState getPhase() {
+        return phase;
+    }
+
+    public String getGitHubBattleRepository() {
+        return gitHubBattleRepository;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -74,5 +87,13 @@ public class Battle {
 
     public void setTournamentName(String tournamentName) {
         this.tournamentName = tournamentName;
+    }
+
+    public void setPhase(TournamentState phase) {
+        this.phase = phase;
+    }
+
+    public void setGitHubBattleRepository(String gitHubBattleRepository) {
+        this.gitHubBattleRepository = gitHubBattleRepository;
     }
 }

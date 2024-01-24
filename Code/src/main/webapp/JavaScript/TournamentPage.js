@@ -23,6 +23,7 @@ function TournamentPage(user) {
     let createBattleButton = document.getElementById("createBattleButton")
     let closeTournamentButton = document.getElementById("closeTournamentButton")
     let addCollaboratorSubmit = document.getElementById("addCollaboratorSubmit")
+    let createBattleSubmit = document.getElementById("createBattleSubmit")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -142,6 +143,22 @@ function TournamentPage(user) {
                 }
             }
         )
+    })
+
+    createBattleSubmit.addEventListener("click", (e) => {
+        //create Battle form reference
+        var form = e.target.closest("form")
+
+        if (form.checkValidity()){
+            makeCall("POST", "CreateBattle?TournamentId=" + tournamentId, form,
+                function (x){
+
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("createBattleSubmit")
     })
 
 

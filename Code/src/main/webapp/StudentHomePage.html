@@ -290,12 +290,18 @@
                 <h3 style="text-align: center;">Create New Battle</h3>
                 <form action="#">
                     <br>
-                    <label>Battle name:</label><br>
+                    <label>Battle name: *</label><br>
                     <input id="battleNameInput" name="battleNameInput" type="text" required><br><br>
                     <label>Battle Description:</label><br>
                     <input id="battleDescriptionInput" name="battleDescriptionInput" type="text"><br><br>
-                    <label>Registration Deadline:</label><br>
-                    <input id="battleRegistrationDeadlineInput" name="battleRegistrationDeadlineInput" type="datetime-local"><br><br>
+                    <label>Registration Deadline: *</label><br>
+                    <input id="battleRegistrationDeadlineInput" name="battleRegistrationDeadlineInput" type="datetime-local" required><br><br>
+                    <label>Submission Deadline: *</label><br>
+                    <input id="battleSubmissionDeadlineInput" name="battleSubmissionDeadlineInput" type="datetime-local" required><br><br>
+                    <label>Battle Project .zip file required: *</label><br>
+                    <input id="battleProject" name="battleProject" type="file" required><br><br>
+                    <label>Battle Test Case .yaml file required:</label><br>
+                    <input id="battleTestCase" name="battleTestCase" type="file"><br><br>
                     <input id="createBattleSubmit" type="button" value="Submit" class="submit">
                 </form>
 

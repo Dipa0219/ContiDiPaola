@@ -103,4 +103,40 @@ public class BattleDAO {
         }
         return battle;
     }
+
+    /**
+     * Check the existence of a battle with the specified name.
+     *
+     * @param name the tournament name to search.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleByName (String name) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM new_schema.battle " +
+                "WHERE Name = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e){
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException(e);
+            }
+        }
+    }
+
 }
