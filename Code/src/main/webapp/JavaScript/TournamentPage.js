@@ -208,6 +208,9 @@ function TournamentPage(user) {
                                 }
                             }
                             break;
+                        case 401: //UNAUTHORIZED
+                            addCollaboratorButton.style.display = "none"
+                            break;
                         default:
                             pageOrchestrator.showError(message);
                             break;

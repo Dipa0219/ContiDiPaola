@@ -93,9 +93,10 @@ public class ShowAddCollaborator extends HttpServlet {
         UserDAO userDAO = new UserDAO(connection);
         //500 error
         try {
-            //200 Ok - if you are not an Educator do not anything
+            //401 error
             if (userDAO.getUserRole(user.getId()) != UserRole.EDUCATOR){
-                response.setStatus(HttpServletResponse.SC_OK);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
                 return;
             }
         } catch (SQLException e) {
