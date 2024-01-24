@@ -20,15 +20,11 @@ public class ZipFolderManager {
 
         try (ZipFile zipFile = new ZipFile(FolderManager.getDirectory() + zipFileName + ".zip\\")) {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-            System.out.println("qui");
             while (entries.hasMoreElements()) {
-                System.out.println("viva");
                 ZipArchiveEntry entry = entries.nextElement();
                 if (!entry.isDirectory()) {
-                    System.out.println("la");
                     File entryFile = new File(FolderManager.getDirectory() + zipFileName + "\\", entry.getName());
                     if (!entryFile.getParentFile().exists()) {
-                        System.out.println("figa");
                         entryFile.getParentFile().mkdirs();
                     }
                     try (
@@ -37,19 +33,15 @@ public class ZipFolderManager {
                     ){
                         byte[] buffer = new byte[1024];
                         int bytesRead;
-                        System.out.println("e");
                         while ((bytesRead = is.read(buffer)) != -1) {
                             os.write(buffer, 0, bytesRead);
-                            System.out.println("chi");
                         }
                     }
                 }
             }
         }
         catch (IOException e) {
-            System.out.println("la");
             throw new RuntimeException(e);
         }
-        System.out.println("castiga");
     }
 }

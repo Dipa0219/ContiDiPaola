@@ -93,7 +93,6 @@ public class FolderManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("fatto");
     }
 
     /**
