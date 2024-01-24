@@ -174,6 +174,11 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("Insert a valid data");
             return;
         }
+        if (battleSubmissionDeadline.before(battleRegistrationDeadline)){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Insert a valid data");
+            return;
+        }
 
         BattleDAO battleDAO = new BattleDAO(connection);
 
