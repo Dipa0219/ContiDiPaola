@@ -158,18 +158,26 @@ public class TournamentDAO {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public boolean checkUserInTournament(int tournamentID, int userID) throws SQLException {
+        System.out.println(tournamentID + " " + userID);
         //search query
-        String query = "SELECT * " +
-                "FROM new_schema.t_subscription " +
-                "WHERE TournamentID = ? and UserID = ?";
+        String query = "select * " +
+                "from t_subscription " +
+                "where TournamentId=? and UserId=?";
         //statement
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
 
         try{
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, tournamentID);
             preparedStatement.setInt(2, userID);
-            return preparedStatement.execute();
+            System.out.println(preparedStatement);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                result = true;
+            }
+            System.out.println(result);
         }
         catch (SQLException e){
             return false;
@@ -183,6 +191,8 @@ public class TournamentDAO {
                 throw new SQLException(e1);
             }
         }
+
+        return result;
     }
 
     /**

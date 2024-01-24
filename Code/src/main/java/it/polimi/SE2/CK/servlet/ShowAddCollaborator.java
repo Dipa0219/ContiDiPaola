@@ -110,6 +110,7 @@ public class ShowAddCollaborator extends HttpServlet {
         try {
             //401 error
             if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
+                System.out.println("Sono quiiii");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().println("You can't access to this page");
                 return;

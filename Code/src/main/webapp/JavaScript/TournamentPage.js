@@ -232,6 +232,7 @@ function TournamentPage(user) {
                     var message = x.responseText;
                     switch (x.status) {
                         case 200:
+                            console.log("sono qui errore errore")
                             message = JSON.parse(message)
                             var collaboratorInput = document.getElementById("collaboratorInput")
 
@@ -248,6 +249,7 @@ function TournamentPage(user) {
                             }
                             break;
                         case 401: //UNAUTHORIZED
+                            console.log("sono qui errore")
                             addCollaboratorButton.style.display = "none"
                             break;
                         default:
