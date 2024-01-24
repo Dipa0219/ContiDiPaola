@@ -31,7 +31,12 @@
             </div>
             <!-- Search Bar -->
             <div class="search-bar">
-                <input id="searchTournament" type="text" placeholder="Find..." onkeypress="checkEnter(event)"> <!-- TODO aggiungere eventListener keypress -->
+                <form action="#" id="searchForm">
+                    <br>
+                    <label>Searching bar </label><br>
+                    <input id="searchTournament" name="searchTournament" type="text" required maxlength="45">
+                    <input id="search_submit" type="button" value="Submit" class="logout">
+                </form>
             </div>
             <!--Profile Image with DropDown Content-->
             <div class="dropdown">

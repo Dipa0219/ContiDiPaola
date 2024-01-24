@@ -18,6 +18,36 @@ function PersonalHomePage(user) {
     //Tournament Registration Deadline Input reference
     let registrationDeadlineInput = document.getElementById("tournamentRegistrationDeadlineInput")
 
+    let tournamentTableType= document.getElementById("tournamentTableType")
+
+    let search_submit =document.getElementById("search_submit")
+
+    search_submit.addEventListener("click",(e)=>{
+        pageOrchestrator.showPersonalHomePage()
+        if (user.role !== 1) {
+            homePageButton.style.display = "";
+        }
+        tournamentTableDiv.style.display = ""
+        var form = e.target.closest("form")
+        if (form.checkValidity()) {
+            makeCall("POST","SearchTournament", e.target.closest("form"), function(x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                message=JSON.parse(message)
+                                self.updateTournamentTable(message,1)
+                                break;
+                            default:
+                                pageOrchestrator.showError(message);
+                                break;
+                        }
+                    }
+                }
+            )
+            clearForm("searchForm")
+        }
+    })
 
     //Function that perform the creation of a tournament
     function creationTournament(form){
@@ -95,7 +125,7 @@ function PersonalHomePage(user) {
                     switch (x.status) {
                         case 200:
                             message=JSON.parse(message)
-                            self.updateTournamentTable(message)
+                            self.updateTournamentTable(message,0)
                             break;
                         default:
                             pageOrchestrator.showError(message);
@@ -106,10 +136,14 @@ function PersonalHomePage(user) {
         )
     };
 
+    this.openSearchPage= function (e){
+
+    }
+
     /*This function is used to update the tournament table
     * It obtains in input the list of tournaments and add a new row in the
     * table for each tournament contained in the list*/
-    this.updateTournamentTable = function (tournaments){
+    this.updateTournamentTable = function (tournaments, isSearch){
         let flag=0
         tournamentTable.innerHTML=""
         tournaments.forEach(function (tournament) {
@@ -140,7 +174,12 @@ function PersonalHomePage(user) {
         if(flag===0){
             tournamentTableDiv.style.display="none"
             tournamentTableType.style.display=""
-            tournamentTableType.innerHTML="You haven't subscribed to any tournament"
+            if(isSearch){
+                tournamentTableType.innerHTML = "We haven't found any tournament"
+            }
+            else {
+                tournamentTableType.innerHTML = "You haven't subscribed to any tournament"
+            }
         }
     }
 

@@ -6,6 +6,9 @@ function makeCall(method, url, formElement, cback) {
     req.open(method, url);
     if (formElement !== null) {
         var formData = new FormData(formElement)
+        for (const value of formData.values()) {
+            console.log(value);
+        }
         req.send(formData)
     } else {
         req.send();
