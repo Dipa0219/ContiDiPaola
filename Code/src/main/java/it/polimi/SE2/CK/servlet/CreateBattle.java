@@ -7,6 +7,8 @@ import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.FolderManager;
+import it.polimi.SE2.CK.utils.ZipFolderManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import jakarta.mail.MessagingException;
@@ -125,7 +127,7 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
-        if (getFileName(battleProject)==null){
+        if (FolderManager.getFileName(battleProject)==null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("All fields with an asterisk are required");
             return;
@@ -193,7 +195,7 @@ public class CreateBattle extends HttpServlet {
 
         //battle project is a .zip file
         //400 error
-        if (!Objects.equals(getFileExtension(battleProject), "zip")){
+        if (!Objects.equals(FolderManager.getFileExtension(battleProject), "zip")){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid project");
             return;
@@ -202,7 +204,8 @@ public class CreateBattle extends HttpServlet {
         //battle test case is a yaml file
         //400 error
         if (battleTestCase!=null){
-            if (Objects.equals(getFileExtension(battleTestCase), "yaml") || Objects.equals(getFileExtension(battleTestCase), "yml")){
+            if (Objects.equals(FolderManager.getFileExtension(battleTestCase), "yaml") ||
+                Objects.equals(FolderManager.getFileExtension(battleTestCase), "yml")){
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Insert a valid test case");
                 return;
@@ -260,10 +263,15 @@ public class CreateBattle extends HttpServlet {
         battle.setRegDeadline(battleRegistrationDeadline);
         battle.setSubDeadline(battleSubmissionDeadline);
 
+        //save the zip file on disk
+        FolderManager.saveFile(battleProject);
+
+        //unzip the zip file
+        ZipFolderManager.unzip(FolderManager.getFileName(battleProject));
+
 
         /*
-            TODO salvare il file zip
-                estrarre il file zip
+            TODO
                 creare una repo su GH
                 caricare il file zip estratto
                 caricare il file yaml se presente
@@ -358,38 +366,5 @@ public class CreateBattle extends HttpServlet {
 
         }
 
-    }
-
-    /**
-     * Get the file name.
-     *
-     * @param part the file request.
-     * @return the file name.
-     */
-    private String getFileName(Part part) {
-        String partHeader = part.getHeader("content-disposition");
-        for (String content : partHeader.split(";")) {
-            if (content.trim().startsWith("filename")) {
-                return content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the file extension.
-     *
-     * @param part the file request.
-     * @return the extension name.
-     */
-    private String getFileExtension(Part part) {
-        String partHeader = part.getHeader("content-disposition");
-        for (String content : partHeader.split(";")) {
-            if (content.trim().startsWith("filename")) {
-                String fileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
-                return fileName.substring(fileName.lastIndexOf('.') + 1);
-            }
-        }
-        return null;
     }
 }
