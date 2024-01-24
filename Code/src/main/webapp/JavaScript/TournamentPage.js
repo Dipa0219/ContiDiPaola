@@ -177,34 +177,35 @@ function TournamentPage(user) {
                 }
             }
         )
-        //add collaborator option or hide the add collaborator button
-        makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
-            function (x){
-                if (x.readyState === XMLHttpRequest.DONE) {
-                    var message = x.responseText;
-                    switch (x.status) {
-                        case 200:
-                            message=JSON.parse(message)
-                            var collaboratorInput = document.getElementById("collaboratorInput")
+        if (user.role===0) {
+            //add collaborator option or hide the add collaborator button
+            makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
+                function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                message = JSON.parse(message)
+                                var collaboratorInput = document.getElementById("collaboratorInput")
 
-                            if (message.length === 0){
-                                addCollaboratorButton.style.display = "none"
-                            }
-                            else {
-                                for (let i = 0; i < message.length; i++) {
-                                    var option = document.createElement("option")
-                                    option.text = message[i]
-                                    option.value = message[i]
-                                    collaboratorInput.add(option)
+                                if (message.length === 0) {
+                                    addCollaboratorButton.style.display = "none"
+                                } else {
+                                    for (let i = 0; i < message.length; i++) {
+                                        var option = document.createElement("option")
+                                        option.text = message[i]
+                                        option.value = message[i]
+                                        collaboratorInput.add(option)
+                                    }
                                 }
-                            }
-                            break;
-                        default:
-                            pageOrchestrator.showError(message);
-                            break;
+                                break;
+                            default:
+                                pageOrchestrator.showError(message);
+                                break;
+                        }
                     }
-                }
-            })
+                })
+        }
     };
 
     //This function is used to update the tournament information
