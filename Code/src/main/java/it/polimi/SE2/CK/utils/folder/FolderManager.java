@@ -1,4 +1,4 @@
-package it.polimi.SE2.CK.utils;
+package it.polimi.SE2.CK.utils.folder;
 
 import javax.servlet.http.Part;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.io.*;
  */
 public class FolderManager {
     /**
-     * Folder path where saving all files.
+     * A private static field that holds the directory path where files are saved.
      */
     private static String directory = ""; //TODO you have to add your directory - DISK:\\path\\to\\your\\directory\\
 
@@ -19,14 +19,14 @@ public class FolderManager {
     /**
      * Gets the path where saving all files.
      *
-     * @return the direcotry path.
+     * @return the directory path.
      */
     public static String getDirectory() {
         return directory;
     }
 
     /**
-     * Get the file name.
+     * Gets the file name.
      *
      * @param part the file request.
      * @return the file name.
@@ -43,7 +43,7 @@ public class FolderManager {
     }
 
     /**
-     * Remove the extension from a file name.
+     * Removes the extension from a file name.
      *
      * @param fileName the file name with extension requests.
      * @return the file name without the extension.
@@ -57,7 +57,7 @@ public class FolderManager {
     }
 
     /**
-     * Get the file extension.
+     * Gets the file extension.
      *
      * @param part the file request.
      * @return the extension name.
@@ -74,12 +74,12 @@ public class FolderManager {
     }
 
     /**
-     * Save the file on disk.
+     * Saves the file to disk.
      *
      * @param part the file to save.
      */
     public static void saveFile(Part part){
-        String fileName = getFileName(part);
+        String fileName = getFileName(part) + "." + getFileExtension(part);
 
         String filePath = directory + fileName;
 
@@ -91,16 +91,39 @@ public class FolderManager {
                 os.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
+    public static void saveFile(Part part, String directoryToSave){
+        String fileName = getFileName(part) + "." + getFileExtension(part);
+
+        String filePath = directoryToSave + "\\" + fileName;
+
+        File directoryFinal = new File(directoryToSave);
+        if (!directoryFinal.exists()){
+            directoryFinal.mkdirs();
+        }
+
+        try (InputStream is = part.getInputStream();
+             OutputStream os = new FileOutputStream(filePath)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
-     * It deletes a directory.
+     * Deletes a directory and its contents recursively.
      *
      * @param directoryToBeDeleted the directory path.
      */
-    public void deleteDirectory(File directoryToBeDeleted) {
+    public static void deleteDirectory(File directoryToBeDeleted) {
         //directory tree
         File[] allContents = directoryToBeDeleted.listFiles();
 
@@ -114,5 +137,4 @@ public class FolderManager {
         //delete the root
         directoryToBeDeleted.delete();
     }
-
 }

@@ -1,4 +1,4 @@
-package it.polimi.SE2.CK.utils;
+package it.polimi.SE2.CK.utils.folder;
 
 import java.io.IOException;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -17,7 +17,6 @@ public class ZipFolderManager {
      * @param zipFileName the zip file.
      */
     public static void unzip(String zipFileName){
-
         try (ZipFile zipFile = new ZipFile(FolderManager.getDirectory() + zipFileName + ".zip\\")) {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
@@ -41,7 +40,22 @@ public class ZipFolderManager {
             }
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Delete a zip file.
+     *
+     * @param zipFileName the zip file.
+     */
+    public static void deleteZipFile(String zipFileName) {
+        //zip file path
+        File fileToDelete = new File(FolderManager.getDirectory() + zipFileName);
+
+        //check existence of file
+        if (fileToDelete.exists() && fileToDelete.isFile()) {
+            fileToDelete.delete();
         }
     }
 }

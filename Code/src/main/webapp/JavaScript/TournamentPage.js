@@ -152,7 +152,16 @@ function TournamentPage(user) {
         if (form.checkValidity()){
             makeCall("POST", "CreateBattle?TournamentId=" + tournamentId, form,
                 function (x){
-
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                break;
+                            default:
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                        }
+                    }
                 })
         }
         else {

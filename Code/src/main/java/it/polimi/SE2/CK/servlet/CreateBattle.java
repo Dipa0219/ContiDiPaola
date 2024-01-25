@@ -7,12 +7,14 @@ import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
-import it.polimi.SE2.CK.utils.FolderManager;
-import it.polimi.SE2.CK.utils.ZipFolderManager;
+import it.polimi.SE2.CK.utils.GitHubManager;
+import it.polimi.SE2.CK.utils.folder.FolderManager;
+import it.polimi.SE2.CK.utils.folder.ZipFolderManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
@@ -28,8 +31,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Servlet that manage the creation of a tournament.
@@ -209,8 +210,8 @@ public class CreateBattle extends HttpServlet {
         //battle test case is a yaml file
         //400 error
         if (battleTestCase!=null){
-            if (Objects.equals(FolderManager.getFileExtension(battleTestCase), "yaml") ||
-                Objects.equals(FolderManager.getFileExtension(battleTestCase), "yml")){
+            if (!Objects.equals(FolderManager.getFileExtension(battleTestCase), "yaml") &&
+                !Objects.equals(FolderManager.getFileExtension(battleTestCase), "yml")){
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Insert a valid test case");
                 return;
@@ -274,14 +275,26 @@ public class CreateBattle extends HttpServlet {
         //unzip the zip file
         ZipFolderManager.unzip(FolderManager.getFileName(battleProject));
 
+        //save the yaml file on disk
+        if (battleTestCase!=null){
+            FolderManager.saveFile(battleTestCase, FolderManager.getDirectory() + FolderManager.getFileName(battleProject) + "\\.github\\workflows");
+        }
+
+        //creation of GitHub repository
+        GitHubManager.createGitHubRepository(battle.getName(), true);
+
+        //upload project file on GitHub repository
+        GitHubManager.uploadFolderOnGitHubRepository(FolderManager.getDirectory() + FolderManager.getFileName(battleProject),
+                GitHubManager.getRepoURL() + battle.getName());
+
+        //set the GitHub repository where the battle is saved
+        battle.setGitHubBattleRepository(GitHubManager.getRepoURL() + battle.getName());
+
 
         /*
             TODO
-                creare una repo su GH
-                caricare il file zip estratto
-                caricare il file yaml se presente
-                salvare url repo
-                salvare ad DB la battaglia
+                salvare a DB la battaglia
+                eliminare cartelle create
          */
 
 
@@ -298,6 +311,10 @@ public class CreateBattle extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        //delete the zip file
+//        ZipFolderManager.deleteZipFile(FolderManager.getFileName(battleProject) + "." + FolderManager.getFileExtension(battleProject));
+        //delete the GitHub repository directory TODO testing
+//        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + FolderManager.getFileName(battleProject)));
 
 
 
@@ -355,7 +372,7 @@ public class CreateBattle extends HttpServlet {
         try {
             emailAccount = userDAO.allStudentEmail();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         String object="A new tournament has been created";
         String text=tournamentCreator + " created a new tournament. \n" +
@@ -366,7 +383,7 @@ public class CreateBattle extends HttpServlet {
             try {
                 EmailManager.sendEmail(s, object, text);
             } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
 
         }
