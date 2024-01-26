@@ -2,7 +2,6 @@ package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
-import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
@@ -12,9 +11,7 @@ import it.polimi.SE2.CK.utils.folder.FolderManager;
 import it.polimi.SE2.CK.utils.folder.ZipFolderManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
-import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -29,8 +26,9 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Servlet that manage the creation of a tournament.
@@ -101,8 +99,10 @@ public class CreateBattle extends HttpServlet {
         String registrationDeadline = request.getParameter("battleRegistrationDeadlineInput");
         String submissionDeadline = request.getParameter("battleSubmissionDeadlineInput");
         int tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+        int minStudentPerTeam = Integer.parseInt(request.getParameter("minStudentPerTeamInput"));
+        int maxStudentPerTeam = Integer.parseInt(request.getParameter("maxStudentPerTeamInput"));
         Part battleProject = null;
-        //500 error
+        //400 error
         try {
             battleProject = request.getPart("battleProject");
         }
@@ -112,7 +112,7 @@ public class CreateBattle extends HttpServlet {
             return;
         }
         Part battleTestCase = null;
-        //500 error
+        //400 error
         try {
             battleTestCase = request.getPart("battleTestCase");
         }
@@ -121,6 +121,7 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+        System.out.println(battleTestCase.getSize());
 
         //400 error
         if (StringUtils.isAnyEmpty(battleName, registrationDeadline)){
@@ -128,16 +129,19 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+        //400 error
         if (FolderManager.getFileName(battleProject)==null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+        //400 error
         if (battleName.length()>45){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("The max length of battle name is 45 character");
             return;
         }
+        //400 error
         if (battleDescription.length()>200){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("The max length of battle description is 200 character");
@@ -164,18 +168,35 @@ public class CreateBattle extends HttpServlet {
         //get the actual date
         Date currentDate = new Date();
         Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+        //date error
         //400 error
         if (battleRegistrationDeadline.before(currentTimestamp)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid data");
             return;
         }
+        //400 error
         if (battleSubmissionDeadline.before(currentTimestamp)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid data");
             return;
         }
+        //400 error
         if (battleSubmissionDeadline.before(battleRegistrationDeadline)){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Insert a valid data");
+            return;
+        }
+
+        //number student per team
+        //400 error
+        if (minStudentPerTeam < 0 || maxStudentPerTeam < 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Insert a valid data");
+            return;
+        }
+        //400 error
+        if (minStudentPerTeam > maxStudentPerTeam) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid data");
             return;
@@ -209,7 +230,7 @@ public class CreateBattle extends HttpServlet {
 
         //battle test case is a yaml file
         //400 error
-        if (battleTestCase!=null){
+        if (battleTestCase.getSize() > 0){
             if (!Objects.equals(FolderManager.getFileExtension(battleTestCase), "yaml") &&
                 !Objects.equals(FolderManager.getFileExtension(battleTestCase), "yml")){
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -268,6 +289,11 @@ public class CreateBattle extends HttpServlet {
         battle.setDescription(battleDescription);
         battle.setRegDeadline(battleRegistrationDeadline);
         battle.setSubDeadline(battleSubmissionDeadline);
+        battle.setMinNumStudent(minStudentPerTeam);
+        battle.setMaxNumStudent(maxStudentPerTeam);
+        battle.setTournamentId(tournamentId);
+        battle.setTournamentName(tournament.getName());
+        battle.setPhase(TournamentState.NOTSTARTED);
 
         //save the zip file on disk
         FolderManager.saveFile(battleProject);
@@ -275,36 +301,48 @@ public class CreateBattle extends HttpServlet {
         //unzip the zip file
         ZipFolderManager.unzip(FolderManager.getFileName(battleProject));
 
+        System.out.println("test case " + battleTestCase.getSize());
         //save the yaml file on disk
-        if (battleTestCase!=null){
-            FolderManager.saveFile(battleTestCase, FolderManager.getDirectory() + FolderManager.getFileName(battleProject) + "\\.github\\workflows");
+        if (battleTestCase.getSize() > 0){
+            FolderManager.saveFile(battleTestCase,
+                    FolderManager.getDirectory() + FolderManager.getFileName(battleProject) +
+                            FolderManager.getPathUnix() + ".github" + FolderManager.getPathUnix() + "workflows"); //TODO select your OS
         }
 
         //creation of GitHub repository
+        System.out.println("eccomi");
         GitHubManager.createGitHubRepository(battle.getName(), true);
+        System.out.println("qui");
 
         //upload project file on GitHub repository
+        System.out.println("proprio");
         GitHubManager.uploadFolderOnGitHubRepository(FolderManager.getDirectory() + FolderManager.getFileName(battleProject),
                 GitHubManager.getRepoURL() + battle.getName());
+        System.out.println("qui");
 
         //set the GitHub repository where the battle is saved
         battle.setGitHubBattleRepository(GitHubManager.getRepoURL() + battle.getName());
 
+        //creation battle on DB
+        boolean result;
+        //500 error
+        try {
+            result = battleDAO.createBattle(battle);
+        } catch (SQLException e) {
+            System.out.println("ciaociao1");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+        System.out.println(result);
 
-        /*
-            TODO
-                salvare a DB la battaglia
-                eliminare cartelle create
-         */
-
-
-
-
-
-
-
-
-
+        //500 error
+        if (!result){
+            System.out.println("ciaociao2");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);
@@ -312,81 +350,15 @@ public class CreateBattle extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         //delete the zip file
-//        ZipFolderManager.deleteZipFile(FolderManager.getFileName(battleProject) + "." + FolderManager.getFileExtension(battleProject));
-        //delete the GitHub repository directory TODO testing
-//        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + FolderManager.getFileName(battleProject)));
+        ZipFolderManager.deleteZipFile(FolderManager.getFileName(battleProject) + "." + FolderManager.getFileExtension(battleProject));
+        //delete the GitHub repository directory
+        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + FolderManager.getFileName(battleProject)));
 
-
-
-//
-//        //get session user
-//        SessionUser user = (SessionUser) session.getAttribute("user");
-//
-//        //sets the new tournament data
-//        Tournament tournament=new Tournament();
-//        tournament.setCreatorId(user.getId());
-//        tournament.setCreatorUsername(user.getUsername());
-//        tournament.setName(tournamentName);
-//        tournament.setDescription(tournamentDescription);
-//        tournament.setRegDeadline(battleRegistrationDeadline);
-//
-//        //creation tournament on DB
-//        boolean result;
-//        //500 error
-//        try {
-//            result = tournamentDAO.createTournament(tournament);
-//        }
-//        catch (SQLException e){
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            response.getWriter().println("The server do not respond");
-//            return;
-//        }
-//
-//        //500 error
-//        if (!result){
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            response.getWriter().println("The server do not respond");
-//            return;
-//        }
-//
-//        //200 ok
-//        response.setStatus(HttpServletResponse.SC_OK);
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("UTF-8");
-//
-//        //send email to all student
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        executor.submit(() -> sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline()));
-//        executor.shutdownNow();
-    }
-
-    /**
-     * Email all students enrolled on CKB.
-     *
-     * @param tournamentCreator the name of the educator that create the tournament.
-     * @param time the registration deadline.
-     */
-    private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount= null;
-        try {
-            emailAccount = userDAO.allStudentEmail();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        String object="A new tournament has been created";
-        String text=tournamentCreator + " created a new tournament. \n" +
-                "Hurry up, you only have until " + time +
-                "\nIf you are interested log on to the CKB platform now";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-
-        }
-
+        //send email to all student in a tournament
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Tournament finalTournament = tournament;
+        executor.submit(() ->
+                EmailManager.sendEmailToAllStudentEnrolledInTournamentCreationBattle(battle, connection));
+        executor.shutdownNow();
     }
 }

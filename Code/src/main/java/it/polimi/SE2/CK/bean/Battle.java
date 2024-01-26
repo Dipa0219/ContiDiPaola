@@ -13,6 +13,7 @@ public class Battle {
     int minNumStudent;
     int maxNumStudent;
     String tournamentName;
+    int tournamentId;
     TournamentState phase;
     String gitHubBattleRepository;
 
@@ -47,6 +48,10 @@ public class Battle {
 
     public String getTournamentName() {
         return tournamentName;
+    }
+
+    public int getTournamentId() {
+        return tournamentId;
     }
 
     public TournamentState getPhase() {
@@ -87,6 +92,10 @@ public class Battle {
 
     public void setTournamentName(String tournamentName) {
         this.tournamentName = tournamentName;
+    }
+
+    public void setTournamentId(int tournamentId) {
+        this.tournamentId = tournamentId;
     }
 
     public void setPhase(TournamentState phase) {

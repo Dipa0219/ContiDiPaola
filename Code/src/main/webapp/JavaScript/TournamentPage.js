@@ -156,8 +156,23 @@ function TournamentPage(user) {
                         var message = x.responseText;
                         switch (x.status) {
                             case 200:
+                                clearForm("createBattleForm")
+                                closeModal()
+                                self.openPage(tournamentId)
                                 break;
-                            default:
+                            case 400: //BAD REQUEST
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 401: //UNAUTHORIZED
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 406: //NOT ACCEPTABLE
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 409: //CONFLICT
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 500: //INTERNAL SERVER ERROR
                                 document.getElementById("errormessageCreateBattle").textContent = message;
                                 break;
                         }

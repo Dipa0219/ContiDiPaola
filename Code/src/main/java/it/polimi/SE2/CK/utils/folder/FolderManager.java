@@ -6,6 +6,10 @@ import java.io.IOException;
 
 import java.io.*;
 
+//TODO if you use Windows the path is formed by \\
+//     if you use Linux   the path is formed by /
+//     if you use MacOS   the path is formed by /
+
 /**
  * Class that manage the folder.
  */
@@ -13,8 +17,36 @@ public class FolderManager {
     /**
      * A private static field that holds the directory path where files are saved.
      */
-    private static String directory = ""; //TODO you have to add your directory - DISK:\\path\\to\\your\\directory\\
+    private static String directory = ""; //TODO you have to add your directory - DISK:/path/to/your//directory/
 
+    /**
+     * A private static field that holds the path separator for Windows operating system.
+     */
+    private static String pathWindows = "\\";
+
+    /**
+     * A private static field that holds the path separator for Unix operating system.
+     */
+    private static String pathUnix = "/";
+
+
+    /**
+     * Gets the path separator for Windows operating system.
+     *
+     * @return the path separator for Windows operating system - \.
+     */
+    public static String getPathWindows() {
+        return pathWindows;
+    }
+
+    /**
+     * Gets the path separator for Unix operating system.
+     *
+     * @return the path separator for Unix operating system - /.
+     */
+    public static String getPathUnix() {
+        return pathUnix;
+    }
 
     /**
      * Gets the path where saving all files.
@@ -73,6 +105,7 @@ public class FolderManager {
         return null;
     }
 
+
     /**
      * Saves the file to disk.
      *
@@ -95,10 +128,16 @@ public class FolderManager {
         }
     }
 
+    /**
+     * Saves the file on disk.
+     *
+     * @param part the file to save.
+     * @param directoryToSave the directory where save the file.
+     */
     public static void saveFile(Part part, String directoryToSave){
         String fileName = getFileName(part) + "." + getFileExtension(part);
 
-        String filePath = directoryToSave + "\\" + fileName;
+        String filePath = directoryToSave + FolderManager.getPathUnix() + fileName; //TODO select your OS
 
         File directoryFinal = new File(directoryToSave);
         if (!directoryFinal.exists()){
@@ -116,7 +155,6 @@ public class FolderManager {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Deletes a directory and its contents recursively.
