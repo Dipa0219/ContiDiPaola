@@ -4,6 +4,11 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
 http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+
+  <listener>
+    <listener-class>it.polimi.SE2.CK.utils.starting.StartTournament</listener-class>
+  </listener>
+
   <context-param>
     <param-name>dbUrl</param-name>
     <param-value>jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC</param-value>

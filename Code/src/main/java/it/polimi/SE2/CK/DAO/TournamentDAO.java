@@ -2,12 +2,17 @@ package it.polimi.SE2.CK.DAO;
 
 
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class manage the interaction with the database that manage the tournament data.
@@ -522,5 +527,64 @@ public class TournamentDAO {
             }
         }
             return true;
+    }
+
+    /**
+     * Searches all tournament Not Started and verify if they can be started.
+     */
+    public void startTournament(){
+        //search query
+        String query = "SELECT idTournament, RegDeadline " +
+                "FROM tournament " +
+                "WHERE Phase = ? " +
+                "ORDER BY RegDeadline ASC";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        //get the actual date
+        java.util.Date currentDate = new Date();
+        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                if (resultSet.getTimestamp("RegDeadline").before(currentTimestamp)){
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    int tournamentId = resultSet.getInt("idTournament");
+                    executor.submit(() ->
+                            startTournamentUpdateTable(tournamentId));
+                    executor.shutdownNow();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Updates the tournament phase from Not Started to Ongoing.
+     *
+     * @param tournamentId the tournament id to update.
+     */
+    private void startTournamentUpdateTable(int tournamentId){
+        //update query
+        String query = "UPDATE `new_schema`.`tournament` " +
+                "SET `Phase` = ? " +
+                "WHERE (`idTournament` = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(2, tournamentId);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
