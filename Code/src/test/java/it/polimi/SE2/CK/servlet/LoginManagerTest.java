@@ -247,7 +247,7 @@ public class LoginManagerTest {
         when(servletConfig.getServletContext()).thenReturn(servletContext);
         when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }
