@@ -7,7 +7,6 @@ import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
-import jakarta.mail.MessagingException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -167,39 +165,11 @@ public class CloseTournament extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        //send email to all student
+        //send email to all student in tournament
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Tournament finalTournament = tournament;
         executor.submit(() ->
-                sendEmailToAllStudentEnrolledInTournament(finalTournament));
+                EmailManager.sendEmailToAllStudentEnrolledInTournamentClosed(finalTournament, connection));
         executor.shutdownNow();
-    }
-
-    /**
-     * Email all students enrolled on CKB.
-     *
-     * @param tournament the interested tournament.
-     */
-    private void sendEmailToAllStudentEnrolledInTournament(Tournament tournament){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount= null;
-        try {
-            emailAccount = userDAO.allStudentTournamentEmail(tournament.getId());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String object = "A tournament has been closed";
-        String text = tournament.getCreatorUsername() + " closed the " + tournament.getName() + " tournament. \n" +
-                "The final rankings are available on the tournament page.";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
     }
 }

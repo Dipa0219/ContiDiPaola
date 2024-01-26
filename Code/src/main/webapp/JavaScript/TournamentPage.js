@@ -23,6 +23,7 @@ function TournamentPage(user) {
     let createBattleButton = document.getElementById("createBattleButton")
     let closeTournamentButton = document.getElementById("closeTournamentButton")
     let addCollaboratorSubmit = document.getElementById("addCollaboratorSubmit")
+    let createBattleSubmit = document.getElementById("createBattleSubmit")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -142,6 +143,46 @@ function TournamentPage(user) {
                 }
             }
         )
+    })
+
+    createBattleSubmit.addEventListener("click", (e) => {
+        //create Battle form reference
+        var form = e.target.closest("form")
+
+        if (form.checkValidity()){
+            makeCall("POST", "CreateBattle?TournamentId=" + tournamentId, form,
+                function (x){
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                clearForm("createBattleForm")
+                                closeModal()
+                                self.openPage(tournamentId)
+                                break;
+                            case 400: //BAD REQUEST
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 401: //UNAUTHORIZED
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 406: //NOT ACCEPTABLE
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 409: //CONFLICT
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 500: //INTERNAL SERVER ERROR
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                        }
+                    }
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("createBattleSubmit")
     })
 
 

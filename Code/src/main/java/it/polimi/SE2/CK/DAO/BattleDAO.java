@@ -2,6 +2,7 @@ package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -102,5 +103,86 @@ public class BattleDAO {
             }
         }
         return battle;
+    }
+
+    /**
+     * Check the existence of a battle with the specified name.
+     *
+     * @param name the tournament name to search.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleByName (String name) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM new_schema.battle " +
+                "WHERE Name = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e){
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
+     * Inserts a battle in the database.
+     *
+     * @param battle the battle to insert.
+     * @return true if the battle has been added to the database.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean createBattle(Battle battle) throws SQLException {
+        //insert query
+        String query = "INSERT INTO `new_schema`.`battle` " +
+                "(`Name`, `Description`, `RegDeadline`, `SubDeadline`, `CodeKata`, `MinNumStudent`, `MaxNumStudent`, `TournamentId`, `Phase`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, battle.getName());
+            preparedStatement.setString(2, battle.getDescription());
+            preparedStatement.setTimestamp(3, battle.getRegDeadline());
+            preparedStatement.setTimestamp(4, battle.getSubDeadline());
+            preparedStatement.setString(5, battle.getGitHubBattleRepository());
+            preparedStatement.setInt(6, battle.getMinNumStudent());
+            preparedStatement.setInt(7, battle.getMaxNumStudent());
+            preparedStatement.setInt(8, battle.getTournamentId());
+            preparedStatement.setString(9, battle.getPhase().getValue());
+            System.out.println(preparedStatement);
+            preparedStatement.execute();
+        }
+        catch (SQLException e){
+            System.out.println("sono qui");
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 }
