@@ -50,7 +50,7 @@ public class SignInManager extends HttpServlet {
         response.getWriter().println("Request non acceptable");
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (StringUtils.isAnyEmpty(request.getParameter("role"),request.getParameter("name"),request.getParameter("surname"),
                 request.getParameter("birthdate"),request.getParameter("SignInUsername"), request.getParameter("email"),
                 request.getParameter("SignInPassword"), request.getParameter("userGH"))) {

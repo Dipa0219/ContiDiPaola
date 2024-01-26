@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.servlet;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -27,8 +28,9 @@ public class LoginManager extends HttpServlet {
     private Connection connection = null;
 
     public void init() throws ServletException {
+        ServletContext context =null;
         try {
-            ServletContext context = getServletContext();
+            context = getServletContext();
             String driver = context.getInitParameter("dbDriver");
             String url = context.getInitParameter("dbUrl");
             String user = context.getInitParameter("dbUser");
@@ -43,12 +45,13 @@ public class LoginManager extends HttpServlet {
         }
     }
 
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String usrn;
         String pwd;
         usrn = request.getParameter("LoginUsername");
