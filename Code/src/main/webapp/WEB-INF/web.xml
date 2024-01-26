@@ -8,6 +8,9 @@ http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
   <listener>
     <listener-class>it.polimi.SE2.CK.utils.starting.StartTournament</listener-class>
   </listener>
+  <listener>
+    <listener-class>it.polimi.SE2.CK.utils.starting.StartBattle</listener-class>
+  </listener>
 
   <context-param>
     <param-name>dbUrl</param-name>

@@ -552,11 +552,16 @@ public class TournamentDAO {
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
+                //registration deadline < now
                 if (resultSet.getTimestamp("RegDeadline").before(currentTimestamp)){
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     int tournamentId = resultSet.getInt("idTournament");
+                    //update tournament table
                     executor.submit(() ->
                             startTournamentUpdateTable(tournamentId));
+                    //send email to all student enrolled to the tournament
+                    executor.submit(() ->
+                            EmailManager.sendEmailToAllStudentEnrolledInTournamentStarted(tournamentId, con));
                     executor.shutdownNow();
                 }
             }
