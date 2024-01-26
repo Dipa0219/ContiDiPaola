@@ -46,7 +46,7 @@ public class GetUser extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         if(session.isNew() || session.getAttribute("user")==null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

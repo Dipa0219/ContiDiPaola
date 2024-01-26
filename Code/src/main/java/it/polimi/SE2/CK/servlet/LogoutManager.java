@@ -11,13 +11,12 @@ import java.io.IOException;
 public class LogoutManager extends HttpServlet {
     private static final long serialVersionUID = 1;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("user", null);
-        request.getSession().invalidate();
-        response.setStatus(HttpServletResponse.SC_OK);
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        response.getWriter().println("Request non acceptable");
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("user", null);
         request.getSession().invalidate();
         response.setStatus(HttpServletResponse.SC_OK);

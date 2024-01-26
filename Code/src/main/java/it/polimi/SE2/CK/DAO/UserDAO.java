@@ -263,7 +263,7 @@ public class UserDAO {
                 user.setRole(result.getInt("Role"));
             }
         } catch (SQLException e) {
-            throw new SQLException(e);
+            return user;
         }
         finally {
             try {

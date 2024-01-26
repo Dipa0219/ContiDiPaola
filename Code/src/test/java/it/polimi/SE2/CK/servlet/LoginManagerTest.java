@@ -134,16 +134,7 @@ public class LoginManagerTest {
         user.setId(1);
         user.setUsername("Bob99");
         user.setRole(1);
-    
-        // Mock the database connection
-        Connection connection = mock(Connection.class);
-    
-        // Mock the checkUsername method to return the user object
-        try {
-            when(userDao.checkUsername("Bob99", "1")).thenReturn(user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
     
         // Create an instance of LoginManager and invoke the doPost method
         LoginManager loginManager = new LoginManager();
@@ -160,10 +151,7 @@ public class LoginManagerTest {
     
         // Verify that the response character encoding is UTF-8
         verify(response).setCharacterEncoding("UTF-8");
-    
-        // Verify that the user object is added to the session
-        //verify(request.getSession()).setAttribute("user", user);
-    
+
         // Verify that the user object is converted to JSON and written to the response
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(user);
@@ -188,14 +176,7 @@ public class LoginManagerTest {
     
         // Mock the database connection
         Connection connection = mock(Connection.class);
-    
-        // Mock the checkUsername method to return null
-        try {
-            when(userDao.checkUsername("username", "password")).thenReturn(null);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    
+
         // Create an instance of LoginManager and invoke the doPost method
         LoginManager loginManager = new LoginManager();
         ServletConfig servletConfig = setUp();
@@ -266,7 +247,7 @@ public class LoginManagerTest {
         when(servletConfig.getServletContext()).thenReturn(servletContext);
         when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }
