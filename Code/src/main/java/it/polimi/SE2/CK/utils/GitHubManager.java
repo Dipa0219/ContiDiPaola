@@ -25,12 +25,12 @@ public class GitHubManager {
     /**
      * IThe username of the GitHub account.
      */
-    private static final String gitHubUsername=""; //TODO you have to add GitHub username
+    private static final String gitHubUsername="CodeKataCKB";
 
     /**
      * The token used for authentication with GitHub.
      */
-    private static final String gitHubToken =""; //TODO you have to add GitHub token
+    private static final String gitHubToken ="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";
 
     /**
      * The URL of the root GitHub repository.

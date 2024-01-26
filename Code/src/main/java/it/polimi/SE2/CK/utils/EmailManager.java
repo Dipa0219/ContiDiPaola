@@ -19,11 +19,11 @@ public class EmailManager {
     /**
      * CKB email.
      */
-    private static final String email ="code.kata.battle.ckb@gmail.com";
+    private static final String email = "code.kata.battle.ckb@gmail.com";
     /**
      * CKB password.
      */
-    private static final String password="matn oohm xsuz onvz"; //app password - google --> 2-factor authentication
+    private static final String password = "matn oohm xsuz onvz"; //app password - google --> 2-factor authentication
 
 
     /**
