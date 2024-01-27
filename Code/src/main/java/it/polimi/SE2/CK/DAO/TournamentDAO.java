@@ -530,6 +530,57 @@ public class TournamentDAO {
     }
 
     /**
+     * Checks if a tournament has at least one subscribed student.
+     *
+     * @param tournamentId the interested tournament
+     * @return true if at least one student is inscribed.
+     */
+    private boolean tournamentHaveSubscription(int tournamentId){
+        //search query
+        String query = "SELECT * " +
+                "FROM user as u " +
+                "WHERE u.Role = ? and exists ( " +
+                "   SELECT * " +
+                "   FROM t_subscription as ts " +
+                "   WHERE ts.UserId = u.idUser and ts.TournamentId = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.STUDENT.getValue());
+            preparedStatement.setInt(2, tournamentId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()){
+                result = true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e2){
+                throw new RuntimeException();
+            }
+        }
+        return result;
+    }
+
+    /**
      * Searches all tournament Not Started and verify if they can be started.
      */
     public void startTournament(){
@@ -556,20 +607,46 @@ public class TournamentDAO {
                 //registration deadline < now
                 if (resultSet.getTimestamp("RegDeadline").before(currentTimestamp)){
                     int tournamentId = resultSet.getInt("idTournament");
-                    //TODO if tournament have not student subscribed --> Ended and send email to collaborator
-                    //  otherwise the following instruction
-                    //update tournament table
-                    executor.submit(() ->
-                            startTournamentUpdateTable(tournamentId));
-                    //send email to all student enrolled to the tournament
-                    executor.submit(() ->
-                            EmailManager.sendEmailToAllStudentEnrolledInTournamentStarted(tournamentId, con));
+                    //if tournament do not have any inscribed student
+                    if (!tournamentHaveSubscription(tournamentId)){
+                        //update tournament table
+                        executor.submit(() ->
+                                closeTournamentUpdateTable(tournamentId));
+                        //send email to all educator that manage the tournament
+                        executor.submit(() ->
+                                EmailManager.sendEmailToAllCollaboratorInTournamentClosed(tournamentId, con));
+                    }
+                    else{
+                        //update tournament table
+                        executor.submit(() ->
+                                startTournamentUpdateTable(tournamentId));
+                        //send email to all student enrolled to the tournament
+                        executor.submit(() ->
+                                EmailManager.sendEmailToAllStudentEnrolledInTournamentStarted(tournamentId, con));
+                    }
                 }
             }
             executor.shutdownNow();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e2){
+                throw new RuntimeException();
+            }
         }
     }
 
@@ -593,6 +670,49 @@ public class TournamentDAO {
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e2){
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    /**
+     * Updates the tournament phase from Not Started to Ongoing.
+     *
+     * @param tournamentId the tournament id to update.
+     */
+    private void closeTournamentUpdateTable(int tournamentId){
+        //update query
+        String query = "UPDATE `new_schema`.`tournament` " +
+                "SET `Phase` = ? " +
+                "WHERE (`idTournament` = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.CLOSED.getValue());
+            preparedStatement.setInt(2, tournamentId);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e2){
+                throw new RuntimeException();
+            }
         }
     }
 }

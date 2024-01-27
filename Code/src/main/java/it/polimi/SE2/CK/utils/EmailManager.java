@@ -122,7 +122,6 @@ public class EmailManager {
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 
@@ -189,8 +188,40 @@ public class EmailManager {
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
 
+    /**
+     * Email all educator that manage o specific tournament that it has been closed.
+     *
+     * @param tournamentId the interested tournament.
+     * @param connection the connection (session) with a specific database.
+     */
+    public static void sendEmailToAllCollaboratorInTournamentClosed(int tournamentId, Connection connection){
+        UserDAO userDAO=new UserDAO(connection);
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
+        Tournament tournament = null;
+        try {
+            tournament = tournamentDAO.showTournamentById(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allEducatorTournamentEmail(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String object = "A tournament has been closed";
+        String text = tournament.getName() + " is close because no student have subscribed.";
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

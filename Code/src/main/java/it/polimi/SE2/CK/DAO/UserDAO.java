@@ -123,6 +123,39 @@ public class UserDAO {
     }
 
     /**
+     * Database search for all student emails enrolled in a specific tournament.
+     *
+     * @param tournamentID the specific tournament.
+     * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> allEducatorTournamentEmail(int tournamentID) throws SQLException {
+        //search query
+        String query="Select Email" +
+                "FROM user as u join t_subscription as ts on u.idUser=ts.UserId " +
+                "WHERE u.Role = ? and ts.TournamentId = ?;";
+        //statemente
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.EDUCATOR.getValue());
+            preparedStatement.setInt(2, tournamentID);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    /**
      * Retrieves the user's ID from the database.
      *
      * @param username the username to search.
