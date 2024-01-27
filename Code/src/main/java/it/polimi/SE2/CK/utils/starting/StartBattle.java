@@ -1,5 +1,7 @@
 package it.polimi.SE2.CK.utils.starting;
 
+import it.polimi.SE2.CK.DAO.BattleDAO;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -61,11 +63,13 @@ public class StartBattle implements ServletContextListener {
      * Searches for battle that have ongoing and if the submission deadline has passed it starts them.
      */
     private void endBattle(){
-        System.out.println("sono anche qui");
-        /*
-            TODO
-                close battle DAO
-         */
+        BattleDAO battleDAO = new BattleDAO(connection);
+
+        try {
+            battleDAO.closeBattle();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

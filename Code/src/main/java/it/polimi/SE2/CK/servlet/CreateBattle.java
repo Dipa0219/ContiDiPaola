@@ -189,7 +189,7 @@ public class CreateBattle extends HttpServlet {
 
         //number student per team
         //400 error
-        if (minStudentPerTeam < 0 || maxStudentPerTeam < 0) {
+        if (minStudentPerTeam < 1 || maxStudentPerTeam < 1) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid data");
             return;

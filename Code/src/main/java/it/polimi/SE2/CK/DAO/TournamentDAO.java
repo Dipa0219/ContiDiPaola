@@ -539,7 +539,7 @@ public class TournamentDAO {
      * @param tournamentId the interested tournament
      * @return true if at least one student is inscribed.
      */
-    private boolean tournamentHaveSubscription(int tournamentId){
+    private boolean tournamentHaveSubscription(int tournamentId) throws SQLException{
         //search query
         String query = "SELECT * " +
                 "FROM user as u " +
@@ -587,7 +587,7 @@ public class TournamentDAO {
     /**
      * Searches all tournament Not Started and verify if they can be started.
      */
-    public void startTournament(){
+    public void startTournament() throws SQLException{
         //search query
         String query = "SELECT idTournament, RegDeadline " +
                 "FROM tournament " +
@@ -688,7 +688,7 @@ public class TournamentDAO {
     }
 
     /**
-     * Updates the tournament phase from Not Started to Ongoing.
+     * Updates the tournament phase from Ongoing to Closed.
      *
      * @param tournamentId the tournament id to update.
      */

@@ -204,7 +204,6 @@ function TournamentPage(user) {
             closeTournamentButton.style.display=""
         }
         else if (user.role===1) {
-            //TODO verify if we have to show this button
             joinTournamentButton.style.display = ""
         }
 

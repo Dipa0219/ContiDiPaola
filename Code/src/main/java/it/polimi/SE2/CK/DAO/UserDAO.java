@@ -9,6 +9,7 @@ import java.util.List;
 
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
+import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 public class UserDAO {
@@ -181,6 +182,58 @@ public class UserDAO {
                 result.add(resultSet.getString("Email"));
             }
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Database search for all student emails enrolled in a specific battle.
+     *
+     * @param battleId the specific battle.
+     * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> allStudentBattleEmail(int battleId) throws SQLException {
+        //search query
+        String query = " SELECT u.Email " +
+                " FROM user as u, team as t, team_student as ts, battle as b " +
+                " WHERE u.idUser = ts.studentId and b.idbattle = t.battleId and t.idteam = ts.teamId " +
+                "and u.Role = ? and b.idbattle = ? and ts.phase = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.STUDENT.getValue());
+            preparedStatement.setInt(2, battleId);
+            preparedStatement.setString(3, TeamStudentState.ACCEPT.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        }
+        catch (SQLException e){
             throw new RuntimeException(e);
         }
         finally {

@@ -53,7 +53,11 @@ public class StartTournament implements ServletContextListener {
     private void startTournament(){
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
 
-        tournamentDAO.startTournament();
+        try {
+            tournamentDAO.startTournament();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.utils;
 
+import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
@@ -192,7 +193,7 @@ public class EmailManager {
     }
 
     /**
-     * Email all educator that manage o specific tournament that it has been closed.
+     * Email all educator that manage a specific tournament that it has been closed.
      *
      * @param tournamentId the interested tournament.
      * @param connection the connection (session) with a specific database.
@@ -215,6 +216,41 @@ public class EmailManager {
         }
         String object = "A tournament has been closed";
         String text = tournament.getName() + " is close because no student have subscribed.";
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Email all student enrolled in o specific battle that it has been closed.
+     *
+     * @param battleId the interested battle.
+     * @param connection the connection (session) with a specific database.
+     */
+    public static void sendEmailToAllStudentBattleClosed(int battleId, Connection connection){
+        UserDAO userDAO=new UserDAO(connection);
+        BattleDAO battleDAO = new BattleDAO(connection);
+        Battle battle = null;
+        try {
+            battle = battleDAO.showBattleById(battleId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allStudentBattleEmail(battleId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String object = "A battle has been closed";
+        String text = battle.getName() + " is closed. \n" +
+                "The final rankings are available on the battle page.";
 
         for (String s : emailAccount) {
             try {

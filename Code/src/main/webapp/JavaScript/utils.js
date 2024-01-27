@@ -7,7 +7,6 @@ function makeCall(method, url, formElement, cback) {
     if (formElement !== null) {
         var formData = new FormData(formElement)
         for (const value of formData.values()) {
-            console.log(value);
         }
         req.send(formData)
     } else {

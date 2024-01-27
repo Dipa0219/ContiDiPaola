@@ -67,6 +67,25 @@ function BattlePage(user){
         battleRegistrationDeadlineLabel.innerHTML="Registration Deadline: "+battle.regDeadline
         battleSubmissionDeadlineLabel.innerHTML="Submission Deadline: "+battle.subDeadline
         battleNumberTeamMemberLabel.innerHTML="Number of Team Member: between "+battle.minNumStudent +" to "+battle.maxNumStudent
+
+        if (user.role === 1){
+            if (battle.minNumStudent === 1){
+                joinBattleAloneButton.style.display=""
+            }
+            else {
+                joinBattleAloneButton.style.display="none"
+            }
+        }
+        else if (user.role === 0){
+            if (battle.phase === "Ongoing"){
+                modifyGradeButton.style.display = ""
+            }
+            else {
+                modifyGradeButton.style.display = "none"
+            }
+        }
+
+
     }
 
 
