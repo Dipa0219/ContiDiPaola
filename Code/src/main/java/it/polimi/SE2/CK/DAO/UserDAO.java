@@ -71,7 +71,7 @@ public class UserDAO {
                 "WHERE Role = ?";
         //statemente
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
 
         try {
@@ -84,6 +84,22 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -103,7 +119,7 @@ public class UserDAO {
                 "WHERE u.Role = ? and ts.TournamentId = ?;";
         //statemente
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
 
         try {
@@ -117,6 +133,22 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -136,7 +168,7 @@ public class UserDAO {
                 "WHERE u.Role = ? and ts.TournamentId = ?;";
         //statemente
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
 
         try {
@@ -150,6 +182,22 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -169,7 +217,7 @@ public class UserDAO {
                 "WHERE username = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int result = -1;
 
         try{
@@ -184,6 +232,23 @@ public class UserDAO {
         catch (SQLException e){
             return -1;
         }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
         return result;
     }
 
@@ -201,7 +266,7 @@ public class UserDAO {
                 "WHERE idUser = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet result;
+        ResultSet result = null;
 
         try{
             preparedStatement = con.prepareStatement(query);
@@ -222,7 +287,22 @@ public class UserDAO {
         catch (SQLException e){
             throw new SQLException();
         }
-
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
         return null;
     }
 

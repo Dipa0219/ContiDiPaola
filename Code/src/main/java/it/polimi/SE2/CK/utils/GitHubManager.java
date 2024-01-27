@@ -55,7 +55,6 @@ public class GitHubManager {
      * @param isPrivate the new repository is private or public (true = private repository).
      */
     public static void createGitHubRepository(String repositoryName, boolean isPrivate) {
-        System.out.println(repositoryName);
         OkHttpClient client = new OkHttpClient();
 
         //set name repository and the visibility
@@ -86,8 +85,6 @@ public class GitHubManager {
      * @param ghRepoURL the URL of the repository.
      */
     public static void uploadFolderOnGitHubRepository(String projectPath, String ghRepoURL) {
-        System.out.println(projectPath);
-        System.out.println(ghRepoURL);
         File projectPathToUpload = new File(projectPath);
 
         Git git = null;

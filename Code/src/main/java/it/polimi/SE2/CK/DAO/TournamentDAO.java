@@ -163,7 +163,6 @@ public class TournamentDAO {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public boolean checkUserInTournament(int tournamentID, int userID) throws SQLException {
-        System.out.println(tournamentID + " " + userID);
         //search query
         String query = "select * " +
                 "from t_subscription " +
@@ -177,17 +176,22 @@ public class TournamentDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, tournamentID);
             preparedStatement.setInt(2, userID);
-            System.out.println(preparedStatement);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 result = true;
             }
-            System.out.println(result);
         }
         catch (SQLException e){
             return false;
         }
         finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
             try {
                 if (preparedStatement != null) {
                     preparedStatement.close();

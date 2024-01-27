@@ -166,11 +166,9 @@ public class BattleDAO {
             preparedStatement.setInt(7, battle.getMaxNumStudent());
             preparedStatement.setInt(8, battle.getTournamentId());
             preparedStatement.setString(9, battle.getPhase().getValue());
-            System.out.println(preparedStatement);
             preparedStatement.execute();
         }
         catch (SQLException e){
-            System.out.println("sono qui");
             return false;
         }
         finally {
