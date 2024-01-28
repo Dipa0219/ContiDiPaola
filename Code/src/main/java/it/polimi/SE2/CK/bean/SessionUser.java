@@ -1,5 +1,7 @@
 package it.polimi.SE2.CK.bean;
 
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
+
 public class SessionUser {
     private int id;
     private String username;

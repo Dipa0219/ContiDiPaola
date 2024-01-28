@@ -56,12 +56,12 @@ public class ShowBattleInfo extends HttpServlet {
         try {
             battleId = Integer.parseInt(request.getParameter("BattleId"));
         }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
         if (battleId<=0){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }

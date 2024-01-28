@@ -79,13 +79,31 @@ public class ShowAddCollaborator extends HttpServlet {
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
-        tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
+        try {
+            tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
+        }catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        if (tournament.getId()<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
+            return;
+        }
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        //401 error
+        if (user.getRole() != UserRole.EDUCATOR.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't do this action");
             return;
         }
 
@@ -98,21 +116,7 @@ public class ShowAddCollaborator extends HttpServlet {
         }
 
         //user is an educator
-        SessionUser user = (SessionUser) session.getAttribute("user");
-        UserDAO userDAO = new UserDAO(connection);
-        //500 error
-        try {
-            //401 error
-            if (userDAO.getUserRole(user.getId()) != UserRole.EDUCATOR){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
-                return;
-            }
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
+
 
         //user is in the tournament
         //500 error

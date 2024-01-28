@@ -215,7 +215,7 @@ function TournamentPage(user) {
                         switch (x.status) {
                             case 200:
                                 message= JSON.parse(message)
-                                if (!message){
+                                if (message){
                                     joinTournamentButton.style.display="none"
                                 }
                                 break;

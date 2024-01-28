@@ -77,14 +77,6 @@ public class ShowTournamentInfo extends HttpServlet {
             return;
         }
 
-        //tournament is in not in Closed phase
-        //401 error
-        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("The tournament has already been closed");
-            return;
-        }
-
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");

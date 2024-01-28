@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class AddCollaboratorTest {
 
     @Test
-    public void test_getUser_doGet() throws ServletException, IOException {
+    public void test_getUser_doGet() throws IOException {
         // Mock HttpServletRequest and HttpServletResponse
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -41,9 +41,7 @@ public class AddCollaboratorTest {
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    @Test
-    public void testDoPost() {
-    }
+
 
     @Test
     public void test_join_tournament_with_empty_session() throws IOException, ServletException {

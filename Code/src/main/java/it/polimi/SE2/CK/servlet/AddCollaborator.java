@@ -107,7 +107,11 @@ public class AddCollaborator extends HttpServlet {
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
-        tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        try {
+            tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        }catch (Exception e){
+
+        }
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());

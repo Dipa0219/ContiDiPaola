@@ -1,10 +1,8 @@
 package it.polimi.SE2.CK.servlet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
-import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 @WebServlet("/JoinTournament")
 @MultipartConfig
@@ -68,7 +65,7 @@ public class JoinTournament extends HttpServlet {
         }
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
         SessionUser user = (SessionUser) session.getAttribute("user");
-        if (user.getRole()==0){
+        if (user.getRole()!= UserRole.STUDENT.getValue()){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Educator are not allowed to join tournament in this way, please try again");
             return;

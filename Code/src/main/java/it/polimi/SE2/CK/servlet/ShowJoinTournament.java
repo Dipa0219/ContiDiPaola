@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
-import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -52,6 +52,11 @@ public class ShowJoinTournament extends HttpServlet {
             return;
         }
         SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user.getRole()!= UserRole.STUDENT.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't do this action");
+            return;
+        }
         int tournamentId;
         try {
             tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
@@ -65,11 +70,10 @@ public class ShowJoinTournament extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
-        System.out.println(tournamentId);
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
         Boolean resp;
         try {
-            resp = tournamentDAO.checkJoinTournament(tournamentId,user.getId());
+            resp = tournamentDAO.checkUserInTournament(tournamentId,user.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
