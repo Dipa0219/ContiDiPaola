@@ -53,10 +53,13 @@ public class StartBattle implements ServletContextListener {
      */
     private void startBattle(){
         System.out.println("eccomi qui");
-        /*
-            TODO
-                start battle DAO
-         */
+        BattleDAO battleDAO = new BattleDAO(connection);
+
+        try {
+            battleDAO.startBattle();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

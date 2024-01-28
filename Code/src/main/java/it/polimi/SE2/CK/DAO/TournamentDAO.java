@@ -630,7 +630,7 @@ public class TournamentDAO {
                     }
                 }
             }
-            executor.shutdownNow();
+            executor.shutdown();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

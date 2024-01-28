@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import java.io.*;
 
-//TODO if you use Windows the path is formed by \\
-//     if you use Linux   the path is formed by /
-//     if you use MacOS   the path is formed by /
+//if you use Windows the path is formed by \\
+//if you use Linux   the path is formed by /
+//if you use MacOS   the path is formed by /
 
 /**
  * Class that manage the folder.
@@ -137,7 +137,7 @@ public class FolderManager {
     public static void saveFile(Part part, String directoryToSave){
         String fileName = getFileName(part) + "." + getFileExtension(part);
 
-        String filePath = directoryToSave + FolderManager.getPathUnix() + fileName; //TODO select your OS
+        String filePath = directoryToSave + FolderManager.getPathWindows() + fileName; //TODO select your OS
 
         File directoryFinal = new File(directoryToSave);
         if (!directoryFinal.exists()){

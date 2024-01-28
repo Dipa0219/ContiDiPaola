@@ -3,13 +3,17 @@ package it.polimi.SE2.CK.DAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.GitHubManager;
+import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class BattleDAO {
     private final Connection con;
@@ -185,13 +189,143 @@ public class BattleDAO {
 
     /**
      * Searches all battle Not Started and verify if they can be started.
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void startBattle() throws SQLException {
-        //TODO
+        //search query
+        String query = "SELECT idbattle, RegDeadline " +
+                "FROM battle " +
+                "WHERE Phase = ? " +
+                "ORDER BY RegDeadline ASC";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        //get the actual date
+        java.util.Date currentDate = new Date();
+        Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            while (resultSet.next()) {
+                //if submission deadline < now
+                if (resultSet.getTimestamp("RegDeadline").before(currentTimestamp)) {
+                    int battleId = resultSet.getInt("idbattle");
+                    //update battle table
+                    executor.submit(() ->
+                    {
+                        try {
+                            startBattleUpdateTable(battleId);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    //create GitHub repository for every team in battle
+                    executor.submit(() ->
+                    {
+                        ArrayList<Integer> teamInBattle = null;
+                        //get the team in battle
+                        try {
+                            teamInBattle = (ArrayList<Integer>) getTeamInBattle(battleId);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        //create a repository per team
+                        ExecutorService executorTeam = Executors.newFixedThreadPool(teamInBattle.size());
+                        List<Future<?>> futures = new ArrayList<>();
+
+                        //real creation repository
+                        for (Integer teamId : teamInBattle){
+                            futures.add(executorTeam.submit(() ->
+                                    GitHubManager.createGitHubRepositoryPerTeam(teamId, con)));
+                        }
+                        executorTeam.shutdown();
+
+                    });
+
+                }
+            }
+            executor.shutdown();
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    /**
+     * Gets the teams in a specific battle.
+     *
+     * @param battleId the specific battle.
+     * @return the list of team in a specific battle.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    private List<Integer> getTeamInBattle(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT idteam " +
+                "FROM team " +
+                "WHERE battleId = ? and (not phase = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Integer> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setString(2, TeamState.INCOMPLETE.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getInt("idteam"));
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+
+        return result;
     }
 
     /**
      * Searches all battle Started and verify if they must be closed.
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void closeBattle() throws SQLException {
         //search query
@@ -219,13 +353,19 @@ public class BattleDAO {
                     int battleId = resultSet.getInt("idbattle");
                     //update battle table
                     executor.submit(() ->
-                            closeBattleUpdateTable(battleId));
+                    {
+                        try {
+                            closeBattleUpdateTable(battleId);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     //send email to all student that enrolled in the battle
                     executor.submit(() ->
                             EmailManager.sendEmailToAllStudentBattleClosed(battleId, con));
                 }
             }
-            executor.shutdownNow();
+            executor.shutdown();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
@@ -252,8 +392,9 @@ public class BattleDAO {
      * Updates the battle phase from Ongoing to Closed.
      *
      * @param battleId the tournament id to update.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    private void closeBattleUpdateTable(int battleId){
+    private void closeBattleUpdateTable(int battleId) throws SQLException {
         //update query
         String query = "UPDATE `new_schema`.`battle` " +
                 "SET `Phase` = ? " +
@@ -279,5 +420,87 @@ public class BattleDAO {
                 throw new RuntimeException();
             }
         }
+    }
+
+    /**
+     * Updates the battle phase from Not Started to Ongoing.
+     *
+     * @param battleId the tournament id to update.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    private void startBattleUpdateTable(int battleId) throws SQLException {
+        //update query
+        String query = "UPDATE `new_schema`.`battle` " +
+                "SET `Phase` = ? " +
+                "WHERE (`idBattle` = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(2, battleId);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e2){
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    /**
+     * Gets the CodeKata.
+     *
+     * @param teamId the specific team.
+     * @return the CodeKata.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public String getCodeKataFromTeamId(int teamId) throws SQLException {
+        //search query
+        String query = "SELECT b.Name, b.CodeKata " +
+                "FROM team as t, battle as b " +
+                "WHERE t.battleId = b.idbattle and idteam = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        String result = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, teamId);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result = resultSet.getString("CodeKata");
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+
+        return result;
     }
 }

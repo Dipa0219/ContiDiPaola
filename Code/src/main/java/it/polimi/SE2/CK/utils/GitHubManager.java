@@ -1,14 +1,25 @@
 package it.polimi.SE2.CK.utils;
 
+import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.utils.folder.FolderManager;
 import okhttp3.*;
 import okhttp3.OkHttpClient;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.errors.UnmergedPathException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 //TODO ssh -R 80:localhost:8085 nokey@localhost.run
@@ -20,7 +31,7 @@ public class GitHubManager {
     /**
      * The URL of the GitHub API.
      */
-    private static final String gitHubURL="https://api.github.com/user/repos";
+    private static final String gitHubURL="https://api.github.com";
 
     /**
      * IThe username of the GitHub account.
@@ -63,7 +74,7 @@ public class GitHubManager {
 
         //build the repository
         Request request = new Request.Builder()
-                .url(gitHubURL)
+                .url(gitHubURL + "/user/repos")
                 .post(RequestBody.create(mediaType, requestBody))
                 .header("Authorization", "Bearer " + gitHubToken)
                 .build();
@@ -82,16 +93,16 @@ public class GitHubManager {
      * It uploads a project on existing GitHub repository.
      *
      * @param projectPath the project path.
-     * @param ghRepoURL the URL of the repository.
+     * @param repositoryURL the URL of the repository.
      */
-    public static void uploadFolderOnGitHubRepository(String projectPath, String ghRepoURL) {
+    public static void uploadFolderOnGitHubRepository(String projectPath, String repositoryURL) {
         File projectPathToUpload = new File(projectPath);
 
         Git git = null;
         //clone the existing repository
         try {
             git = Git.cloneRepository()
-                    .setURI(ghRepoURL)
+                    .setURI(repositoryURL)
                     .setDirectory(projectPathToUpload)
                     .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitHubUsername, gitHubToken))
                     .call();
@@ -124,5 +135,100 @@ public class GitHubManager {
         } catch (InvalidRemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * It pulls a repository and save it on the disk.
+     *
+     * @param repositoryURL the url repository path.
+     * @param repositoryName the name of the repository.
+     */
+    private static void pullGitHubRepository(String repositoryURL, String repositoryName) {
+        File destinationRepository = new File(FolderManager.getDirectory() + repositoryName + "\\");
+        Git git = null;
+
+        try {
+            git = Git.cloneRepository()
+                    .setURI(repositoryURL)
+                    .setDirectory(destinationRepository)
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitHubUsername, gitHubToken))
+                    .call();
+        }
+        catch (JGitInternalException e){
+            e.printStackTrace();
+        }
+
+        PullCommand pullCommand = git.pull();
+        try {
+            pullCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitHubUsername, gitHubToken))
+                    .call();
+        } catch (WrongRepositoryStateException | RefNotFoundException | InvalidConfigurationException |
+                 DetachedHeadException | InvalidRemoteException | CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * It manages all action that occurs in a creation of GitHub repository for a specific team in a battle.
+     *
+     * @param teamId the specific team.
+     */
+    public static void createGitHubRepositoryPerTeam(int teamId, Connection connection){
+        //get all GitHub username
+        UserDAO userDAO = new UserDAO(connection);
+        ArrayList<String> ghUsername = null;
+        try {
+            ghUsername = (ArrayList<String>) userDAO.allStudentBattleGitHub(teamId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        //get the battle name and CodeKata
+        BattleDAO battleDAO = new BattleDAO(connection);
+        String battleName = null;
+        String codeKata = null;
+        try {
+            codeKata = battleDAO.getCodeKataFromTeamId(teamId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (codeKata.length()==0){
+            throw new RuntimeException();
+        }
+        else {
+            battleName = codeKata.substring(getRepoURL().length());
+        }
+
+        //GitHub pull from CodeKata
+        pullGitHubRepository(codeKata, battleName);
+
+        //GitHub repository creation
+        createGitHubRepository(battleName + teamId, true);
+
+        //upload folder on GitHub
+        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows(),
+                GitHubManager.getRepoURL() + battleName + teamId);
+
+        //TODO add teammate
+
+        //TODO set automatic notification
+
+        //TODO delete folder pull repository
+
+
+
+
+
+
+        /*TODO
+            nome battaglia && CodeKata
+                from CodeKata --> GHpull
+            createGHRepo
+            uploadFolderOnGHrepo
+            add teammate to repo
+            .
+            automatic notification --> webhook or GHA ????
+         */
     }
 }
