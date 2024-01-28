@@ -9,8 +9,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.errors.UnmergedPathException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
@@ -19,10 +17,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 
-//TODO ssh -R 80:localhost:8085 nokey@localhost.run
+//TODO ssh -R 80:localhost:8085 nokey@localhost.run - tunneling
 
 /**
  * Class that manage the interacting with the GitHub API.
@@ -169,6 +166,32 @@ public class GitHubManager {
     }
 
     /**
+     * It adds a repository collaborator.
+     *
+     * @param repositoryName the repository name.
+     * @param username the GitHub username.
+     */
+    private static void addCollaboratorOnGitHubRepository(String repositoryName, String username) {
+        String api = gitHubURL + "/repos/" + gitHubUsername + "/" + repositoryName + "/collaborators/" + username;
+
+        OkHttpClient client = new OkHttpClient();
+        String requestBody = "{\"permission\": \"admin\"}";
+
+        Request request = new Request.Builder()
+                .url(api)
+                .put(RequestBody.create(MediaType.parse("application/json"), requestBody))
+                .header("Authorization", "Bearer " + gitHubToken)
+                .build();
+
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * It manages all action that occurs in a creation of GitHub repository for a specific team in a battle.
      *
      * @param teamId the specific team.
@@ -210,25 +233,14 @@ public class GitHubManager {
         uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows(),
                 GitHubManager.getRepoURL() + battleName + teamId);
 
-        //TODO add teammate
+        //add teammate
+        for (String s : ghUsername) {
+            addCollaboratorOnGitHubRepository(battleName + teamId, s);
+        }
 
         //TODO set automatic notification
 
-        //TODO delete folder pull repository
-
-
-
-
-
-
-        /*TODO
-            nome battaglia && CodeKata
-                from CodeKata --> GHpull
-            createGHRepo
-            uploadFolderOnGHrepo
-            add teammate to repo
-            .
-            automatic notification --> webhook or GHA ????
-         */
+        //delete folder pull repository
+        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows()));
     }
 }
