@@ -159,10 +159,15 @@ public class TeamDAO {
     public List<SessionUser> showStudentNotInBattle(int userId, int battleId) throws SQLException {
         //search query
         String query = "SELECT u.idUser, u.Username " +
-                "FROM team_student as ts, team as t, user as u " +
-                "WHERE ts.teamId = t.idteam and ts.studentId = u.idUser  " +
-                "   and not (ts.phase = ?) and t.battleId = ? " +
-                "   and u.Role = ? and not (u.idUser = ?)";
+                "FROM t_subscription as tsub, user as u, battle as b " +
+                "WHERE tsub.UserId = u.idUser and tsub.TournamentId = b.TournamentId " +
+                "   and b.idbattle = ? " +
+                "   and not (u.idUser = ?) " +
+                "   and u.Role = ? " +
+                "   and tsub.UserId not in( " +
+                "       SELECT ts.studentId " +
+                "       FROM team_student as ts " +
+                "       WHERE ts.phase = ?)";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -170,10 +175,10 @@ public class TeamDAO {
 
         try {
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, TeamStudentState.ACCEPT.getValue());
-            preparedStatement.setInt(2, battleId);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setInt(2, userId);
             preparedStatement.setInt(3, UserRole.STUDENT.getValue());
-            preparedStatement.setInt(4, userId);
+            preparedStatement.setString(4, TeamStudentState.ACCEPT.getValue());
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
