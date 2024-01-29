@@ -21,9 +21,9 @@ function BattlePage(user){
     let battleSubmissionDeadlineLabel = document.getElementById("battleSubmissionDeadlineLabel")
     let battleNumberTeamMemberLabel = document.getElementById("battleNumberTeamMemberLabel")
     let joinBattleAloneMessage = document.getElementById("joinBattleAloneMessage")
+    let teamMateInput = document.getElementById("teamMateInput")
 
     joinBattleAloneButton.addEventListener('click', (e) => {
-        console.log("battle id" + battleId)
         makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
             function (x) {
                 //server return message
@@ -44,6 +44,39 @@ function BattlePage(user){
                 }
             })
     })
+
+    joinBattleAsTeamButton.addEventListener('click', (e) => {
+        makeCall("GET", 'ShowUserTeam?BattleId=' + battleId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE){
+                    var message = x.responseText;
+                    switch (x.status){
+                        case 200:
+                            message = JSON.parse(message)
+                            if (message.length === 0) {
+                                joinBattleAsTeamButton.style.display = "none"
+                            }
+                            else {
+                                teamMateInput.innerHTML=''
+                                updateTeammates(message)
+                            }
+                            break
+                        default:
+                            break
+                    }
+                }
+            })
+    })
+
+    //shows all possible teammates
+    function updateTeammates(teammates){
+        teammates.forEach(function (teammate) {
+            let option = document.createElement("option")
+            option.text = teammate.username
+            option.value = teammate.id
+            teamMateInput.add(option)
+        })
+    }
 
     /*This is the method used to open the battle page
    * First it decides which button must be shown

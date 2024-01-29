@@ -21,7 +21,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Servlet that manage the creation of a tournament.
+ * Servlet that manage the subscription on a battle alone.
  */
 @WebServlet("/JoinBattleAlone")
 @MultipartConfig

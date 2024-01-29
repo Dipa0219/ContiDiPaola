@@ -1,7 +1,9 @@
 package it.polimi.SE2.CK.DAO;
 
+import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -140,6 +142,65 @@ public class TeamDAO {
                 }
             } catch (SQLException e2) {
                 throw new RuntimeException();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Database search for all student usernames not in a specific battle.
+     *
+     * @param userId the user id of the user making the request.
+     * @param battleId the battle id to search.
+     * @return list of all student requested.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<SessionUser> showStudentNotInBattle(int userId, int battleId) throws SQLException {
+        //search query
+        String query = "SELECT u.idUser, u.Username " +
+                "FROM team_student as ts, team as t, user as u " +
+                "WHERE ts.teamId = t.idteam and ts.studentId = u.idUser  " +
+                "   and not (ts.phase = ?) and t.battleId = ? " +
+                "   and u.Role = ? and not (u.idUser = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<SessionUser> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TeamStudentState.ACCEPT.getValue());
+            preparedStatement.setInt(2, battleId);
+            preparedStatement.setInt(3, UserRole.STUDENT.getValue());
+            preparedStatement.setInt(4, userId);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                SessionUser sessionUser = new SessionUser();
+                sessionUser.setId(resultSet.getInt("idUser"));
+                sessionUser.setUsername(resultSet.getString("Username"));
+
+                result.add(sessionUser);
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
             }
         }
 
