@@ -121,7 +121,6 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
-        System.out.println(battleTestCase.getSize());
 
         //400 error
         if (StringUtils.isAnyEmpty(battleName, registrationDeadline)){
@@ -190,7 +189,7 @@ public class CreateBattle extends HttpServlet {
 
         //number student per team
         //400 error
-        if (minStudentPerTeam < 0 || maxStudentPerTeam < 0) {
+        if (minStudentPerTeam < 1 || maxStudentPerTeam < 1) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Insert a valid data");
             return;
@@ -301,7 +300,6 @@ public class CreateBattle extends HttpServlet {
         //unzip the zip file
         ZipFolderManager.unzip(FolderManager.getFileName(battleProject));
 
-        System.out.println("test case " + battleTestCase.getSize());
         //save the yaml file on disk
         if (battleTestCase.getSize() > 0){
             FolderManager.saveFile(battleTestCase,
@@ -310,15 +308,11 @@ public class CreateBattle extends HttpServlet {
         }
 
         //creation of GitHub repository
-        System.out.println("eccomi");
         GitHubManager.createGitHubRepository(battle.getName(), true);
-        System.out.println("qui");
 
         //upload project file on GitHub repository
-        System.out.println("proprio");
         GitHubManager.uploadFolderOnGitHubRepository(FolderManager.getDirectory() + FolderManager.getFileName(battleProject),
                 GitHubManager.getRepoURL() + battle.getName());
-        System.out.println("qui");
 
         //set the GitHub repository where the battle is saved
         battle.setGitHubBattleRepository(GitHubManager.getRepoURL() + battle.getName());
@@ -329,16 +323,13 @@ public class CreateBattle extends HttpServlet {
         try {
             result = battleDAO.createBattle(battle);
         } catch (SQLException e) {
-            System.out.println("ciaociao1");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
-        System.out.println(result);
 
         //500 error
         if (!result){
-            System.out.println("ciaociao2");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

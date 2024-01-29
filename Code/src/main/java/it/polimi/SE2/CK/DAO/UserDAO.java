@@ -9,6 +9,8 @@ import java.util.List;
 
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
+import it.polimi.SE2.CK.utils.enumeration.TeamState;
+import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 public class UserDAO {
@@ -71,7 +73,7 @@ public class UserDAO {
                 "WHERE Role = ?";
         //statemente
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
 
         try {
@@ -84,6 +86,22 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -103,7 +121,7 @@ public class UserDAO {
                 "WHERE u.Role = ? and ts.TournamentId = ?;";
         //statemente
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
 
         try {
@@ -117,6 +135,174 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Database search for all student emails enrolled in a specific tournament.
+     *
+     * @param tournamentID the specific tournament.
+     * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> allEducatorTournamentEmail(int tournamentID) throws SQLException {
+        //search query
+        String query="Select Email" +
+                "FROM user as u join t_subscription as ts on u.idUser=ts.UserId " +
+                "WHERE u.Role = ? and ts.TournamentId = ?;";
+        //statemente
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.EDUCATOR.getValue());
+            preparedStatement.setInt(2, tournamentID);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Database search for all student emails enrolled in a specific battle.
+     *
+     * @param battleId the specific battle.
+     * @return the student emails.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> allStudentBattleEmail(int battleId) throws SQLException {
+        //search query
+        String query = " SELECT u.Email " +
+                " FROM user as u, team as t, team_student as ts, battle as b " +
+                " WHERE u.idUser = ts.studentId and b.idbattle = t.battleId and t.idteam = ts.teamId " +
+                "and u.Role = ? and b.idbattle = ? and ts.phase = ? and (not t.phase = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, UserRole.STUDENT.getValue());
+            preparedStatement.setInt(2, battleId);
+            preparedStatement.setString(3, TeamStudentState.ACCEPT.getValue());
+            preparedStatement.setString(4, TeamState.INCOMPLETE.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("Email"));
+            }
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Database search for all student GitHub username enrolled in a specific team.
+     *
+     * @param teamId the specific team.
+     * @return the student GitHub username.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<String> allStudentBattleGitHub(int teamId) throws SQLException {
+        //search query
+        String query = "SELECT u.GitHubUser " +
+                "FROM team_student as ts, user as u " +
+                "WHERE ts.studentId = u.idUser and ts.teamId = ? and ts.phase = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<String> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, teamId);
+            preparedStatement.setString(2, TeamStudentState.ACCEPT.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                result.add(resultSet.getString("GitHubUser"));
+            }
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
         }
 
         return result;
@@ -136,7 +322,7 @@ public class UserDAO {
                 "WHERE username = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet;
+        ResultSet resultSet = null;
         int result = -1;
 
         try{
@@ -151,6 +337,23 @@ public class UserDAO {
         catch (SQLException e){
             return -1;
         }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
         return result;
     }
 
@@ -168,7 +371,7 @@ public class UserDAO {
                 "WHERE idUser = ?";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet result;
+        ResultSet result = null;
 
         try{
             preparedStatement = con.prepareStatement(query);
@@ -189,7 +392,22 @@ public class UserDAO {
         catch (SQLException e){
             throw new SQLException();
         }
-
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
         return null;
     }
 

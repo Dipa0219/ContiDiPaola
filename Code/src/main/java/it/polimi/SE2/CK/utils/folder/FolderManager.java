@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import java.io.*;
 
-//TODO if you use Windows the path is formed by \\
-//     if you use Linux   the path is formed by /
-//     if you use MacOS   the path is formed by /
+//if you use Windows the path is formed by \\
+//if you use Linux   the path is formed by /
+//if you use MacOS   the path is formed by /
 
 /**
  * Class that manage the folder.
@@ -174,5 +174,22 @@ public class FolderManager {
 
         //delete the root
         directoryToBeDeleted.delete();
+    }
+
+    /**
+     * Writes a text in a file.
+     *
+     * @param fileToWrite the file.
+     * @param text the text to write in the file.
+     */
+    public static void writeFile(File fileToWrite, String text) {
+        try {
+            FileWriter fileWriter = new FileWriter(fileToWrite);
+            fileWriter.write(text);
+
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

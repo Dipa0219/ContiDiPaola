@@ -1,5 +1,7 @@
 package it.polimi.SE2.CK.utils;
 
+import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.Tournament;
@@ -23,7 +25,7 @@ public class EmailManager {
     /**
      * CKB password.
      */
-    private static final String password = "matn oohm xsuz onvz"; //app password - google --> 2-factor authentication
+    private static final String password = "matnoohmxsuzonvz"; //app password - google --> 2-factor authentication
 
 
     /**
@@ -98,7 +100,7 @@ public class EmailManager {
     }
 
     /**
-     * Email all students enrolled on CKB that a tournament has been closed.
+     * Email all students enrolled on specific tournament that it has been closed.
      *
      * @param tournament the interested tournament.
      * @param connection the connection (session) with a specific database.
@@ -121,12 +123,11 @@ public class EmailManager {
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 
     /**
-     * Email all students enrolled on CKB that a new battle in the tournament has been created.
+     * Email all students enrolled on specific tournament that a new battle has been created.
      *
      * @param battle the interested battle.
      * @param connection the connection (session) with a specific database.
@@ -139,6 +140,7 @@ public class EmailManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         String object = "A battle has been created";
         String text = battle.getName() + "battle has been created. " +
                 "The battle belongs to the " + battle.getTournamentName() + " tournament.\n" +
@@ -152,6 +154,110 @@ public class EmailManager {
                 throw new RuntimeException(e);
             }
 
+        }
+    }
+
+    /**
+     * Email all students enrolled on specific tournament that it has been started.
+     *
+     * @param tournamentId the tournament id.
+     * @param connection the connection (session) with a specific database.
+     */
+    public static void sendEmailToAllStudentEnrolledInTournamentStarted(int tournamentId, Connection connection) {
+        UserDAO userDAO=new UserDAO(connection);
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allStudentTournamentEmail(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
+        Tournament tournament = null;
+        try {
+            tournament = tournamentDAO.showTournamentById(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        String object = "A tournament has been started";
+        String text = tournament.getName() + "tournament has been started. ";
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Email all educator that manage a specific tournament that it has been closed.
+     *
+     * @param tournamentId the interested tournament.
+     * @param connection the connection (session) with a specific database.
+     */
+    public static void sendEmailToAllCollaboratorInTournamentClosed(int tournamentId, Connection connection){
+        UserDAO userDAO=new UserDAO(connection);
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
+        Tournament tournament = null;
+        try {
+            tournament = tournamentDAO.showTournamentById(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allEducatorTournamentEmail(tournamentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String object = "A tournament has been closed";
+        String text = tournament.getName() + " is close because no student have subscribed.";
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Email all student enrolled in o specific battle that it has been closed.
+     *
+     * @param battleId the interested battle.
+     * @param connection the connection (session) with a specific database.
+     */
+    public static void sendEmailToAllStudentBattleClosed(int battleId, Connection connection){
+        UserDAO userDAO=new UserDAO(connection);
+        BattleDAO battleDAO = new BattleDAO(connection);
+        Battle battle = null;
+        try {
+            battle = battleDAO.showBattleById(battleId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<String> emailAccount= null;
+        try {
+            emailAccount = userDAO.allStudentBattleEmail(battleId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String object = "A battle has been closed";
+        String text = battle.getName() + " is closed. \n" +
+                "The final rankings are available on the battle page.";
+
+        for (String s : emailAccount) {
+            try {
+                EmailManager.sendEmail(s, object, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

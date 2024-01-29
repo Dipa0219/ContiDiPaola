@@ -158,6 +158,7 @@ function TournamentPage(user) {
                             case 200:
                                 clearForm("createBattleForm")
                                 closeModal()
+                                battleTableType.style.display="none";
                                 self.openPage(tournamentId)
                                 break;
                             case 400: //BAD REQUEST
@@ -203,7 +204,6 @@ function TournamentPage(user) {
             closeTournamentButton.style.display=""
         }
         else if (user.role===1) {
-            //TODO verify if we have to show this button
             joinTournamentButton.style.display = ""
         }
 
@@ -340,6 +340,8 @@ function TournamentPage(user) {
     * It obtains in input the list of battle and add a new row in the
     * table for each tournament contained in the list*/
     this.updateBattleTable = function (battles){
+        battleTableType.style.display="none"
+        battleTableType.innerHTML=""
         battleTable.innerHTML=""
         let flag=0
         battles.forEach(function (battle){
