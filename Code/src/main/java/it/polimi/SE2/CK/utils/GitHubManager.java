@@ -12,14 +12,16 @@ import org.eclipse.jgit.errors.UnmergedPathException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
+import javax.servlet.http.Part;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 
-//TODO ssh -R 80:localhost:8085 nokey@localhost.run - tunneling
+//TODO ssh -R 80:localhost:8080 nokey@localhost.run - tunneling
 
 /**
  * Class that manage the interacting with the GitHub API.
@@ -225,6 +227,37 @@ public class GitHubManager {
 
         //GitHub pull from CodeKata
         pullGitHubRepository(codeKata, battleName);
+        //add readme
+        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows() + "README.md");
+        FolderManager.writeFile(readme, "To notify the server, you need to configure a workflow so that a notification is sent to the CKB application whenever a change occurs in the repository.\n" +
+                "\n" +
+                "\n" +
+                "If you do not know how to do this below you will find an example:" +
+                "\n" +
+                "name: Notification\n" +
+                "\n" +
+                "on:\n" +
+                "  push:\n" +
+                "    branches:\n" +
+                "      - main\n" +
+                "\n" +
+                "jobs:\n" +
+                "  invia-notifica:\n" +
+                "    runs-on: ubuntu-latest\n" +
+                "\n" +
+                "    steps:\n" +
+                "    - name: Configura Git\n" +
+                "      uses: actions/setup-node@v4\n" +
+                "      with:\n" +
+                "        node-version: '14'\n" +
+                "    - name: Check out the code\n" +
+                "      uses: actions/checkout@v2\n" +
+                "\n" +
+                "    - name: Invia notifica al server\n" +
+                "      run: |\n" +
+                "        curl -X POST -H \"Content-Type: application/json\" \\\n" +
+                "          -d '{\"repository\": \"${{ github.repository }}\", \"commit\": \"${{ github.sha }}\", \"author\": \"${{ github.actor }}\"}' \\\n" +
+                "          https://URLCODEKATA/receive-from-github");
 
         //GitHub repository creation
         createGitHubRepository(battleName + teamId, true);
@@ -237,8 +270,6 @@ public class GitHubManager {
         for (String s : ghUsername) {
             addCollaboratorOnGitHubRepository(battleName + teamId, s);
         }
-
-        //TODO set automatic notification
 
         //delete folder pull repository
         FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows()));

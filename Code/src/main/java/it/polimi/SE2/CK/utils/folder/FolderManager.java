@@ -137,7 +137,7 @@ public class FolderManager {
     public static void saveFile(Part part, String directoryToSave){
         String fileName = getFileName(part) + "." + getFileExtension(part);
 
-        String filePath = directoryToSave + FolderManager.getPathWindows() + fileName; //TODO select your OS
+        String filePath = directoryToSave + FolderManager.getPathUnix() + fileName; //TODO select your OS
 
         File directoryFinal = new File(directoryToSave);
         if (!directoryFinal.exists()){
@@ -174,5 +174,22 @@ public class FolderManager {
 
         //delete the root
         directoryToBeDeleted.delete();
+    }
+
+    /**
+     * Writes a text in a file.
+     *
+     * @param fileToWrite the file.
+     * @param text the text to write in the file.
+     */
+    public static void writeFile(File fileToWrite, String text) {
+        try {
+            FileWriter fileWriter = new FileWriter(fileToWrite);
+            fileWriter.write(text);
+
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
