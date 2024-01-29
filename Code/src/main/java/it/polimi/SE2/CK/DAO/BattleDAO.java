@@ -24,9 +24,9 @@ public class BattleDAO {
 
     public ArrayList<Battle> showBattlesByTournamentId(int tournamentId) throws SQLException {
         ArrayList<Battle> battles = new ArrayList<>();
-        String query = "select *\n" +
-                "from new_schema.battle\n" +
-                "where tournamentId=?;";
+        String query = "select * " +
+                "from new_schema.battle " +
+                "where tournamentId = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
@@ -67,9 +67,9 @@ public class BattleDAO {
 
     public Battle showBattleById(int battleId) throws SQLException {
         Battle battle = null;
-        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase\n" +
-                "from new_schema.battle as b join new_schema.tournament as t on t.idTournament=b.TournamentId\n" +
-                "where Idbattle=?;";
+        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase " +
+                "from new_schema.battle as b join new_schema.tournament as t on t.idTournament=b.TournamentId " +
+                "where Idbattle = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
@@ -91,7 +91,6 @@ public class BattleDAO {
                     case "Ongoing" -> battle.setPhase(TournamentState.ONGOING);
                     case "Closed" -> battle.setPhase(TournamentState.CLOSED);
                 }
-                System.out.println("phase " + battle.getPhase());
             }
         } catch (SQLException e) {
             throw new SQLException(e);
@@ -134,6 +133,41 @@ public class BattleDAO {
             preparedStatement.setString(1, name);
             return preparedStatement.execute();
         } catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
+     * Check if the battle is not started and the tournament is in ongoing phase.
+     *
+     * @param battleId the battle id.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleNotStarted(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, tournament as t " +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(3, battleId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
             return false;
         } finally {
             try {
@@ -195,9 +229,9 @@ public class BattleDAO {
     public void startBattle() throws SQLException {
         //search query
         String query = "SELECT idbattle, RegDeadline, CodeKata " +
-                "FROM battle " +
-                "WHERE Phase = ? " +
-                "ORDER BY RegDeadline ASC";
+                "FROM battle as b, tournament as t\n" +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? " +
+                "ORDER BY b.RegDeadline ASC;";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -209,6 +243,7 @@ public class BattleDAO {
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
             resultSet = preparedStatement.executeQuery();
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -408,53 +443,5 @@ public class BattleDAO {
                 throw new RuntimeException();
             }
         }
-    }
-
-    /**
-     * Gets the CodeKata.
-     *
-     * @param teamId the specific team.
-     * @return the CodeKata.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public String getCodeKataFromTeamId(int teamId) throws SQLException {
-        //search query
-        String query = "SELECT b.Name, b.CodeKata " +
-                "FROM team as t, battle as b " +
-                "WHERE t.battleId = b.idbattle and idteam = ?";
-        //statement
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        String result = null;
-
-        try {
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, teamId);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()){
-                result = resultSet.getString("CodeKata");
-            }
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception e1) {
-                throw new RuntimeException();
-            }
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e2) {
-                throw new RuntimeException();
-            }
-        }
-
-        return result;
     }
 }

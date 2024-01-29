@@ -20,6 +20,30 @@ function BattlePage(user){
     let battleRegistrationDeadlineLabel = document.getElementById("battleRegistrationDeadlineLabel")
     let battleSubmissionDeadlineLabel = document.getElementById("battleSubmissionDeadlineLabel")
     let battleNumberTeamMemberLabel = document.getElementById("battleNumberTeamMemberLabel")
+    let joinBattleAloneMessage = document.getElementById("joinBattleAloneMessage")
+
+    joinBattleAloneButton.addEventListener('click', (e) => {
+        console.log("battle id" + battleId)
+        makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
+            function (x) {
+                //server return message
+                var message = x.responseText;
+                switch (x.status) {
+                    case 200: //OK
+                        openModal("joinBattleAlone")
+                        joinBattleAloneMessage.innerHTML = "You signed up in the tournament"
+
+                        joinBattleAloneButton.style.display = "none"
+                        joinBattleAsTeamButton.style.display = "none"
+                        selectTeamButton.style.display = "none"
+                        break;
+                    default: //error occurs
+                        openModal("joinBattleAlone")
+                        joinBattleAloneMessage.innerHTML = message
+                        break;
+                }
+            })
+    })
 
     /*This is the method used to open the battle page
    * First it decides which button must be shown
