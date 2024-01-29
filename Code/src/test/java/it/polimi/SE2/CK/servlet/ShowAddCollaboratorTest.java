@@ -1,5 +1,7 @@
 package it.polimi.SE2.CK.servlet;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpSessionContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +25,128 @@ import static org.mockito.Mockito.*;
 public class ShowAddCollaboratorTest{
 
     @Test
-    public void test_show_tournament_with_empty_session() throws IOException, ServletException {
+    public void test_show_collaborator() throws IOException,ServletException{
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user =new SessionUser();
+                user.setId(3);
+                user.setUsername("Gary_97");
+                user.setRole(0);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        when(request.getParameter("TournamentId")).thenReturn("3");
+
+        ArrayList<SessionUser> collaborators = new ArrayList<>();
+        SessionUser user = new SessionUser();
+        user.setId(9);
+        user.setUsername("VivaVerdi");
+        user.setRole(0);
+        collaborators.add(user);
+        // Invoke doGet method
+        ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
+        ServletConfig servletConfig =setUp();
+        showAddCollaborator.init(servletConfig);
+
+        showAddCollaborator.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        verify(response).setContentType("application/json");
+        verify(response).setCharacterEncoding("UTF-8");
+
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(collaborators);
+        assertEquals(writer.toString(), json);
+    }
+    @Test
+    public void test_show_collaborator_with_empty_session() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -350,7 +474,7 @@ public class ShowAddCollaboratorTest{
     }
 
     @Test
-    public void test_join_tournament_with_wrong_role() throws IOException, ServletException {
+    public void test_show_collaborator_with_wrong_role() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -458,7 +582,7 @@ public class ShowAddCollaboratorTest{
     }
 
     @Test
-    public void test_close_tournament_wrong_educator() throws IOException, ServletException {
+    public void test_show_collaborator_wrong_educator() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -565,6 +689,116 @@ public class ShowAddCollaboratorTest{
         showAddCollaborator.doGet(request, response);
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         assertEquals(writer.toString(),"You can't access to this page\r\n");
+    }
+
+    @Test
+    public void test_show_collaborator_closed_tournament() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user =new SessionUser();
+                user.setId(9);
+                user.setUsername("VivaVerdi");
+                user.setRole(0);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        when(request.getParameter("TournamentId")).thenReturn("4");
+
+        // Invoke doGet method
+        ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
+        ServletConfig servletConfig =setUp();
+        showAddCollaborator.init(servletConfig);
+
+        showAddCollaborator.doGet(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertEquals(writer.toString(),"The tournament has already been closed\r\n");
     }
 
     @Test

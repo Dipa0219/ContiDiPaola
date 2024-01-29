@@ -23,6 +23,7 @@ function TournamentPage(user) {
     let createBattleButton = document.getElementById("createBattleButton")
     let closeTournamentButton = document.getElementById("closeTournamentButton")
     let addCollaboratorSubmit = document.getElementById("addCollaboratorSubmit")
+    let collaboratorInput = document.getElementById("collaboratorInput")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -84,16 +85,9 @@ function TournamentPage(user) {
         var collaboratorList = []
         //Create Tournament Form reference
         var form = e.target.closest("form")
+        console.log(tournamentId);
         if (form.checkValidity()){
-            //catch all collaborator
-            var collaborator = document.getElementById("collaboratorInput")
-            for (let i = 0; i < collaborator.options.length; i++) {
-                if (collaborator.options[i].selected){
-                    collaboratorList.push(collaborator.options[i].value)
-                }
-            }
-
-            makeCall("POST", 'AddCollaborator?TournamentID=' + tournamentId + '&CollaboratorList=' + collaboratorList, form,
+            makeCall("POST", 'AddCollaborator?TournamentId=' + tournamentId , form,
                 function (x){
                     if (x.readyState === XMLHttpRequest.DONE){
                         //server return message
@@ -101,7 +95,7 @@ function TournamentPage(user) {
                         switch (x.status){
                             case 200: //OK
                                 clearForm("addCollaboratorForm");
-                                showAddCollaborator();
+                                self.showAddCollaborator();
                                 closeModal();
                                 break;
                             case 400: //BAD REQUEST
@@ -162,7 +156,6 @@ function TournamentPage(user) {
             closeTournamentButton.style.display=""
         }
         else if (user.role===1) {
-            //TODO verify if we have to show this button
             joinTournamentButton.style.display = ""
         }
 
@@ -193,6 +186,11 @@ function TournamentPage(user) {
                     switch (x.status) {
                         case 200:
                             message=JSON.parse(message)
+                            if (message.length===0){
+                                battleTableDiv.style.display="none"
+                                battleTableType.style.display=""
+                                battleTableType.innerHTML="It hasn't been created any battle for this tournament"
+                            }
                             self.updateBattleTable(message)
                             break;
                         default:
@@ -204,7 +202,7 @@ function TournamentPage(user) {
         )
         if (user.role===0) {
             //add collaborator option or hide the add collaborator button
-            showAddCollaborator();
+            self.showAddCollaborator();
         }
         else if (user.role===1){
             //add collaborator option or hide the add collaborator button
@@ -228,8 +226,7 @@ function TournamentPage(user) {
         }
     };
 
-    //This function add collaborator option or hide the add collaborator button
-    function showAddCollaborator() {
+    this.showAddCollaborator = function (){
         makeCall("GET", 'ShowAddCollaborator?TournamentId=' + tournamentId, null,
             function (x) {
                 if (x.readyState === XMLHttpRequest.DONE) {
@@ -237,18 +234,12 @@ function TournamentPage(user) {
                     switch (x.status) {
                         case 200:
                             message = JSON.parse(message)
-                            var collaboratorInput = document.getElementById("collaboratorInput")
-
                             if (message.length === 0) {
                                 addCollaboratorButton.style.display = "none"
-                            } else {
+                            }
+                            else {
                                 collaboratorInput.innerHTML='';
-                                for (let i = 0; i < message.length; i++) {
-                                    var option = document.createElement("option")
-                                    option.text = message[i]
-                                    option.value = message[i]
-                                    collaboratorInput.add(option)
-                                }
+                                self.updateCollaboratorList(message)
                             }
                             break;
                         case 401: //UNAUTHORIZED
@@ -300,9 +291,7 @@ function TournamentPage(user) {
     * table for each tournament contained in the list*/
     this.updateBattleTable = function (battles){
         battleTable.innerHTML=""
-        let flag=0
         battles.forEach(function (battle){
-            flag =1
             let tr= document.createElement("tr");
             let td= document.createElement("td");
             let anchor = document.createElement("a");
@@ -320,12 +309,15 @@ function TournamentPage(user) {
             td.innerHTML= battle.name;
             tr.appendChild(td);
         })
+    }
 
-        if(flag===0){
-            battleTableDiv.style.display="none"
-            battleTableType.style.display=""
-            battleTableType.innerHTML="It hasn't been created any battle for this tournament"
-        }
+    this.updateCollaboratorList=function (collaborators){
+        collaborators.forEach(function (collaborator){
+            let option = document.createElement("option")
+            option.text = collaborator.username
+            option.value = collaborator.id
+            collaboratorInput.add(option)
+        })
     }
 
     /*This function is used to hide all the element contained in this page*/
