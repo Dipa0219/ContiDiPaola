@@ -30,6 +30,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import static java.lang.System.in;
 
 /**
  * Servlet that manage the creation of a tournament.
@@ -96,11 +99,12 @@ public class AddCollaborator extends HttpServlet {
         }
 
         SessionUser user = (SessionUser) session.getAttribute("user");
+        String[] collaboratorsList = request.getParameterValues("collaboratorInput");
         //user is an educator
         //401 error
         if (user.getRole() != UserRole.EDUCATOR.getValue()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("You can't access to this page");
+            response.getWriter().println("You can't do this action");
             return;
         }
 
@@ -108,10 +112,19 @@ public class AddCollaborator extends HttpServlet {
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
         try {
-            tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+            tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
         }catch (Exception e){
-
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
         }
+
+        if (tournament.getId()<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());
@@ -135,7 +148,7 @@ public class AddCollaborator extends HttpServlet {
             //401 error
             if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
+                response.getWriter().println("You can't do this action");
                 return;
             }
         } catch (SQLException e) {
@@ -144,40 +157,35 @@ public class AddCollaborator extends HttpServlet {
             return;
         }
 
+        if (collaboratorsList==null || collaboratorsList.length==0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You have to choose a collaborator");
+            return;
+        }
         //collaborator list
-        String collaborator = request.getParameter("CollaboratorList");
-        String[] collaboratorsList = collaborator.split(",");
-        ArrayList<String> collaboratorList = new ArrayList<>(Arrays.asList(collaboratorsList));
+        List<String> listItems =Arrays.asList(collaboratorsList);
+        List<Integer> collaborators = listItems.stream()
+                .map(Integer::parseInt)
+                .toList();
 
         //empty collaborator list
         //400 error
-        if (collaboratorList.isEmpty()){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Choose a collaborator");
-            return;
-        }
+
 
         UserDAO userDAO = new UserDAO(connection);
         //500 error
-        for (String s : collaboratorList) {
+        for (Integer i : collaborators) {
             try {
-                //selected collaborator is a user
-                //400 error
-                if (userDAO.getUserID(s) == -1) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().println("You have not selected a valid user");
-                    return;
-                }
                 //selected collaborator is an educator
                 //409 error
-                if (!userDAO.getUserRole(userDAO.getUserID(s)).equals(UserRole.EDUCATOR)) {
+                if (!userDAO.getUserRole(i).equals(UserRole.EDUCATOR)) {
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
                     response.getWriter().println("You have not selected an educator");
                     return;
                 }
                 //selected collaborator not is in the tournament
                 //409 error
-                if (tournamentDAO.checkUserInTournament(tournament.getId(), userDAO.getUserID(s))){
+                if (tournamentDAO.checkUserInTournament(tournament.getId(), i)){
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
                     response.getWriter().println("You have selected an educator already in the tournament");
                     return;
@@ -193,19 +201,13 @@ public class AddCollaborator extends HttpServlet {
         boolean result;
         //500 error
         try {
-            result = tournamentDAO.addCollaborator(tournament.getId(), collaboratorList);
+            result = tournamentDAO.addCollaborator(tournament.getId(), collaborators);
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
 
-        //500 error
-        if (!result){
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);

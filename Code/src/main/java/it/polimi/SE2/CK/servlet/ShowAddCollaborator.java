@@ -76,9 +76,11 @@ public class ShowAddCollaborator extends HttpServlet {
             return;
         }
 
+        SessionUser user = (SessionUser) session.getAttribute("user");
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
+
         try {
             tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
         }catch (Exception e){
@@ -86,11 +88,13 @@ public class ShowAddCollaborator extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
         if (tournament.getId()<=0){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());
@@ -99,7 +103,8 @@ public class ShowAddCollaborator extends HttpServlet {
             response.getWriter().println("The server do not respond");
             return;
         }
-        SessionUser user = (SessionUser) session.getAttribute("user");
+
+        //user is an educator
         //401 error
         if (user.getRole() != UserRole.EDUCATOR.getValue()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -115,7 +120,6 @@ public class ShowAddCollaborator extends HttpServlet {
             return;
         }
 
-        //user is an educator
 
 
         //user is in the tournament
@@ -134,10 +138,10 @@ public class ShowAddCollaborator extends HttpServlet {
         }
 
         //get educator not in tournament
-        ArrayList<String> educatorNotInTournament = new ArrayList<>();
+        ArrayList<SessionUser> educatorNotInTournament;
         //500 error
         try{
-            educatorNotInTournament = (ArrayList<String>) tournamentDAO.showEducatorNotInTournament(tournament.getId());
+            educatorNotInTournament = tournamentDAO.showEducatorNotInTournament(tournament.getId());
         }
         catch (SQLException e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

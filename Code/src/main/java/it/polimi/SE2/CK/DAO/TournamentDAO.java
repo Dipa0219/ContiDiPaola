@@ -1,7 +1,9 @@
 package it.polimi.SE2.CK.DAO;
 
 
+import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.bean.User;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
@@ -210,9 +212,9 @@ public class TournamentDAO {
      * @return list of all educator username not in a tournament.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public List<String> showEducatorNotInTournament(int tournamentID) throws SQLException {
+    public ArrayList<SessionUser> showEducatorNotInTournament(int tournamentID) throws SQLException {
         //search query
-        String query = "SELECT u.Username " +
+        String query = "SELECT *" +
                 "FROM user as u " +
                 "WHERE u.Role = 0 and not exists (" +
                     "SELECT * " +
@@ -221,7 +223,7 @@ public class TournamentDAO {
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        ArrayList<String> result;
+        ArrayList<SessionUser> result;
 
         try{
             preparedStatement = con.prepareStatement(query);
@@ -230,7 +232,11 @@ public class TournamentDAO {
 
             result = new ArrayList<>();
             while (resultSet.next()){
-                result.add(resultSet.getString("Username"));
+                SessionUser user = new SessionUser();
+                user.setId(resultSet.getInt("idUser"));
+                user.setUsername(resultSet.getString("Username"));
+                user.setRole(resultSet.getInt("Role"));
+                result.add(user);
             }
         }
         catch (SQLException e){
@@ -252,7 +258,6 @@ public class TournamentDAO {
                 throw new SQLException(e1);
             }
         }
-
         return result;
     }
 
@@ -340,23 +345,22 @@ public class TournamentDAO {
      * @return true if the collaborators has been added to the database.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean addCollaborator(int tournamentID, List<String> collaboratorUsernameList) throws SQLException {
+    public boolean addCollaborator(int tournamentID, List<Integer> collaboratorUsernameList) throws SQLException {
         //insert query
         String query = "INSERT INTO `new_schema`.`t_subscription` " +
                 "(`TournamentId`, `UserId`) " +
                 "VALUES (?, ?)";
         //statement
         PreparedStatement preparedStatement = null;
-        UserDAO userDAO = new UserDAO(con);
 
         try {
             //start transaction
             con.setAutoCommit(false);
 
             preparedStatement = con.prepareStatement(query);
-            for (String s : collaboratorUsernameList) {
+            for (Integer userId : collaboratorUsernameList) {
                 preparedStatement.setInt(1, tournamentID);
-                preparedStatement.setInt(2, userDAO.getUserID(s));
+                preparedStatement.setInt(2, userId);
                 preparedStatement.execute();
             }
 

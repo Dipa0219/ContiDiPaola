@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSessionContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
