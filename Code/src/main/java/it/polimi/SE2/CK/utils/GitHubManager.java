@@ -198,7 +198,7 @@ public class GitHubManager {
      *
      * @param teamId the specific team.
      */
-    public static void createGitHubRepositoryPerTeam(int teamId, Connection connection){
+    public static void createGitHubRepositoryPerTeam(int teamId, String codeKata, Connection connection){
         //get all GitHub username
         UserDAO userDAO = new UserDAO(connection);
         ArrayList<String> ghUsername = null;
@@ -209,14 +209,7 @@ public class GitHubManager {
         }
 
         //get the battle name and CodeKata
-        BattleDAO battleDAO = new BattleDAO(connection);
         String battleName = null;
-        String codeKata = null;
-        try {
-            codeKata = battleDAO.getCodeKataFromTeamId(teamId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         if (codeKata.length()==0){
             throw new RuntimeException();
