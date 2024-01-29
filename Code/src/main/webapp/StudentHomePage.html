@@ -169,11 +169,11 @@
         <!-- Ranking Table -->
         <div id="rankingTableDiv" class="genericMain" style="display: none">
             <h3>Ranking:</h3>
-            <p id="rankingStarted" style="color: red;">The battle has not yet started.<br>
+            <p id="rankingStarted" style="color: red;display: none">The battle has not yet started.<br>
                 The ranking of the battle once it has started will be shown here.
             </p>
             <!-- Tournament Table -->
-            <table>
+            <table id="rankingTable" style="display: none">
                 <thead>
                 <tr>
                     <th>Position</th>
@@ -181,7 +181,7 @@
                     <th>Points</th>
                 </tr>
                 </thead>
-                <tbody id="rankingTable"></tbody>
+                <tbody id="rankingTableBody"></tbody>
             </table>
         </div>
 
