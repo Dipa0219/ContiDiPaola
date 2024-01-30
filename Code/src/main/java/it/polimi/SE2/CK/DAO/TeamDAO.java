@@ -105,6 +105,86 @@ public class TeamDAO {
     }
 
     /**
+     * Insert a team request in a battle.
+     *
+     * @param userId the student that creates the team.
+     * @param battleId the battle to join.
+     * @param teammateId the teammates.
+     * @return true is the team is created correctly.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId) throws SQLException {
+        //insert query
+        String queryTeam = "INSERT INTO `new_schema`.`team` " +
+                "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        String queryTeamStudent = "INSERT INTO `new_schema`.`team_student` " +
+                "(`teamId`, `studentId`, `phase`) " +
+                "VALUES (?, ?, ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int teamId = -1;
+
+
+        try {
+            //start transaction
+            con.setAutoCommit(false);
+
+            preparedStatement = con.prepareStatement(queryTeam, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, teammateId.size());
+            preparedStatement.setInt(2, battleId);
+            preparedStatement.setString(3, TeamState.INCOMPLETE.getValue());
+            preparedStatement.setInt(4, userId);
+            preparedStatement.setInt(5, 0);
+            preparedStatement.executeUpdate();
+
+            resultSet = preparedStatement.getGeneratedKeys();
+            if (resultSet.first()){
+                teamId = resultSet.getInt(1);
+            }
+            //team is created
+            if (teamId != -1) {
+                for (Integer integer : teammateId) {
+                    preparedStatement = con.prepareStatement(queryTeamStudent);
+                    preparedStatement.setInt(1, teamId);
+                    preparedStatement.setInt(2, integer);
+                    preparedStatement.setString(3, TeamStudentState.ACCEPT.getValue());
+                    preparedStatement.execute();
+                }
+            }
+            else {
+                new SQLException();
+            }
+
+            //end transaction
+            con.commit();
+        }
+        catch (SQLException e){
+            try {
+                //transaction error ==> rollback
+                con.rollback();
+            }
+            catch (SQLException e1){
+                return false;
+            }
+            return false;
+        }
+        finally {
+            try {
+                if (preparedStatement != null){
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException e){
+                throw new SQLException();
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Check if student is in another team for the same battle.
      *
      * @param userId the student id.
@@ -134,7 +214,7 @@ public class TeamDAO {
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            return false;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -210,5 +290,48 @@ public class TeamDAO {
         }
 
         return result;
+    }
+
+    /**
+     * Check if student has already creates a team.
+     *
+     * @param userId the user id of the request student.
+     * @param battleId the battle id to search.
+     * @return true if the student has already creates a team.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkStudentHasCreatedATeam(int userId, int battleId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM team " +
+                "WHERE teamLeader = ? and battleId = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, battleId);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.first()) {
+                result = true;
+            }
+        }
+        catch (SQLException e) {
+            result = false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+
+        return  result;
     }
 }

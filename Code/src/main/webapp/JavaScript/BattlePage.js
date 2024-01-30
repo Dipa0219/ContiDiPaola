@@ -22,6 +22,7 @@ function BattlePage(user){
     let battleNumberTeamMemberLabel = document.getElementById("battleNumberTeamMemberLabel")
     let joinBattleAloneMessage = document.getElementById("joinBattleAloneMessage")
     let teamMateInput = document.getElementById("teamMateInput")
+    let joinBattleAsTeamSubmit = document.getElementById("joinBattleAsTeamSubmit")
 
     joinBattleAloneButton.addEventListener('click', (e) => {
         makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
@@ -66,6 +67,21 @@ function BattlePage(user){
                     }
                 }
             })
+    })
+
+    joinBattleAsTeamSubmit.addEventListener('click', (e) => {
+        //create Join Battle as Team form reference
+        var form = e.target.closest("form")
+        if (form.checkValidity()){
+            makeCall("POST", 'JoinBattleAsTeam?BattleId=' + battleId, form,
+                function (x) {
+                    //TODO
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("joinBattleAsTeamForm")
     })
 
     //shows all possible teammates
