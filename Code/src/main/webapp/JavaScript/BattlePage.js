@@ -25,6 +25,8 @@ function BattlePage(user){
     let joinBattleAsTeamSubmit = document.getElementById("joinBattleAsTeamSubmit")
     let teamInput = document.getElementById("teamInput")
     let joinTeamSubmit = document.getElementById("joinTeamSubmit")
+    let teamGradeInput = document.getElementById("teamGradeInput")
+    let modifyGradeSubmit = document.getElementById("modifyGradeSubmit")
 
     joinBattleAloneButton.addEventListener('click', (e) => {
         makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
@@ -135,7 +137,7 @@ function BattlePage(user){
                             closeModal()
                             break
                         default: //error occurs
-                            document.getElementById("errormessageJoinTeam")
+                            document.getElementById("errormessageJoinTeam").textContent = message
                             break
                     }
                 })
@@ -145,6 +147,64 @@ function BattlePage(user){
         }
         clearForm("joinTeamForm")
     })
+
+    modifyGradeButton.addEventListener('click', (e) => {
+        makeCall("GET", 'ShowTeamInBattle?BattleId=' + battleId, null,
+            function (x) {
+                if (x.readyState === XMLHttpRequest.DONE){
+                    var message = x.responseText
+                    switch (x.status) {
+                        case 200:
+                            message = JSON.parse(message)
+                            if (message.length === 0) {
+                                modifyGradeButton.style.display = "none"
+                            }
+                            else {
+                                teamGradeInput.innerHTML=''
+                                updateTeamsGrade(message)
+                            }
+                            break
+                        default:
+                            pageOrchestrator.showError(message);
+                            break
+                    }
+                }
+            })
+    })
+
+    modifyGradeSubmit.addEventListener('click', (e) => {
+        //create Modify Grade form reference
+        var form = e.target.closest("form")
+        if (form.checkValidity()){
+            makeCall("POST", 'ModifyGrade?BattleId=' + battleId, form,
+                function (x){
+                    var message = x.responseText
+                    switch (x.status){
+                        case 200:
+                            clearForm("modifyGradeForm")
+                            closeModal()
+                            break
+                        default: //error occurs
+                            document.getElementById("errormessageModifyGrade").textContent = message
+                            break
+                    }
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("modifyGradeForm")
+    })
+
+    //show all possible team in an ongoing battle
+    function updateTeamsGrade(teams) {
+        teams.forEach(function (team) {
+            let option = document.createElement("option")
+            option.text = team.teamName
+            option.value = team.idTeam
+            teamGradeInput.add(option)
+        })
+    }
 
     //shows all possible teammates
     function updateTeammates(teammates){

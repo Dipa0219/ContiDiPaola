@@ -229,6 +229,77 @@ public class BattleDAO {
     }
 
     /**
+     * Check if the battle is ongoing and the tournament is in ongoing phase too.
+     *
+     * @param battleId the battle id.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleOngoing(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, tournament as t " +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(3, battleId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
+     * Check if the user is in battle and also in tournament.
+     *
+     * @param battleId the specific battle.
+     * @param userId the specific user.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkEducatorManageBattle(int battleId, int userId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, t_subscription as tsub " +
+                "WHERE b.TournamentId = tsub.TournamentId " +
+                "   and b.idbattle = ? and tsub.UserId = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setInt(2, userId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
      * Inserts a battle in the database.
      *
      * @param battle the battle to insert.

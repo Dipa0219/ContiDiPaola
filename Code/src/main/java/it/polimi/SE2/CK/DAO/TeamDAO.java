@@ -67,6 +67,57 @@ public class TeamDAO {
     }
 
     /**
+     * Shows all team in a specific battle.
+     *
+     * @param battleId the specific battle.
+     * @return the list of team in a specific battle.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public List<Team> showTeamInBattle(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT idteam, teamName " +
+                "FROM team " +
+                "WHERE battleId = ? and (not phase = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Team> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setString(2, TeamState.INCOMPLETE.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                Team team = new Team();
+                team.setIdTeam(resultSet.getInt("idTeam"));
+                team.setTeamName(resultSet.getString("teamName"));
+                result.add(team);
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new RuntimeException();
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+
+    }
+
+    /**
      * Gets the team name.
      *
      * @param teamId the team id.

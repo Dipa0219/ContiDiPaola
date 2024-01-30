@@ -109,10 +109,15 @@ public class ReceiveFromGitHubServlet extends HttpServlet {
         }
 
         //update point
+        boolean result;
         try {
-            teamDAO.updatePointTeam(teamId, point);
+            result = teamDAO.updatePointTeam(teamId, point);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+        if (!result){
+            throw new RuntimeException();
         }
 
     }
