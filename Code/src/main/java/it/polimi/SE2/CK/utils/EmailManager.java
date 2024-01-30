@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class that send the email using gmail API.
@@ -26,6 +28,16 @@ public class EmailManager {
      * CKB password.
      */
     private static final String password = "matnoohmxsuzonvz"; //app password - google --> 2-factor authentication
+
+    /**
+     * The regular expression pattern used to validate email addresses.
+     */
+    private static final String emailPattern = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    /**
+     * The compiled pattern object used for email address validation.
+     */
+    private static final Pattern pattern = Pattern.compile(emailPattern);
 
 
     /**
@@ -65,6 +77,17 @@ public class EmailManager {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Validates an email address.
+     *
+     * @param email the email to check.
+     * @return true if the email is a valid one.
+     */
+    public static boolean isValidEmail(String email) {
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
 

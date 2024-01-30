@@ -145,6 +145,22 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
+        //there are no battles that are not Closed yet
+        //500 error
+        try {
+            //409 error
+            if (tournamentDAO.checkBattleNotClosed(tournament.getId())){
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                response.getWriter().println("The tournament has battle not Closed");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+
         //close tournament
         boolean result;
         //500 error

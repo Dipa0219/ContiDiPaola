@@ -506,6 +506,7 @@ public class TournamentDAO {
      *
      * @param tournamentId the interested tournament
      * @return true if at least one student is inscribed.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     private boolean tournamentHaveSubscription(int tournamentId) throws SQLException{
         //search query
@@ -554,6 +555,8 @@ public class TournamentDAO {
 
     /**
      * Searches all tournament Not Started and verify if they can be started.
+     *
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void startTournament() throws SQLException{
         //search query
@@ -583,7 +586,13 @@ public class TournamentDAO {
                     if (!tournamentHaveSubscription(tournamentId)){
                         //update tournament table
                         executor.submit(() ->
-                                closeTournamentUpdateTable(tournamentId));
+                        {
+                            try {
+                                closeTournamentUpdateTable(tournamentId);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         //send email to all educator that manage the tournament
                         executor.submit(() ->
                                 EmailManager.sendEmailToAllCollaboratorInTournamentClosed(tournamentId, con));
@@ -591,7 +600,13 @@ public class TournamentDAO {
                     else{
                         //update tournament table
                         executor.submit(() ->
-                                startTournamentUpdateTable(tournamentId));
+                        {
+                            try {
+                                startTournamentUpdateTable(tournamentId);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         //send email to all student enrolled to the tournament
                         executor.submit(() ->
                                 EmailManager.sendEmailToAllStudentEnrolledInTournamentStarted(tournamentId, con));
@@ -626,8 +641,9 @@ public class TournamentDAO {
      * Updates the tournament phase from Not Started to Ongoing.
      *
      * @param tournamentId the tournament id to update.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    private void startTournamentUpdateTable(int tournamentId){
+    private void startTournamentUpdateTable(int tournamentId) throws SQLException{
         //update query
         String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
@@ -659,8 +675,9 @@ public class TournamentDAO {
      * Updates the tournament phase from Ongoing to Closed.
      *
      * @param tournamentId the tournament id to update.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    private void closeTournamentUpdateTable(int tournamentId){
+    private void closeTournamentUpdateTable(int tournamentId) throws SQLException{
         //update query
         String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
@@ -734,6 +751,58 @@ public class TournamentDAO {
                 throw new SQLException(e1);
             }
         }
+        return result;
+    }
+
+    /**
+     * Checks if a tournament has a battle not in Closed phase.
+     *
+     * @param tournamentId the tournament to check.
+     * @return true if the tournament has a battle not in Closed phase.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleNotClosed(int tournamentId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM tournament as t, battle as b " +
+                "WHERE t.idTournament = b.TournamentId  " +
+                "   and t.idTournament = ? and not (b.Phase = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentId);
+            preparedStatement.setString(2, TournamentState.CLOSED.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.first()){
+                result = true;
+            }
+
+        }
+        catch (SQLException e){
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
         return result;
     }
 }
