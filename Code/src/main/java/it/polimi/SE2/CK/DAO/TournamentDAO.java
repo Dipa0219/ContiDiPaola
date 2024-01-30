@@ -1,9 +1,9 @@
 package it.polimi.SE2.CK.DAO;
 
 
+import it.polimi.SE2.CK.bean.Ranking;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
-import it.polimi.SE2.CK.bean.User;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
@@ -465,8 +465,8 @@ public class TournamentDAO {
         }
         //insert query
         query = "INSERT INTO `t_subscription` " +
-                "(`TournamentId`, `UserId`) " +
-                "VALUES (?, ?)";
+                "(`TournamentId`, `UserId`, `Points`) " +
+                "VALUES (?, ?,'0')";
         //statement
         PreparedStatement preparedStatement = null;
 
@@ -684,5 +684,54 @@ public class TournamentDAO {
                 throw new RuntimeException();
             }
         }
+    }
+
+    public ArrayList<Ranking> showRanking(int tournamentId) throws SQLException {
+        //search query
+        String query = "select username, points\n" +
+                "from t_subscription join user on UserId = idUser\n" +
+                "where points is not null and tournamentId =?\n" +
+                "order by points desc;";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Ranking> result;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, tournamentId);
+            resultSet = preparedStatement.executeQuery();
+
+            result = new ArrayList<>();
+            int i=1;
+            while (resultSet.next()){
+                Ranking ranking = new Ranking();
+                ranking.setName(resultSet.getString("username"));
+                ranking.setPoints(resultSet.getInt("points"));
+                ranking.setPosition(i);
+                i++;
+                result.add(ranking);
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return result;
     }
 }

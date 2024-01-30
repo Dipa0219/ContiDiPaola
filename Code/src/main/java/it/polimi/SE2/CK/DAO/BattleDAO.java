@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.Battle;
+import it.polimi.SE2.CK.bean.Ranking;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.GitHubManager;
@@ -455,6 +456,53 @@ public class BattleDAO {
             }
         }
 
+        return result;
+    }
+
+    public ArrayList<Ranking> showRanking(int battleId) throws SQLException {
+        //search query
+        String query = "select teamName, points\n" +
+                "from new_schema.team\n" +
+                "where battleId =?\n" +
+                "order by points desc;";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Ranking> result=new ArrayList<>();
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            resultSet = preparedStatement.executeQuery();
+
+            int i=1;
+            while (resultSet.next()){
+                Ranking ranking = new Ranking();
+                ranking.setName(resultSet.getString("teamName"));
+                ranking.setPoints(resultSet.getInt("points"));
+                ranking.setPosition(i);
+                i++;
+                result.add(ranking);
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
         return result;
     }
 }
