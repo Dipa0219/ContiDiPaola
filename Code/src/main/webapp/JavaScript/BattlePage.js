@@ -54,29 +54,29 @@ function BattlePage(user){
             })
     })
 
-    joinBattleAsTeamButton.addEventListener('click', (e) => {
-        makeCall("GET", 'ShowUserTeam?BattleId=' + battleId, null,
-            function (x){
-                if (x.readyState === XMLHttpRequest.DONE){
-                    var message = x.responseText;
-                    switch (x.status){
-                        case 200:
-                            message = JSON.parse(message)
-                            if (message.length === 0) {
-                                joinBattleAsTeamButton.style.display = "none"
-                            }
-                            else {
-                                teamMateInput.innerHTML=''
-                                updateTeammates(message)
-                            }
-                            break
-                        default:
-                            pageOrchestrator.showError(message);
-                            break
-                    }
-                }
-            })
-    })
+    // joinBattleAsTeamButton.addEventListener('click', (e) => {
+    //     makeCall("GET", 'ShowUserTeam?BattleId=' + battleId, null,
+    //         function (x){
+    //             if (x.readyState === XMLHttpRequest.DONE){
+    //                 var message = x.responseText;
+    //                 switch (x.status){
+    //                     case 200:
+    //                         message = JSON.parse(message)
+    //                         if (message.length === 0) {
+    //                             joinBattleAsTeamButton.style.display = "none"
+    //                         }
+    //                         else {
+    //                             teamMateInput.innerHTML=''
+    //                             updateTeammates(message)
+    //                         }
+    //                         break
+    //                     default:
+    //                         pageOrchestrator.showError(message);
+    //                         break
+    //                 }
+    //             }
+    //         })
+    // })
 
     joinBattleAsTeamSubmit.addEventListener('click', (e) => {
         //create Join Battle as Team form reference
@@ -104,29 +104,29 @@ function BattlePage(user){
         clearForm("joinBattleAsTeamForm")
     })
 
-    selectTeamButton.addEventListener('click', (e) => {
-        makeCall("GET", 'ShowTeam?BattleId=' + battleId, null,
-            function (x){
-                if (x.readyState === XMLHttpRequest.DONE){
-                    var message = x.responseText;
-                    switch (x.status){
-                        case 200:
-                            message = JSON.parse(message)
-                            if (message.length === 0) {
-                                selectTeamButton.style.display = "none"
-                            }
-                            else {
-                                teamInput.innerHTML=''
-                                updateTeams(message)
-                            }
-                            break
-                        default:
-                            pageOrchestrator.showError(message);
-                            break
-                    }
-                }
-            })
-    })
+    // selectTeamButton.addEventListener('click', (e) => {
+    //     makeCall("GET", 'ShowTeam?BattleId=' + battleId, null,
+    //         function (x){
+    //             if (x.readyState === XMLHttpRequest.DONE){
+    //                 var message = x.responseText;
+    //                 switch (x.status){
+    //                     case 200:
+    //                         message = JSON.parse(message)
+    //                         if (message.length === 0) {
+    //                             selectTeamButton.style.display = "none"
+    //                         }
+    //                         else {
+    //                             teamInput.innerHTML=''
+    //                             updateTeams(message)
+    //                         }
+    //                         break
+    //                     default:
+    //                         pageOrchestrator.showError(message);
+    //                         break
+    //                 }
+    //             }
+    //         })
+    // })
 
     joinTeamSubmit.addEventListener('click', (e) => {
         //create Select Your Team form reference
@@ -154,29 +154,29 @@ function BattlePage(user){
         clearForm("joinTeamForm")
     })
 
-    modifyGradeButton.addEventListener('click', (e) => {
-        makeCall("GET", 'ShowTeamInBattle?BattleId=' + battleId, null,
-            function (x) {
-                if (x.readyState === XMLHttpRequest.DONE){
-                    var message = x.responseText
-                    switch (x.status) {
-                        case 200:
-                            message = JSON.parse(message)
-                            if (message.length === 0) {
-                                modifyGradeButton.style.display = "none"
-                            }
-                            else {
-                                teamGradeInput.innerHTML=''
-                                updateTeamsGrade(message)
-                            }
-                            break
-                        default:
-                            pageOrchestrator.showError(message);
-                            break
-                    }
-                }
-            })
-    })
+    // modifyGradeButton.addEventListener('click', (e) => {
+    //     makeCall("GET", 'ShowTeamInBattle?BattleId=' + battleId, null,
+    //         function (x) {
+    //             if (x.readyState === XMLHttpRequest.DONE){
+    //                 var message = x.responseText
+    //                 switch (x.status) {
+    //                     case 200:
+    //                         message = JSON.parse(message)
+    //                         if (message.length === 0) {
+    //                             modifyGradeButton.style.display = "none"
+    //                         }
+    //                         else {
+    //                             teamGradeInput.innerHTML=''
+    //                             updateTeamsGrade(message)
+    //                         }
+    //                         break
+    //                     default:
+    //                         pageOrchestrator.showError(message);
+    //                         break
+    //                 }
+    //             }
+    //         })
+    // })
 
     modifyGradeSubmit.addEventListener('click', (e) => {
         //create Modify Grade form reference
@@ -248,14 +248,82 @@ function BattlePage(user){
         battleInfo.style.display=""
         battlePageDiv.style.display=""
         rankingTableDiv.style.display=""
+
         if (user.role===1){
             joinBattleAloneButton.style.display=""
             joinBattleAsTeamButton.style.display=""
             selectTeamButton.style.display=""
+
+            makeCall("GET", 'ShowUserTeam?BattleId=' + battleId, null,
+                function (x){
+                    if (x.readyState === XMLHttpRequest.DONE){
+                        var message = x.responseText;
+                        switch (x.status){
+                            case 200:
+                                message = JSON.parse(message)
+                                if (message.length === 0) {
+                                    joinBattleAsTeamButton.style.display = "none"
+                                }
+                                else {
+                                    teamMateInput.innerHTML=''
+                                    updateTeammates(message)
+                                }
+                                break
+                            default:
+                                pageOrchestrator.showError(message);
+                                break
+                        }
+                    }
+                })
+
+            makeCall("GET", 'ShowTeam?BattleId=' + battleId, null,
+                function (x){
+                    if (x.readyState === XMLHttpRequest.DONE){
+                        var message = x.responseText;
+                        switch (x.status){
+                            case 200:
+                                message = JSON.parse(message)
+                                if (message.length === 0) {
+                                    selectTeamButton.style.display = "none"
+                                }
+                                else {
+                                    teamInput.innerHTML=''
+                                    updateTeams(message)
+                                }
+                                break
+                            default:
+                                pageOrchestrator.showError(message);
+                                break
+                        }
+                    }
+                })
         }
         else if (user.role===0) {
             modifyGradeButton.style.display = ""
+
+            makeCall("GET", 'ShowTeamInBattle?BattleId=' + battleId, null,
+                function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE){
+                        var message = x.responseText
+                        switch (x.status) {
+                            case 200:
+                                message = JSON.parse(message)
+                                if (message.length === 0) {
+                                    modifyGradeButton.style.display = "none"
+                                }
+                                else {
+                                    teamGradeInput.innerHTML=''
+                                    updateTeamsGrade(message)
+                                }
+                                break
+                            default:
+                                pageOrchestrator.showError(message);
+                                break
+                        }
+                    }
+                })
         }
+
         makeCall("GET","ShowBattleInfo?BattleId="+ battleId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
@@ -272,6 +340,7 @@ function BattlePage(user){
                 }
             }
         )
+
         makeCall("GET","CheckBattleRanking?BattleId="+ battleId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
