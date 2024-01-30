@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.SessionUser;
+import it.polimi.SE2.CK.bean.Team;
 import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
@@ -388,6 +389,55 @@ public class TeamDAO {
                 }
             } catch (SQLException e2) {
                 throw new RuntimeException();
+            }
+        }
+
+        return result;
+    }
+
+    public List<Team> showTeamRequest(int userId, int battleId) throws SQLException {
+        //search query
+        String query = "SELECT t.idteam, t.teamName " +
+                "FROM team as t, team_student as ts " +
+                "WHERE ts.teamId = t.idteam " +
+                "   and t.battleId = ? and ts.phase = ? and not (t.phase = ?) and not (ts.studentId = ?)";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Team> result = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setString(2, TeamStudentState.NOTACCEPT.getValue());
+            preparedStatement.setString(3, TeamState.COMPLETE.getValue());
+            preparedStatement.setInt(4, userId);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                Team team = new Team();
+                team.setIdTeam(resultSet.getInt("idTeam"));
+                team.setTeamName(resultSet.getString("teamName"));
+                result.add(team);
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
             }
         }
 

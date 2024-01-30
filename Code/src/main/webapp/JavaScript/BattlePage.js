@@ -23,6 +23,7 @@ function BattlePage(user){
     let joinBattleAloneMessage = document.getElementById("joinBattleAloneMessage")
     let teamMateInput = document.getElementById("teamMateInput")
     let joinBattleAsTeamSubmit = document.getElementById("joinBattleAsTeamSubmit")
+    let teamInput = document.getElementById("teamInput")
 
     joinBattleAloneButton.addEventListener('click', (e) => {
         makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
@@ -34,9 +35,7 @@ function BattlePage(user){
                         openModal("joinBattleAlone")
                         joinBattleAloneMessage.innerHTML = "You signed up in the tournament"
 
-                        joinBattleAloneButton.style.display = "none"
-                        joinBattleAsTeamButton.style.display = "none"
-                        selectTeamButton.style.display = "none"
+                        hideAllButton()
                         break;
                     default: //error occurs
                         openModal("joinBattleAlone")
@@ -63,6 +62,7 @@ function BattlePage(user){
                             }
                             break
                         default:
+                            pageOrchestrator.showError(message);
                             break
                     }
                 }
@@ -75,13 +75,48 @@ function BattlePage(user){
         if (form.checkValidity()){
             makeCall("POST", 'JoinBattleAsTeam?BattleId=' + battleId, form,
                 function (x) {
-                    //TODO
+                    //server return message
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200: //OK
+                            clearForm("joinBattleAsTeamForm")
+                            hideAllButton()
+                            closeModal()
+                            break;
+                        default: //error occurs
+                            document.getElementById("errormessageJoinBattleAsTeam").textContent = message
+                            break;
+                    }
                 })
         }
         else {
             form.reportValidity()
         }
         clearForm("joinBattleAsTeamForm")
+    })
+
+    selectTeamButton.addEventListener('click', (e) => {
+        makeCall("GET", 'ShowTeam?BattleId=' + battleId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE){
+                    var message = x.responseText;
+                    switch (x.status){
+                        case 200:
+                            message = JSON.parse(message)
+                            if (message.length === 0) {
+                                selectTeamButton.style.display = "none"
+                            }
+                            else {
+                                teamInput.innerHTML=''
+                                updateTeams(message)
+                            }
+                            break
+                        default:
+                            pageOrchestrator.showError(message);
+                            break
+                    }
+                }
+            })
     })
 
     //shows all possible teammates
@@ -92,6 +127,24 @@ function BattlePage(user){
             option.value = teammate.id
             teamMateInput.add(option)
         })
+    }
+
+    //show all possible team
+    function updateTeams(teams){
+        teams.forEach(function (team) {
+            let option = document.createElement("option")
+            option.text = team.teamName
+            option.value = team.idTeam
+            teamInput.add(option)
+        })
+    }
+
+    //hide all page buttons
+    function hideAllButton() {
+        joinBattleAloneButton.style.display="none"
+        joinBattleAsTeamButton.style.display="none"
+        selectTeamButton.style.display="none"
+        modifyGradeButton.style.display = "none"
     }
 
     /*This is the method used to open the battle page
