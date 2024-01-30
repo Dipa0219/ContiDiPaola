@@ -52,7 +52,6 @@ public class StartBattle implements ServletContextListener {
      * Searches for battle that have not started and if the registration deadline has passed it starts them.
      */
     private void startBattle(){
-        System.out.println("eccomi qui");
         BattleDAO battleDAO = new BattleDAO(connection);
 
         try {
