@@ -4,6 +4,7 @@ import it.polimi.SE2.CK.DAO.TournamentDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
@@ -150,6 +151,12 @@ public class CreateTournament extends HttpServlet {
         //get session user
         SessionUser user = (SessionUser) session.getAttribute("user");
 
+        if (user.getRole()!= UserRole.EDUCATOR.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't do this action");
+            return;
+        }
+
         //sets the new tournament data
         Tournament tournament=new Tournament();
         tournament.setCreatorId(user.getId());
@@ -159,19 +166,11 @@ public class CreateTournament extends HttpServlet {
         tournament.setRegDeadline(tournamentRegistrationDeadline);
 
         //creation tournament on DB
-        boolean result;
         //500 error
         try {
-            result = tournamentDAO.createTournament(tournament);
+            tournamentDAO.createTournament(tournament);
         }
         catch (SQLException e){
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //500 error
-        if (!result){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

@@ -48,6 +48,7 @@ public class CheckBattleRanking extends HttpServlet {
             throw new UnavailableException("Couldn't get db connection");
         }
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         if(session.isNew() || session.getAttribute("user")==null) {
@@ -109,7 +110,6 @@ public class CheckBattleRanking extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(rankings);
-        System.out.println(json);
         response.getWriter().write(json);
     }
 

@@ -92,7 +92,6 @@ public class BattleDAO {
                     case "Ongoing" -> battle.setPhase(TournamentState.ONGOING);
                     case "Closed" -> battle.setPhase(TournamentState.CLOSED);
                 }
-                System.out.println("phase " + battle.getPhase());
             }
         } catch (SQLException e) {
             throw new SQLException(e);
