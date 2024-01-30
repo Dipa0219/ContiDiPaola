@@ -201,23 +201,29 @@ public class BattleDAO {
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean checkBattleNotStarted(int battleId) throws SQLException {
+    public Boolean checkBattleNotStarted(int battleId) throws SQLException {
         //search query
         String query = "SELECT * " +
                 "FROM battle as b, tournament as t " +
-                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+                "WHERE b.idbattle = ?";
         //statement
         PreparedStatement preparedStatement = null;
-
+        ResultSet resultSet =null;
         try {
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
-            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
-            preparedStatement.setInt(3, battleId);
-            return preparedStatement.execute();
+            preparedStatement.setInt(1, battleId);
+            resultSet=preparedStatement.executeQuery();
+            while (resultSet.next()){
+                if(!resultSet.getString("phase").equals(TournamentState.NOTSTARTED.getValue())){
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         }
         catch (SQLException e) {
-            return false;
+            return null;
         } finally {
             try {
                 if (preparedStatement != null) {
@@ -227,6 +233,7 @@ public class BattleDAO {
                 throw new SQLException(e);
             }
         }
+        return true;
     }
 
     /**

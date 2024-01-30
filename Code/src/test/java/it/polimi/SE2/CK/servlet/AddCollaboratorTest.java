@@ -44,7 +44,6 @@ public class AddCollaboratorTest {
     }
 
     @Test
-
     public void test_add_collaborator() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -1127,7 +1126,119 @@ public class AddCollaboratorTest {
         addCollaborator.doPost(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertEquals(writer.toString(),"You have not selected an educator\r\n");
+        assertEquals(writer.toString(),"The chosen user must be an educator\r\n");
+    }
+
+    @Test
+    public void test_add_collaborator_with_collaborator_not_existing() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(2);
+                user.setUsername("MarielloBello");
+                user.setRole(0);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        String[] collaborators = new String[1];
+        collaborators[0]="444";
+        when(request.getParameter("TournamentId")).thenReturn("3");
+        when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
+        // Invoke doGet method
+        AddCollaborator addCollaborator = new AddCollaborator();
+        ServletConfig servletConfig =setUp();
+        addCollaborator.init(servletConfig);
+        addCollaborator.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
+        assertEquals(writer.toString(),"The user you have choose doesn't exist\r\n");
     }
 
     @Test

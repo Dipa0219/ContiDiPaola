@@ -11,6 +11,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
 import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 public class UserDAO {
@@ -58,6 +59,40 @@ public class UserDAO {
             }
         }
         return user;
+    }
+
+    public Boolean checkRole(int id) throws SQLException {
+        SessionUser user = null;
+        String query="SELECT role from user where idUser=?";
+        ResultSet result = null;
+        PreparedStatement pstatement = null;
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            while (result.next()) {
+                return result.getInt("role") != UserRole.EDUCATOR.getValue();
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+        finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return null;
     }
 
     /**

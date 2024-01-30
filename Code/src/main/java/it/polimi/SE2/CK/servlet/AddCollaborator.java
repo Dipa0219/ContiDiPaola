@@ -178,9 +178,15 @@ public class AddCollaborator extends HttpServlet {
             try {
                 //selected collaborator is an educator
                 //409 error
-                if (user.getRole() != UserRole.EDUCATOR.getValue()) {
+                Boolean res=userDAO.checkRole(i);
+                if (res==null){
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    response.getWriter().println("You have not selected an educator");
+                    response.getWriter().println("The user you have choose doesn't exist");
+                    return;
+                }
+                else if(res){
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().println("The chosen user must be an educator");
                     return;
                 }
                 //selected collaborator not is in the tournament
