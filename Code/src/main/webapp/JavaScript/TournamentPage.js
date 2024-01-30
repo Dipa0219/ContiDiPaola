@@ -14,6 +14,13 @@ function TournamentPage(user) {
     let battleTableType = document.getElementById("battleTableType")
     let tournamentPageDiv =document.getElementById("tournamentPageDiv")
     let battleTable = document.getElementById("battleTable")
+    let rankingTableDiv= document.getElementById("rankingTableDiv")
+
+
+    //Initialization of ranking elements
+    let rankingStarted= document.getElementById("rankingStarted")
+    let rankingTable = document.getElementById("rankingTable")
+    let rankingTableBody = document.getElementById("rankingTableBody")
 
     //Initialization of student button
     let joinTournamentButton = document.getElementById("joinTournamentButton")
@@ -24,6 +31,7 @@ function TournamentPage(user) {
     let closeTournamentButton = document.getElementById("closeTournamentButton")
     let addCollaboratorSubmit = document.getElementById("addCollaboratorSubmit")
     let collaboratorInput = document.getElementById("collaboratorInput")
+    let createBattleSubmit = document.getElementById("createBattleSubmit")
 
     //Initialization of tournament information element
     let tournamentNameLabel = document.getElementById("tournamentNameLabel")
@@ -31,61 +39,14 @@ function TournamentPage(user) {
     let tournamentRegistrationDeadlineLabel = document.getElementById("tournamentRegistrationDeadlineLabel")
     let tournamentOwner = document.getElementById("tournamentOwner")
 
-
-    //Function that perform the closure of a tournament
-    function closingTournament(){
-        //Post in CloseTournament servlet
-        makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
-            function (x) {
-                if (x.readyState === XMLHttpRequest.DONE) {
-                    //server return message
-                    var message = x.responseText;
-                    let p= document.createElement("p")
-                    let closeModalMessage= document.getElementById("closeTournamentMessage")
-                    switch (x.status){
-                        case 200: //OK
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML="The tournament is closed";
-
-                            createBattleButton.style.display = "none"
-                            addCollaboratorButton.style.display = "none"
-                            closeTournamentButton.style.display = "none"
-                            break;
-                        case 400: //BAD REQUEST
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML = message
-                            break;
-                        case 401: //UNAUTHORIZED
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML = message
-                            break;
-                        case 406: //NOT ACCEPTABLE
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML = message
-                            break;
-                        case 409: //CONFLICT
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML = message
-                            break;
-                        case 500: //INTERNAL SERVER ERROR
-                            openModal("closeTournament")
-                            closeModalMessage.innerHTML = message
-                            break;
-                    }
-                }
-            })
-    }
-
     //Adding the click listener
     closeTournamentButton.addEventListener("click", (e) => {
         closingTournament()
     })
 
     addCollaboratorSubmit.addEventListener("click", (e) => {
-        var collaboratorList = []
         //Create Tournament Form reference
         var form = e.target.closest("form")
-        console.log(tournamentId);
         if (form.checkValidity()){
             makeCall("POST", 'AddCollaborator?TournamentId=' + tournamentId , form,
                 function (x){
@@ -138,6 +99,89 @@ function TournamentPage(user) {
         )
     })
 
+    createBattleSubmit.addEventListener("click", (e) => {
+        //create Battle form reference
+        var form = e.target.closest("form")
+
+        if (form.checkValidity()){
+            makeCall("POST", "CreateBattle?TournamentId=" + tournamentId, form,
+                function (x){
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        var message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                clearForm("createBattleForm")
+                                closeModal()
+                                battleTableType.style.display="none";
+                                self.openPage(tournamentId)
+                                break;
+                            case 400: //BAD REQUEST
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 401: //UNAUTHORIZED
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 406: //NOT ACCEPTABLE
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 409: //CONFLICT
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                            case 500: //INTERNAL SERVER ERROR
+                                document.getElementById("errormessageCreateBattle").textContent = message;
+                                break;
+                        }
+                    }
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("createBattleSubmit")
+    })
+
+    //Function that perform the closure of a tournament
+    function closingTournament(){
+        //Post in CloseTournament servlet
+        makeCall("POST", 'CloseTournament?TournamentID='+tournamentId, null,
+            function (x) {
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    //server return message
+                    var message = x.responseText;
+                    let closeModalMessage= document.getElementById("closeTournamentMessage")
+                    switch (x.status){
+                        case 200: //OK
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML="The tournament is closed";
+
+                            createBattleButton.style.display = "none"
+                            addCollaboratorButton.style.display = "none"
+                            closeTournamentButton.style.display = "none"
+                            break;
+                        case 400: //BAD REQUEST
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 401: //UNAUTHORIZED
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 406: //NOT ACCEPTABLE
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 409: //CONFLICT
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                        case 500: //INTERNAL SERVER ERROR
+                            openModal("closeTournament")
+                            closeModalMessage.innerHTML = message
+                            break;
+                    }
+                }
+            })
+    }
 
     /*This is the method used to open the tournament page
     * First it decides which button must be shown
@@ -150,6 +194,7 @@ function TournamentPage(user) {
         tournamentInfo.style.display=""
         battleTableDiv.style.display=""
         tournamentPageDiv.style.display=""
+        rankingTableDiv.style.display=""
         if (user.role===0){
             addCollaboratorButton.style.display=""
             createBattleButton.style.display=""
@@ -192,6 +237,34 @@ function TournamentPage(user) {
                                 battleTableType.innerHTML="It hasn't been created any battle for this tournament"
                             }
                             self.updateBattleTable(message)
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            }
+        )
+        makeCall("GET","CheckTournamentRanking?TournamentId="+ tournamentId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            message=JSON.parse(message)
+                            if (message.length===0){
+                                rankingTableDiv.style.display="none"
+                            }
+                            self.updateRankingTable(message)
+                            break;
+                        case 404:
+                            message=JSON.parse(message)
+                            if (message.NotStarted==="1"){
+                                rankingStarted.style.display=""
+                            }
+                            else{
+                                pageOrchestrator.showError(message.NotStarted);
+                            }
                             break;
                         default:
                             pageOrchestrator.showError(message);
@@ -266,11 +339,11 @@ function TournamentPage(user) {
         }
         tournamentRegistrationDeadlineLabel.innerHTML= "Registration Deadline:" + tournament.regDeadline
 
-        hideTournamentButton(tournament)
+        self.hideTournamentButton(tournament)
     };
 
     //This function is used to hide the tournament button if requests
-    function hideTournamentButton(tournament) {
+    this.hideTournamentButton= function (tournament) {
         if (tournament.phase === "Ongoing"){
             joinTournamentButton.style.display="none"
         }
@@ -290,6 +363,8 @@ function TournamentPage(user) {
     * It obtains in input the list of battle and add a new row in the
     * table for each tournament contained in the list*/
     this.updateBattleTable = function (battles){
+        battleTableType.style.display="none"
+        battleTableType.innerHTML=""
         battleTable.innerHTML=""
         battles.forEach(function (battle){
             let tr= document.createElement("tr");
@@ -311,13 +386,33 @@ function TournamentPage(user) {
         })
     }
 
-    this.updateCollaboratorList=function (collaborators){
+    this.updateCollaboratorList = function (collaborators){
         collaborators.forEach(function (collaborator){
             let option = document.createElement("option")
             option.text = collaborator.username
             option.value = collaborator.id
             collaboratorInput.add(option)
         })
+    }
+
+    this.updateRankingTable = function (rankings){
+        rankingTable.style.display=""
+        rankingTableBody.innerHTML=""
+        rankingTable.innerHTML=""
+        rankings.forEach(function (ranking){
+            let tr= document.createElement("tr");
+            let td= document.createElement("td");
+            td.innerHTML=ranking.position;
+            tr.appendChild(td);
+            rankingTable.appendChild(tr);
+            td= document.createElement("td");
+            td.innerHTML= ranking.name;
+            tr.appendChild(td);
+            td= document.createElement("td");
+            td.innerHTML= ranking.points;
+            tr.appendChild(td);
+            }
+        )
     }
 
     /*This function is used to hide all the element contained in this page*/
@@ -331,5 +426,9 @@ function TournamentPage(user) {
         createBattleButton.style.display="none"
         closeTournamentButton.style.display="none"
         joinTournamentButton.style.display="none"
+
+        rankingStarted.style.display="none"
+        rankingTable.style.display="none"
+        rankingTableDiv.style.display="none"
     };
 }

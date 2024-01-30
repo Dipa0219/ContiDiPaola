@@ -14,6 +14,12 @@ function BattlePage(user){
     let joinBattleAsTeamButton = document.getElementById("joinBattleAsTeamButton")
     let selectTeamButton = document.getElementById("selectTeamButton")
     let modifyGradeButton = document.getElementById("modifyGradeButton")
+    let rankingTableDiv= document.getElementById("rankingTableDiv")
+
+    //Initialization of ranking elements
+    let rankingStarted= document.getElementById("rankingStarted")
+    let rankingTable = document.getElementById("rankingTable")
+    let rankingTableBody = document.getElementById("rankingTableBody")
 
     let battleNameLabel= document.getElementById("battleNameLabel")
     let battleDescriptionLabel = document.getElementById("battleDescriptionLabel")
@@ -28,6 +34,7 @@ function BattlePage(user){
         battleId=id
         battleInfo.style.display=""
         battlePageDiv.style.display=""
+        rankingTableDiv.style.display=""
         if (user.role===1){
             joinBattleAloneButton.style.display=""
             joinBattleAsTeamButton.style.display=""
@@ -52,6 +59,34 @@ function BattlePage(user){
                 }
             }
         )
+        makeCall("GET","CheckBattleRanking?BattleId="+ battleId, null,
+            function (x){
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    var message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            message=JSON.parse(message)
+                            if (message.length===0){
+                                rankingTableDiv.style.display="none"
+                            }
+                            self.updateRankingTable(message)
+                            break;
+                        case 404:
+                            message=JSON.parse(message)
+                            if (message.NotStarted==="1"){
+                                rankingStarted.style.display=""
+                            }
+                            else{
+                                pageOrchestrator.showError(message.NotStarted);
+                            }
+                            break;
+                        default:
+                            pageOrchestrator.showError(message);
+                            break;
+                    }
+                }
+            }
+        )
     }
 
     //This function is used to update the tournament information
@@ -67,8 +102,46 @@ function BattlePage(user){
         battleRegistrationDeadlineLabel.innerHTML="Registration Deadline: "+battle.regDeadline
         battleSubmissionDeadlineLabel.innerHTML="Submission Deadline: "+battle.subDeadline
         battleNumberTeamMemberLabel.innerHTML="Number of Team Member: between "+battle.minNumStudent +" to "+battle.maxNumStudent
+
+        if (user.role === 1){
+            if (battle.minNumStudent === 1){
+                joinBattleAloneButton.style.display=""
+            }
+            else {
+                joinBattleAloneButton.style.display="none"
+            }
+        }
+        else if (user.role === 0){
+            if (battle.phase === "Ongoing"){
+                modifyGradeButton.style.display = ""
+            }
+            else {
+                modifyGradeButton.style.display = "none"
+            }
+        }
+
+
     }
 
+    this.updateRankingTable = function (rankings){
+        rankingTable.style.display=""
+        rankingTableBody.innerHTML=""
+        rankingTable.innerHTML=""
+        rankings.forEach(function (ranking){
+                let tr= document.createElement("tr");
+                let td= document.createElement("td");
+                td.innerHTML=ranking.position;
+                tr.appendChild(td);
+                rankingTable.appendChild(tr);
+                td= document.createElement("td");
+                td.innerHTML= ranking.name;
+                tr.appendChild(td);
+                td= document.createElement("td");
+                td.innerHTML= ranking.points;
+                tr.appendChild(td);
+            }
+        )
+    }
 
     /*This function is used to hide all the element contained in this page*/
     this.hide=function (){
@@ -78,5 +151,8 @@ function BattlePage(user){
         joinBattleAsTeamButton.style.display="none"
         selectTeamButton.style.display="none"
         modifyGradeButton.style.display = "none"
+        rankingStarted.style.display="none"
+        rankingTable.style.display="none"
+        rankingTableDiv.style.display="none"
     }
 }

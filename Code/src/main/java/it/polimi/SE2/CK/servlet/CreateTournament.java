@@ -1,11 +1,9 @@
 package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.DAO.TournamentDAO;
-import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
-import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
@@ -23,7 +21,6 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -187,37 +184,9 @@ public class CreateTournament extends HttpServlet {
 
         //send email to all student
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> sendEmailToAllStudent(tournament.getCreatorUsername(), tournament.getRegDeadline()));
+        executor.submit(() ->
+                EmailManager.sendEmailToAllStudentNewTournamentCreated(tournament.getCreatorUsername(), tournament.getRegDeadline(), connection));
         executor.shutdownNow();
     }
 
-    /**
-     * Email all students enrolled on CKB.
-     *
-     * @param tournamentCreator the name of the educator that create the tournament.
-     * @param time the registration deadline.
-     */
-    private void sendEmailToAllStudent(String tournamentCreator, Timestamp time){
-        UserDAO userDAO=new UserDAO(connection);
-        List<String> emailAccount= null;
-        try {
-            emailAccount = userDAO.allStudentEmail();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        String object="A new tournament has been created";
-        String text=tournamentCreator + " created a new tournament. \n" +
-                "Hurry up, you only have until " + time +
-                "\nIf you are interested log on to the CKB platform now";
-
-        for (String s : emailAccount) {
-            try {
-                EmailManager.sendEmail(s, object, text);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
-    }
 }
