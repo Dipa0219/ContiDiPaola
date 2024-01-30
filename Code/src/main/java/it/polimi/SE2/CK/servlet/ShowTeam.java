@@ -26,6 +26,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Servlet that show the possible team to subscribe.
+ */
 @WebServlet("/ShowTeam")
 @MultipartConfig
 public class ShowTeam extends HttpServlet {
@@ -113,8 +116,6 @@ public class ShowTeam extends HttpServlet {
             response.getWriter().println("The server do not respond");
             return;
         }
-
-        System.out.println("ciao " + teamRequest.get(0).getTeamName());
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);

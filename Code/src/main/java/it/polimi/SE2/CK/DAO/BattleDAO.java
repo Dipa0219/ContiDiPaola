@@ -146,6 +146,54 @@ public class BattleDAO {
     }
 
     /**
+     * Gets the battle id.
+     *
+     * @param name the battle name.
+     * @return the battle id.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public int getBattleId(String name) throws SQLException {
+        //search query
+        String query = "SELECT idBattle " +
+                "FROM new_schema.battle " +
+                "WHERE Name = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int result = -1;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.first()){
+                result = resultSet.getInt(1);
+            }
+        }
+        catch (SQLException e) {
+            throw new SQLException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Check if the battle is not started and the tournament is in ongoing phase.
      *
      * @param battleId the battle id.
@@ -237,7 +285,7 @@ public class BattleDAO {
         ResultSet resultSet = null;
 
         //get the actual date
-        java.util.Date currentDate = new Date();
+        Date currentDate = new Date();
         Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
 
         try {
@@ -327,7 +375,7 @@ public class BattleDAO {
         ResultSet resultSet = null;
 
         //get the actual date
-        java.util.Date currentDate = new Date();
+        Date currentDate = new Date();
         Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
 
         try {

@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.utils;
 
 import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.utils.folder.FolderManager;
 import okhttp3.*;
@@ -207,6 +208,13 @@ public class GitHubManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        TeamDAO teamDAO = new TeamDAO(connection);
+        String teamName;
+        try {
+            teamName = teamDAO.getTeamName(teamId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         //get the battle name and CodeKata
         String battleName = null;
@@ -253,7 +261,7 @@ public class GitHubManager {
                 "          https://URLCODEKATA/receive-from-github");
 
         //GitHub repository creation
-        createGitHubRepository(battleName + teamId, true);
+        createGitHubRepository(battleName + "_" + teamName, true);
 
         //upload folder on GitHub
         uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows(),

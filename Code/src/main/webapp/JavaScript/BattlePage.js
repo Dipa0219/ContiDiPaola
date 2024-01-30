@@ -24,6 +24,7 @@ function BattlePage(user){
     let teamMateInput = document.getElementById("teamMateInput")
     let joinBattleAsTeamSubmit = document.getElementById("joinBattleAsTeamSubmit")
     let teamInput = document.getElementById("teamInput")
+    let joinTeamSubmit = document.getElementById("joinTeamSubmit")
 
     joinBattleAloneButton.addEventListener('click', (e) => {
         makeCall("POST", 'JoinBattleAlone?BattleId=' + battleId, null,
@@ -117,6 +118,32 @@ function BattlePage(user){
                     }
                 }
             })
+    })
+
+    joinTeamSubmit.addEventListener('click', (e) => {
+        //create Select Your Team form reference
+        var form = e.target.closest("form")
+        if (form.checkValidity()){
+            makeCall("POST", 'JoinTeam?BattleId=' + battleId, form,
+                function (x) {
+                    //server return message
+                    var message = x.responseText
+                    switch (x.status){
+                        case 200: //OK
+                            clearForm("joinTeamForm")
+                            hideAllButton()
+                            closeModal()
+                            break
+                        default: //error occurs
+                            document.getElementById("errormessageJoinTeam")
+                            break
+                    }
+                })
+        }
+        else {
+            form.reportValidity()
+        }
+        clearForm("joinTeamForm")
     })
 
     //shows all possible teammates
