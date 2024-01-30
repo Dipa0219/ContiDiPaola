@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Team;
 import it.polimi.SE2.CK.bean.Tournament;
@@ -80,7 +81,16 @@ public class ShowTeamInBattle extends HttpServlet {
         }
 
         SessionUser user = (SessionUser) session.getAttribute("user");
-        int battleId = Integer.parseInt(request.getParameter("BattleId"));
+        int battleId;
+        //400 error
+        try {
+            battleId = Integer.parseInt(request.getParameter("BattleId"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
 
         //user is a educator
         //401 error
@@ -98,6 +108,32 @@ public class ShowTeamInBattle extends HttpServlet {
             if (!battleDAO.checkBattleOngoing(battleId)){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle is not started yet");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //500 error
+        Battle battle;
+        try {
+             battle = battleDAO.showBattleById(battleId);
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //user is subscribed in tournament
+        TournamentDAO tournamentDAO = new TournamentDAO(connection);
+        //500 error
+        try {
+            //401 error
+            if (!tournamentDAO.checkUserInTournament(battle.getTournamentId(), user.getId())){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
                 return;
             }
         } catch (SQLException e) {
