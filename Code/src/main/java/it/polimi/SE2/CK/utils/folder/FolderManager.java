@@ -35,7 +35,7 @@ public class FolderManager {
      *
      * @return the path separator for Windows operating system - \.
      */
-    public static String getPathWindows() {
+    private static String getPathWindows() {
         return pathWindows;
     }
 
@@ -44,8 +44,17 @@ public class FolderManager {
      *
      * @return the path separator for Unix operating system - /.
      */
-    public static String getPathUnix() {
+    private static String getPathUnix() {
         return pathUnix;
+    }
+
+    /**
+     * Gets the path separator.
+     *
+     * @return the path separator.
+     */
+    public static String getPath() {
+        return getPathUnix(); //TODO select your OS
     }
 
     /**

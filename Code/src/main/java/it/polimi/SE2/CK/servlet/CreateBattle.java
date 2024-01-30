@@ -304,7 +304,7 @@ public class CreateBattle extends HttpServlet {
         if (battleTestCase.getSize() > 0){
             FolderManager.saveFile(battleTestCase,
                     FolderManager.getDirectory() + FolderManager.getFileName(battleProject) +
-                            FolderManager.getPathUnix() + ".github" + FolderManager.getPathUnix() + "workflows"); //TODO select your OS
+                            FolderManager.getPath() + ".github" + FolderManager.getPath() + "workflows");
         }
 
         //creation of GitHub repository

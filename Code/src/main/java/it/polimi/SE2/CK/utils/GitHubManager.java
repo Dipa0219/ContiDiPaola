@@ -221,7 +221,7 @@ public class GitHubManager {
         //GitHub pull from CodeKata
         pullGitHubRepository(codeKata, battleName);
         //add readme
-        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows() + "README.md");
+        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPath() + "README.md");
         FolderManager.writeFile(readme, "To notify the server, you need to configure a workflow so that a notification is sent to the CKB application whenever a change occurs in the repository.\n" +
                 "\n" +
                 "\n" +
@@ -256,7 +256,7 @@ public class GitHubManager {
         createGitHubRepository(battleName + teamId, true);
 
         //upload folder on GitHub
-        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows(),
+        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPath(),
                 GitHubManager.getRepoURL() + battleName + teamId);
 
         //add teammate
@@ -265,6 +265,6 @@ public class GitHubManager {
         }
 
         //delete folder pull repository
-        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows()));
+        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPath()));
     }
 }
