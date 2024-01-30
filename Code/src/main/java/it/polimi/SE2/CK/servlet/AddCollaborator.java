@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import static java.lang.System.in;
 
 /**
- * Servlet that manage the creation of a tournament.
+ * Servlet that manage the addition of collaborator to a tournament.
  */
 @WebServlet("/AddCollaborator")
 @MultipartConfig
