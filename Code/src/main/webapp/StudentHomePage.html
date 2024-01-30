@@ -236,9 +236,11 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Join Battle As a Team</h3>
-                <form action="#">
+                <form action="#" id="joinBattleAsTeamForm">
                     <br>
-                    <label>choose your Teammate:</label><br>
+                    <label>Choose your Team Name: *</label><br>
+                    <input id="teamNameInput" name="teamNameInput" type="text"><br><br>
+                    <label>Choose your Teammate: *</label><br>
                     <select id="teamMateInput" name="teamMateInput" size="4" multiple></select><br><br>
                     <input id="joinBattleAsTeamSubmit" type="button" value="Submit" class="submit">
                 </form>
@@ -252,7 +254,7 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Select your Team</h3>
-                <form action="#">
+                <form action="#" id="joinTeamForm">
                     <br>
                     <label>Choose Team:</label><br>
                     <select id="teamInput" name="teamInput" size="1"></select><br><br>
@@ -268,14 +270,12 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <h3 style="text-align: center;">Modify the Grade</h3>
-                <form action="#">
+                <form action="#" id="modifyGradeForm">
                     <br>
                     <label>Choose Team:</label><br>
                     <select id="teamGradeInput" name="teamGradeInput" size="1" required></select><br><br>
                     <label>Insert Grade:</label><br>
-                    <input id="teamGraduationInput" name="teamGraduationInput" type="number" min="0" max="31" required><br><br>
-                    <label>Insert Description:</label><br>
-                    <input id="gradeDescriptionInput" name="gradeDescriptionInput" type="text"><br><br>
+                    <input id="teamGraduationInput" name="teamGraduationInput" type="number" min="" max="100" required><br><br>
                     <input id="modifyGradeSubmit" type="button" value="Submit" class="submit">
                 </form>
             </div>
@@ -333,6 +333,14 @@
                 <button class="closemodalbutton" onclick="closeModal()">Close</button>
                 <br>
                 <div id="closeTournamentMessage"></div>
+            </div>
+        </div>
+
+        <div id="joinBattleAloneModal" class="modal">
+            <div class="modal-content">
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <div id="joinBattleAloneMessage"></div>
             </div>
         </div>
     </body>

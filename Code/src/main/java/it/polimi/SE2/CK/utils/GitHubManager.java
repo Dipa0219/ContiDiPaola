@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.utils;
 
 import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.utils.folder.FolderManager;
 import okhttp3.*;
@@ -207,6 +208,13 @@ public class GitHubManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        TeamDAO teamDAO = new TeamDAO(connection);
+        String teamName;
+        try {
+            teamName = teamDAO.getTeamName(teamId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         //get the battle name and CodeKata
         String battleName = null;
@@ -221,7 +229,7 @@ public class GitHubManager {
         //GitHub pull from CodeKata
         pullGitHubRepository(codeKata, battleName);
         //add readme
-        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows() + "README.md");
+        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPath() + "README.md");
         FolderManager.writeFile(readme, "To notify the server, you need to configure a workflow so that a notification is sent to the CKB application whenever a change occurs in the repository.\n" +
                 "\n" +
                 "\n" +
@@ -253,10 +261,10 @@ public class GitHubManager {
                 "          https://URLCODEKATA/receive-from-github");
 
         //GitHub repository creation
-        createGitHubRepository(battleName + teamId, true);
+        createGitHubRepository(battleName + "_" + teamName, true);
 
         //upload folder on GitHub
-        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows(),
+        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPath(),
                 GitHubManager.getRepoURL() + battleName + teamId);
 
         //add teammate
@@ -265,6 +273,6 @@ public class GitHubManager {
         }
 
         //delete folder pull repository
-        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPathWindows()));
+        FolderManager.deleteDirectory(new File(FolderManager.getDirectory() + battleName + FolderManager.getPath()));
     }
 }

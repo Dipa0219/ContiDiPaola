@@ -1,14 +1,10 @@
 package it.polimi.SE2.CK.servlet;
 
-import it.polimi.SE2.CK.DAO.TournamentDAO;
-import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TeamDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
-import it.polimi.SE2.CK.bean.Tournament;
-import it.polimi.SE2.CK.utils.EmailManager;
-import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
-import jakarta.mail.MessagingException;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,27 +15,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
-import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import static java.lang.System.in;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
- * Servlet that manage the addition of collaborator to a tournament.
+ * Servlet that manage the subscription on a battle alone.
  */
-@WebServlet("/AddCollaborator")
+@WebServlet("/JoinBattleAlone")
 @MultipartConfig
-public class AddCollaborator extends HttpServlet {
+public class JoinBattleAlone extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -99,56 +85,32 @@ public class AddCollaborator extends HttpServlet {
         }
 
         SessionUser user = (SessionUser) session.getAttribute("user");
-        String[] collaboratorsList = request.getParameterValues("collaboratorInput");
-        //user is an educator
+        int battleId;
+        try {
+            battleId = Integer.parseInt(request.getParameter("BattleId"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
+        //user is a student
         //401 error
-        if (user.getRole() != UserRole.EDUCATOR.getValue()){
+        if (user.getRole() != UserRole.STUDENT.getValue()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("You can't do this action");
+            response.getWriter().println("You can't access to this page");
             return;
         }
 
-        //existence of tournament
-        TournamentDAO tournamentDAO = new TournamentDAO(connection);
-        Tournament tournament = new Tournament();
-        try {
-            tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
-        }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
-            return;
-        }
-
-        if (tournament.getId()<=0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
-            return;
-        }
-
+        //battle exists and is in Not Started phase
+        BattleDAO battleDAO = new BattleDAO(connection);
         //500 error
         try {
-            tournament = tournamentDAO.showTournamentById(tournament.getId());
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //tournament is in not in Closed phase
-        //406 error
-        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.getWriter().println("The tournament has already been closed");
-            return;
-        }
-
-        //user is in the tournament
-        //500 error
-        try {
-            //401 error
-            if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't do this action");
+            //406 error
+            if (!battleDAO.checkBattleNotStarted(battleId)){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle has already begun");
                 return;
             }
         } catch (SQLException e) {
@@ -157,57 +119,55 @@ public class AddCollaborator extends HttpServlet {
             return;
         }
 
-        if (collaboratorsList==null || collaboratorsList.length==0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You have to choose a collaborator");
-            return;
-        }
-        //collaborator list
-        List<String> listItems =Arrays.asList(collaboratorsList);
-        List<Integer> collaborators = listItems.stream()
-                .map(Integer::parseInt)
-                .toList();
-
-        //empty collaborator list
-        //400 error
-
-
-        UserDAO userDAO = new UserDAO(connection);
         //500 error
-        for (Integer i : collaborators) {
-            try {
-                //selected collaborator is an educator
-                //409 error
-                if (user.getRole() != UserRole.EDUCATOR.getValue()) {
-                    response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    response.getWriter().println("You have not selected an educator");
-                    return;
-                }
-                //selected collaborator not is in the tournament
-                //409 error
-                if (tournamentDAO.checkUserInTournament(tournament.getId(), i)){
-                    response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    response.getWriter().println("You have selected an educator already in the tournament");
-                    return;
-                }
-            } catch (SQLException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().println("The server do not respond");
+        try {
+            Battle battle = battleDAO.showBattleById(battleId);
+            //406 error
+            if (battle.getMinNumStudent()>1){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle does not allow you to register alone");
                 return;
             }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
 
-        //add collaborator
+        TeamDAO teamDAO = new TeamDAO(connection);
+
+        //check if student is in another team
+        //500 error
+        try {
+            //409 error
+            if (teamDAO.checkStudentInOtherTeam(user.getId(), battleId)){
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                response.getWriter().println("You are already signed up to another team");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //join battle alone
         boolean result;
         //500 error
         try {
-            result = tournamentDAO.addCollaborator(tournament.getId(), collaborators);
+            result = teamDAO.joinBattleAlone(user.getId(), battleId, user.getUsername());
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
 
+        //500 error
+        if (!result){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);

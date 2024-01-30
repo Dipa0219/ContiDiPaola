@@ -17,12 +17,12 @@ public class ZipFolderManager {
      * @param zipFileName the zip file.
      */
     public static void unzip(String zipFileName){
-        try (ZipFile zipFile = new ZipFile(FolderManager.getDirectory() + zipFileName + ".zip" + FolderManager.getPathUnix())) { //TODO select your OS
+        try (ZipFile zipFile = new ZipFile(FolderManager.getDirectory() + zipFileName + ".zip" + FolderManager.getPath())) {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
                 ZipArchiveEntry entry = entries.nextElement();
                 if (!entry.isDirectory()) {
-                    File entryFile = new File(FolderManager.getDirectory() + zipFileName + FolderManager.getPathUnix(), entry.getName()); //TODO select your OS
+                    File entryFile = new File(FolderManager.getDirectory() + zipFileName + FolderManager.getPath(), entry.getName());
                     if (!entryFile.getParentFile().exists()) {
                         entryFile.getParentFile().mkdirs();
                     }

@@ -98,9 +98,33 @@ public class CreateBattle extends HttpServlet {
         String battleDescription = request.getParameter("battleDescriptionInput");
         String registrationDeadline = request.getParameter("battleRegistrationDeadlineInput");
         String submissionDeadline = request.getParameter("battleSubmissionDeadlineInput");
-        int tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
-        int minStudentPerTeam = Integer.parseInt(request.getParameter("minStudentPerTeamInput"));
-        int maxStudentPerTeam = Integer.parseInt(request.getParameter("maxStudentPerTeamInput"));
+        int tournamentId;
+        try {
+             tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        int minStudentPerTeam;
+        try {
+            minStudentPerTeam = Integer.parseInt(request.getParameter("minStudentPerTeamInput"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        int maxStudentPerTeam;
+        try {
+            maxStudentPerTeam = Integer.parseInt(request.getParameter("maxStudentPerTeamInput"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
         Part battleProject = null;
         //400 error
         try {
@@ -304,7 +328,7 @@ public class CreateBattle extends HttpServlet {
         if (battleTestCase.getSize() > 0){
             FolderManager.saveFile(battleTestCase,
                     FolderManager.getDirectory() + FolderManager.getFileName(battleProject) +
-                            FolderManager.getPathUnix() + ".github" + FolderManager.getPathUnix() + "workflows"); //TODO select your OS
+                            FolderManager.getPath() + ".github" + FolderManager.getPath() + "workflows");
         }
 
         //creation of GitHub repository

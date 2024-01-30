@@ -26,6 +26,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Servlet that show the possible collaborator to add.
+ */
 @WebServlet("/ShowAddCollaborator")
 @MultipartConfig
 public class ShowAddCollaborator extends HttpServlet {

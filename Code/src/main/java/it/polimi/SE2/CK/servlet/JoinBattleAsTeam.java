@@ -1,14 +1,11 @@
 package it.polimi.SE2.CK.servlet;
 
-import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
-import it.polimi.SE2.CK.bean.Tournament;
-import it.polimi.SE2.CK.utils.EmailManager;
-import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
-import jakarta.mail.MessagingException;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,27 +16,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
-import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import static java.lang.System.in;
 
 /**
- * Servlet that manage the addition of collaborator to a tournament.
+ * Servlet that manage the subscription on a battle with a team. It creates a new team.
  */
-@WebServlet("/AddCollaborator")
+@WebServlet("/JoinBattleAsTeam")
 @MultipartConfig
-public class AddCollaborator extends HttpServlet {
+public class JoinBattleAsTeam extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -99,95 +88,92 @@ public class AddCollaborator extends HttpServlet {
         }
 
         SessionUser user = (SessionUser) session.getAttribute("user");
-        String[] collaboratorsList = request.getParameterValues("collaboratorInput");
-        //user is an educator
+        int battleId;
+        try {
+             battleId = Integer.parseInt(request.getParameter("BattleId"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+        String[] teammateList = request.getParameterValues("teamMateInput");
+        String teamName = request.getParameter("teamNameInput");
+
+        //user is a student
         //401 error
-        if (user.getRole() != UserRole.EDUCATOR.getValue()){
+        if (user.getRole() != UserRole.STUDENT.getValue()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("You can't do this action");
+            response.getWriter().println("You can't access to this page");
             return;
         }
 
-        //existence of tournament
-        TournamentDAO tournamentDAO = new TournamentDAO(connection);
-        Tournament tournament = new Tournament();
-        try {
-            tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
-        }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
-            return;
-        }
-
-        if (tournament.getId()<=0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
-            return;
-        }
-
+        //battle exists and is in Not Started phase
+        BattleDAO battleDAO = new BattleDAO(connection);
         //500 error
         try {
-            tournament = tournamentDAO.showTournamentById(tournament.getId());
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //tournament is in not in Closed phase
-        //406 error
-        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.getWriter().println("The tournament has already been closed");
-            return;
-        }
-
-        //user is in the tournament
-        //500 error
-        try {
-            //401 error
-            if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't do this action");
+            //406 error
+            if (!battleDAO.checkBattleNotStarted(battleId)){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle has already begun");
                 return;
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
 
-        if (collaboratorsList==null || collaboratorsList.length==0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You have to choose a collaborator");
+        Battle battle;
+        //500 error
+        try {
+             battle = battleDAO.showBattleById(battleId);
+        }
+        catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
             return;
         }
-        //collaborator list
-        List<String> listItems =Arrays.asList(collaboratorsList);
-        List<Integer> collaborators = listItems.stream()
+
+        //check if the student select at least 1 student
+        //400 error
+        if (teammateList == null || teammateList.length == 0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You have to choose a teammate");
+            return;
+        }
+
+        List<String> listItems = Arrays.asList(teammateList);
+        List<Integer> teammate = listItems.stream()
                 .map(Integer::parseInt)
                 .toList();
 
-        //empty collaborator list
-        //400 error
-
+        //check if the number of teammates selected is permitted for the battle
+        if (teammate.size() + 1 < battle.getMinNumStudent() || teammate.size() + 1 > battle.getMaxNumStudent()){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You have to choose a number of teammates between " + battle.getMinNumStudent() + " and " + battle.getMaxNumStudent());
+            return;
+        }
 
         UserDAO userDAO = new UserDAO(connection);
-        //500 error
-        for (Integer i : collaborators) {
+        TeamDAO teamDAO = new TeamDAO(connection);
+        for (Integer integer : teammate) {
+            //check if all teammates are student
+            //406 error
+            if (user.getRole() != UserRole.STUDENT.getValue()) {
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("You have to choose a student as teammate");
+                return;
+            }
+
+            //check if all teammates are not in a team
+            //500 error
             try {
-                //selected collaborator is an educator
                 //409 error
-                if (user.getRole() != UserRole.EDUCATOR.getValue()) {
+                if (teamDAO.checkStudentInOtherTeam(integer, battleId)) {
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    response.getWriter().println("You have not selected an educator");
-                    return;
-                }
-                //selected collaborator not is in the tournament
-                //409 error
-                if (tournamentDAO.checkUserInTournament(tournament.getId(), i)){
-                    response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    response.getWriter().println("You have selected an educator already in the tournament");
+                    response.getWriter().println("You select a student that is already signed up to another team");
                     return;
                 }
             } catch (SQLException e) {
@@ -197,17 +183,55 @@ public class AddCollaborator extends HttpServlet {
             }
         }
 
-        //add collaborator
-        boolean result;
+        //check if user has already creates a team
         //500 error
         try {
-            result = tournamentDAO.addCollaborator(tournament.getId(), collaborators);
-        } catch (SQLException e) {
+            //401 error
+            if (teamDAO.checkStudentHasCreatedATeam(user.getId(), battleId)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().println("You can't access to this page");
+                return;
+            }
+        }
+        catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
 
+        //check if the team name is already in use
+        //500 error
+        try {
+            //409 error
+            if (teamDAO.checkTeamName(teamName, battleId)){
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                response.getWriter().println("The name is already in use for the battle");
+                return;
+            }
+        }
+        catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //join battle as a team
+        boolean result;
+        try {
+            result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName);
+        }
+        catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //500 error
+        if (!result){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);

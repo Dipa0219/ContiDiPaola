@@ -25,9 +25,9 @@ public class BattleDAO {
 
     public ArrayList<Battle> showBattlesByTournamentId(int tournamentId) throws SQLException {
         ArrayList<Battle> battles = new ArrayList<>();
-        String query = "select *\n" +
-                "from new_schema.battle\n" +
-                "where tournamentId=?;";
+        String query = "select * " +
+                "from battle " +
+                "where tournamentId = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
@@ -68,9 +68,9 @@ public class BattleDAO {
 
     public Battle showBattleById(int battleId) throws SQLException {
         Battle battle = null;
-        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase\n" +
-                "from new_schema.battle as b join new_schema.tournament as t on t.idTournament=b.TournamentId\n" +
-                "where Idbattle=?;";
+        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase " +
+                "from battle as b join tournament as t on t.idTournament = b.TournamentId " +
+                "where Idbattle = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
@@ -124,7 +124,7 @@ public class BattleDAO {
     public boolean checkBattleByName(String name) throws SQLException {
         //search query
         String query = "SELECT * " +
-                "FROM new_schema.battle " +
+                "FROM battle " +
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -147,6 +147,160 @@ public class BattleDAO {
     }
 
     /**
+     * Gets the battle id.
+     *
+     * @param name the battle name.
+     * @return the battle id.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public int getBattleId(String name) throws SQLException {
+        //search query
+        String query = "SELECT idBattle " +
+                "FROM battle " +
+                "WHERE Name = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int result = -1;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.first()){
+                result = resultSet.getInt(1);
+            }
+        }
+        catch (SQLException e) {
+            throw new SQLException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Check if the battle is not started and the tournament is in ongoing phase.
+     *
+     * @param battleId the battle id.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleNotStarted(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, tournament as t " +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(3, battleId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
+     * Check if the battle is ongoing and the tournament is in ongoing phase too.
+     *
+     * @param battleId the battle id.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkBattleOngoing(int battleId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, tournament as t " +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, TournamentState.ONGOING.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
+            preparedStatement.setInt(3, battleId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
+     * Check if the user is in battle and also in tournament.
+     *
+     * @param battleId the specific battle.
+     * @param userId the specific user.
+     * @return false if there is no result.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkEducatorManageBattle(int battleId, int userId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM battle as b, t_subscription as tsub " +
+                "WHERE b.TournamentId = tsub.TournamentId " +
+                "   and b.idbattle = ? and tsub.UserId = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setInt(2, userId);
+            return preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
+    /**
      * Inserts a battle in the database.
      *
      * @param battle the battle to insert.
@@ -155,7 +309,7 @@ public class BattleDAO {
      */
     public boolean createBattle(Battle battle) throws SQLException {
         //insert query
-        String query = "INSERT INTO `new_schema`.`battle` " +
+        String query = "INSERT INTO battle " +
                 "(`Name`, `Description`, `RegDeadline`, `SubDeadline`, `CodeKata`, `MinNumStudent`, `MaxNumStudent`, `TournamentId`, `Phase`) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         //statement
@@ -195,20 +349,21 @@ public class BattleDAO {
     public void startBattle() throws SQLException {
         //search query
         String query = "SELECT idbattle, RegDeadline, CodeKata " +
-                "FROM battle " +
-                "WHERE Phase = ? " +
-                "ORDER BY RegDeadline ASC";
+                "FROM battle as b, tournament as t\n" +
+                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? " +
+                "ORDER BY b.RegDeadline ASC;";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         //get the actual date
-        java.util.Date currentDate = new Date();
+        Date currentDate = new Date();
         Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
+            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
             resultSet = preparedStatement.executeQuery();
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -284,7 +439,7 @@ public class BattleDAO {
     public void closeBattle() throws SQLException {
         //search query
         String query = "SELECT idbattle, SubDeadline " +
-                "FROM battle" +
+                "FROM battle " +
                 "WHERE Phase = ? " +
                 "ORDER BY SubDeadline ASC";
         //statement
@@ -292,7 +447,7 @@ public class BattleDAO {
         ResultSet resultSet = null;
 
         //get the actual date
-        java.util.Date currentDate = new Date();
+        Date currentDate = new Date();
         Timestamp currentTimestamp = new Timestamp(currentDate.getTime());
 
         try {
@@ -350,7 +505,7 @@ public class BattleDAO {
      */
     private void closeBattleUpdateTable(int battleId) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`battle` " +
+        String query = "UPDATE battle " +
                 "SET `Phase` = ? " +
                 "WHERE (`idBattle` = ?)";
         //statement
@@ -384,7 +539,7 @@ public class BattleDAO {
      */
     private void startBattleUpdateTable(int battleId) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`battle` " +
+        String query = "UPDATE battle " +
                 "SET `Phase` = ? " +
                 "WHERE (`idBattle` = ?)";
         //statement
@@ -410,60 +565,12 @@ public class BattleDAO {
         }
     }
 
-    /**
-     * Gets the CodeKata.
-     *
-     * @param teamId the specific team.
-     * @return the CodeKata.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public String getCodeKataFromTeamId(int teamId) throws SQLException {
-        //search query
-        String query = "SELECT b.Name, b.CodeKata " +
-                "FROM team as t, battle as b " +
-                "WHERE t.battleId = b.idbattle and idteam = ?";
-        //statement
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        String result = null;
-
-        try {
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, teamId);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()){
-                result = resultSet.getString("CodeKata");
-            }
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception e1) {
-                throw new RuntimeException();
-            }
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e2) {
-                throw new RuntimeException();
-            }
-        }
-
-        return result;
-    }
-
     public ArrayList<Ranking> showRanking(int battleId) throws SQLException {
         //search query
-        String query = "select teamName, points\n" +
-                "from new_schema.team\n" +
-                "where battleId =?\n" +
-                "order by points desc;";
+        String query = "select teamName, points " +
+                "from new_schema.team " +
+                "where battleId = ? " +
+                "order by points desc";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
