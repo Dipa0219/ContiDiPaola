@@ -3,12 +3,11 @@ package it.polimi.SE2.CK.servlet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.BattleDAO;
+import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
-import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
-import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import javax.servlet.ServletContext;
@@ -27,16 +26,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * Servlet that show the possible collaborator to add.
+ * Servlet that show the possible teammate for a team.
  */
-@WebServlet("/ShowAddCollaborator")
+@WebServlet("/ShowUserTeam")
 @MultipartConfig
-public class ShowAddCollaborator extends HttpServlet {
+public class ShowUserTeam extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * A connection (session) with a specific database.
-     */
     private Connection connection = null;
 
     /**
@@ -70,68 +65,30 @@ public class ShowAddCollaborator extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-
-        //the user is authorized or not
-        //401 error
         if(session.isNew() || session.getAttribute("user")==null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("You can't access to this page");
             return;
         }
-
         SessionUser user = (SessionUser) session.getAttribute("user");
-        //existence of tournament
-        TournamentDAO tournamentDAO = new TournamentDAO(connection);
-        Tournament tournament = new Tournament();
+        int battleId = Integer.parseInt(request.getParameter("BattleId"));
 
-        try {
-            tournament.setId(Integer.parseInt(request.getParameter("TournamentId")));
-        }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
+        //user is a student
+        //401 error
+        if (user.getRole() != UserRole.STUDENT.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't access to this page");
             return;
         }
 
-        if (tournament.getId()<=0){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
-            return;
-        }
-
+        //battle exists and is in Not Started phase
+        BattleDAO battleDAO = new BattleDAO(connection);
         //500 error
         try {
-            tournament = tournamentDAO.showTournamentById(tournament.getId());
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //user is an educator
-        //401 error
-        if (user.getRole() != UserRole.EDUCATOR.getValue()){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("You can't do this action");
-            return;
-        }
-
-        //tournament is in not in Closed phase
-        //401 error
-        if (tournament.getPhase().equals(TournamentState.CLOSED.getValue())){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().println("The tournament has already been closed");
-            return;
-        }
-
-
-
-        //user is in the tournament
-        //500 error
-        try {
-            //401 error
-            if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
+            //406 error
+            if (!battleDAO.checkBattleNotStarted(battleId)){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle has already begun");
                 return;
             }
         } catch (SQLException e) {
@@ -140,13 +97,13 @@ public class ShowAddCollaborator extends HttpServlet {
             return;
         }
 
-        //get educator not in tournament
-        ArrayList<SessionUser> educatorNotInTournament;
+
+        TeamDAO teamDAO = new TeamDAO(connection);
+        ArrayList<SessionUser> studentNotInBattle = new ArrayList<>();
         //500 error
-        try{
-            educatorNotInTournament = tournamentDAO.showEducatorNotInTournament(tournament.getId());
-        }
-        catch (SQLException e){
+        try {
+            studentNotInBattle = (ArrayList<SessionUser>) teamDAO.showStudentNotInBattle(user.getId(), battleId);
+        } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
@@ -157,7 +114,7 @@ public class ShowAddCollaborator extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(educatorNotInTournament);
+        String json = gson.toJson(studentNotInBattle);
         response.getWriter().write(json);
     }
 

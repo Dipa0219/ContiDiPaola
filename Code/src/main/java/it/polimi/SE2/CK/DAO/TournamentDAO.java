@@ -167,7 +167,7 @@ public class TournamentDAO {
         //search query
         String query = "select * " +
                 "from t_subscription " +
-                "where TournamentId=? and UserId=?";
+                "where TournamentId = ? and UserId = ?";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;

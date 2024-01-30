@@ -136,7 +136,7 @@ public class EmailManager {
         UserDAO userDAO=new UserDAO(connection);
         List<String> emailAccount= null;
         try {
-            emailAccount = userDAO.allStudentTournamentEmail(battle.getId()); //TODO
+            emailAccount = userDAO.allStudentTournamentEmail(battle.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
