@@ -97,7 +97,7 @@ public class TeamDAO {
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            return null;
         } finally {
             try {
                 if (resultSet != null) {
@@ -114,7 +114,7 @@ public class TeamDAO {
                 throw new RuntimeException();
             }
         }
-
+        return result;
     }
 
     /**
