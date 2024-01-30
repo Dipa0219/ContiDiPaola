@@ -113,11 +113,11 @@ public class TeamDAO {
      * @return true is the team is created correctly.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId) throws SQLException {
+    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName) throws SQLException {
         //insert query
         String queryTeam = "INSERT INTO `new_schema`.`team` " +
-                "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`, `teamName`) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         String queryTeamStudent = "INSERT INTO `new_schema`.`team_student` " +
                 "(`teamId`, `studentId`, `phase`) " +
                 "VALUES (?, ?, ?)";
@@ -137,6 +137,7 @@ public class TeamDAO {
             preparedStatement.setString(3, TeamState.INCOMPLETE.getValue());
             preparedStatement.setInt(4, userId);
             preparedStatement.setInt(5, 0);
+            preparedStatement.setString(6, teamName);
             preparedStatement.executeUpdate();
 
             resultSet = preparedStatement.getGeneratedKeys();
@@ -324,6 +325,13 @@ public class TeamDAO {
             result = false;
         } finally {
             try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
@@ -333,5 +341,56 @@ public class TeamDAO {
         }
 
         return  result;
+    }
+
+    /**
+     * Check if the team name is already in use for the battle.
+     *
+     * @param teamName the team name to check.
+     * @param battleId the battle to check.
+     * @return true if the team name is already in use.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkTeamName(String teamName, int battleId) throws SQLException{
+        //search query
+        String query = "SELECT *" +
+                "FROM team " +
+                "WHERE battleId = ? and teamName = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setString(2, teamName);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.first()){
+                result = true;
+            }
+
+        }
+        catch (SQLException e) {
+            result = false;
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e2) {
+                throw new RuntimeException();
+            }
+        }
+
+        return result;
     }
 }

@@ -90,6 +90,7 @@ public class JoinBattleAsTeam extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
         int battleId = Integer.parseInt(request.getParameter("BattleId"));
         String[] teammateList = request.getParameterValues("teamMateInput");
+        String teamName = request.getParameter("teamNameInput");
 
         //user is a student
         //401 error
@@ -197,9 +198,26 @@ public class JoinBattleAsTeam extends HttpServlet {
             return;
         }
 
+        //check if the team name is already in use
+        //500 error
+        try {
+            //409 error
+            if (teamDAO.checkTeamName(teamName, battleId)){
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                response.getWriter().println("The name is already in use for the battle");
+                return;
+            }
+        }
+        catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //create tournament
         boolean result;
         try {
-            result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate);
+            result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName);
         }
         catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
