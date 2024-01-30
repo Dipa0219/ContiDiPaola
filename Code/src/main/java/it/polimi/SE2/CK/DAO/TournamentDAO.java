@@ -465,8 +465,8 @@ public class TournamentDAO {
         }
         //insert query
         query = "INSERT INTO `t_subscription` " +
-                "(`TournamentId`, `UserId`) " +
-                "VALUES (?, ?)";
+                "(`TournamentId`, `UserId`, `Points`) " +
+                "VALUES (?, ?,'0')";
         //statement
         PreparedStatement preparedStatement = null;
 
