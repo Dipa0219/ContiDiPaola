@@ -88,7 +88,15 @@ public class JoinBattleAsTeam extends HttpServlet {
         }
 
         SessionUser user = (SessionUser) session.getAttribute("user");
-        int battleId = Integer.parseInt(request.getParameter("BattleId"));
+        int battleId;
+        try {
+             battleId = Integer.parseInt(request.getParameter("BattleId"));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
         String[] teammateList = request.getParameterValues("teamMateInput");
         String teamName = request.getParameter("teamNameInput");
 

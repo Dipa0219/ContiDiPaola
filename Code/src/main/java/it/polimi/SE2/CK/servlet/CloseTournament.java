@@ -92,7 +92,16 @@ public class CloseTournament extends HttpServlet {
         //existence of tournament
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
         Tournament tournament = new Tournament();
-        tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        //400 error
+        try {
+            tournament.setId(Integer.parseInt(request.getParameter("TournamentID")));
+        }
+        catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());

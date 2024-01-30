@@ -35,8 +35,8 @@ public class TournamentDAO {
 
     public ArrayList<Tournament> showTournamentByUserId (int userId) throws SQLException {
         ArrayList<Tournament> tournaments = new ArrayList<>();
-        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
-                "from tournament as t join t_subscription on idTournament=TournamentId join user as u on t.CreatorId= u.idUser\n" +
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username " +
+                "from tournament as t join t_subscription on idTournament=TournamentId join user as u on t.CreatorId= u.idUser " +
                 "where UserId = ?;";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -80,7 +80,7 @@ public class TournamentDAO {
         Tournament tournament = null;
         ArrayList<Tournament> tournaments = new ArrayList<>();
         String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, t.Phase, u.username\n" +
-                "from tournament as t join user as u on t.CreatorId= u.idUser\n" +
+                "from tournament as t join user as u on t.CreatorId= u.idUser " +
                 "where t.idTournament = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -130,7 +130,7 @@ public class TournamentDAO {
     public boolean checkTournamentByName (String name) throws SQLException {
         //search query
         String query = "SELECT * " +
-                "FROM new_schema.tournament " +
+                "FROM tournament " +
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -310,7 +310,7 @@ public class TournamentDAO {
      */
     public boolean closeTournament(int tournamentID) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`tournament` " +
+        String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
                 "WHERE (`idTournament` = ?)";
         PreparedStatement preparedStatement = null;
@@ -347,7 +347,7 @@ public class TournamentDAO {
      */
     public boolean addCollaborator(int tournamentID, List<Integer> collaboratorUsernameList) throws SQLException {
         //insert query
-        String query = "INSERT INTO `new_schema`.`t_subscription` " +
+        String query = "INSERT INTO t_subscription " +
                 "(`TournamentId`, `UserId`) " +
                 "VALUES (?, ?)";
         //statement
@@ -394,7 +394,7 @@ public class TournamentDAO {
 
     public ArrayList<Tournament> showAllTournamentsByString (String string) throws SQLException {
         ArrayList<Tournament> tournaments = new ArrayList<>();
-        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username\n" +
+        String query="select t.idTournament, t.Name, t.Description, t.CreatorId, t.RegDeadline, u.username " +
                 "from tournament as t join user as u on t.CreatorId = u.idUser;";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -449,7 +449,7 @@ public class TournamentDAO {
     public boolean joinTournament(int userId, int tournamentId) throws SQLException {
         String query = "select *" +
                 "from t_subscription " +
-                "where TournamentId=? and UserId=?";
+                "where TournamentId = ? and UserId = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
@@ -627,7 +627,7 @@ public class TournamentDAO {
      */
     private void startTournamentUpdateTable(int tournamentId){
         //update query
-        String query = "UPDATE `new_schema`.`tournament` " +
+        String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
                 "WHERE (`idTournament` = ?)";
         //statement
@@ -660,7 +660,7 @@ public class TournamentDAO {
      */
     private void closeTournamentUpdateTable(int tournamentId){
         //update query
-        String query = "UPDATE `new_schema`.`tournament` " +
+        String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
                 "WHERE (`idTournament` = ?)";
         //statement
@@ -688,9 +688,9 @@ public class TournamentDAO {
 
     public ArrayList<Ranking> showRanking(int tournamentId) throws SQLException {
         //search query
-        String query = "select username, points\n" +
-                "from t_subscription join user on UserId = idUser\n" +
-                "where points is not null and tournamentId =?\n" +
+        String query = "select username, points " +
+                "from t_subscription join user on UserId = idUser " +
+                "where points is not null and tournamentId = ? " +
                 "order by points desc;";
         //statement
         PreparedStatement preparedStatement = null;

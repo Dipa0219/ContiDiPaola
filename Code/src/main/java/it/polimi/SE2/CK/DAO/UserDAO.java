@@ -117,7 +117,7 @@ public class UserDAO {
     public List<String> allStudentTournamentEmail(int tournamentID) throws SQLException {
         //search query
         String query="Select Email" +
-                "FROM user as u join t_subscription as ts on u.idUser=ts.UserId\n" +
+                "FROM user as u join t_subscription as ts on u.idUser=ts.UserId " +
                 "WHERE u.Role = ? and ts.TournamentId = ?;";
         //statemente
         PreparedStatement preparedStatement = null;
@@ -309,55 +309,6 @@ public class UserDAO {
     }
 
     /**
-     * Retrieves the user's ID from the database.
-     *
-     * @param username the username to search.
-     * @return the user ID or -1 if the username is not in the database.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public int getUserID(String username) throws SQLException {
-        //search query
-        String query = "SELECT idUser " +
-                "FROM user " +
-                "WHERE username = ?";
-        //statement
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        int result = -1;
-
-        try{
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, username);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()){
-                result = resultSet.getInt("idUser");
-            }
-        }
-        catch (SQLException e){
-            return -1;
-        }
-        finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Retrieves the user's role from the database.
      *
      * @param userID the interested user id.
@@ -367,7 +318,7 @@ public class UserDAO {
     public UserRole getUserRole(int userID) throws SQLException {
         //select query
         String query = "SELECT Role " +
-                "FROM new_schema.user " +
+                "FROM user " +
                 "WHERE idUser = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -413,7 +364,7 @@ public class UserDAO {
 
     public int createUser(User user) throws SQLException {
         String query1="SELECT * " +
-                "from new_schema.user " +
+                "from user " +
                 "where username= ? or email = ?";
         ResultSet result;
         PreparedStatement pstatement;

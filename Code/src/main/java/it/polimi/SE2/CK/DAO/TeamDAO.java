@@ -127,7 +127,7 @@ public class TeamDAO {
     public String getTeamName(int teamId) throws SQLException {
         //search query
         String query = "SELECT teamName " +
-                "FROM new_schema.team " +
+                "FROM team " +
                 "WHERE idteam = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -225,7 +225,7 @@ public class TeamDAO {
      */
     public boolean joinBattleAlone(int userId, int battleId, String username) throws SQLException {
         //insert query
-        String query = "INSERT INTO `new_schema`.`team` " +
+        String query = "INSERT INTO team " +
                 "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `teamLeader`) " +
                 "VALUES (?, ?, ?, ?, ?)";
         //statement
@@ -266,7 +266,7 @@ public class TeamDAO {
      */
     public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName) throws SQLException {
         //insert query
-        String queryTeam = "INSERT INTO `new_schema`.`team` " +
+        String queryTeam = "INSERT INTO team " +
                 "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`, `teamName`) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         String queryTeamStudent = "INSERT INTO `new_schema`.`team_student` " +
@@ -612,7 +612,7 @@ public class TeamDAO {
      */
     public boolean joinTeam(int teamId, int studentId) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`team_student` " +
+        String query = "UPDATE team_student " +
                 "SET `phase` = ? " +
                 "WHERE (`teamId` = ?) and (`studentId` = ?)";
         //statement
@@ -663,7 +663,7 @@ public class TeamDAO {
      */
     public boolean updatePointTeam(int teamId, int point) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`team` " +
+        String query = "UPDATE team " +
                 "SET `points` = ? " +
                 "WHERE (`idteam` = ?)";
         //statement

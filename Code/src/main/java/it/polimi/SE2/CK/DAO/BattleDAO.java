@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.DAO;
 
 import it.polimi.SE2.CK.bean.Battle;
+import it.polimi.SE2.CK.bean.Ranking;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.GitHubManager;
@@ -25,7 +26,7 @@ public class BattleDAO {
     public ArrayList<Battle> showBattlesByTournamentId(int tournamentId) throws SQLException {
         ArrayList<Battle> battles = new ArrayList<>();
         String query = "select * " +
-                "from new_schema.battle " +
+                "from battle " +
                 "where tournamentId = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -68,7 +69,7 @@ public class BattleDAO {
     public Battle showBattleById(int battleId) throws SQLException {
         Battle battle = null;
         String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase " +
-                "from new_schema.battle as b join new_schema.tournament as t on t.idTournament=b.TournamentId " +
+                "from battle as b join tournament as t on t.idTournament = b.TournamentId " +
                 "where Idbattle = ?";
         ResultSet result = null;
         PreparedStatement pstatement = null;
@@ -124,7 +125,7 @@ public class BattleDAO {
     public boolean checkBattleByName(String name) throws SQLException {
         //search query
         String query = "SELECT * " +
-                "FROM new_schema.battle " +
+                "FROM battle " +
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -156,7 +157,7 @@ public class BattleDAO {
     public int getBattleId(String name) throws SQLException {
         //search query
         String query = "SELECT idBattle " +
-                "FROM new_schema.battle " +
+                "FROM battle " +
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
@@ -309,7 +310,7 @@ public class BattleDAO {
      */
     public boolean createBattle(Battle battle) throws SQLException {
         //insert query
-        String query = "INSERT INTO `new_schema`.`battle` " +
+        String query = "INSERT INTO battle " +
                 "(`Name`, `Description`, `RegDeadline`, `SubDeadline`, `CodeKata`, `MinNumStudent`, `MaxNumStudent`, `TournamentId`, `Phase`) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         //statement
@@ -439,7 +440,7 @@ public class BattleDAO {
     public void closeBattle() throws SQLException {
         //search query
         String query = "SELECT idbattle, SubDeadline " +
-                "FROM battle" +
+                "FROM battle " +
                 "WHERE Phase = ? " +
                 "ORDER BY SubDeadline ASC";
         //statement
@@ -505,7 +506,7 @@ public class BattleDAO {
      */
     private void closeBattleUpdateTable(int battleId) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`battle` " +
+        String query = "UPDATE battle " +
                 "SET `Phase` = ? " +
                 "WHERE (`idBattle` = ?)";
         //statement
@@ -539,7 +540,7 @@ public class BattleDAO {
      */
     private void startBattleUpdateTable(int battleId) throws SQLException {
         //update query
-        String query = "UPDATE `new_schema`.`battle` " +
+        String query = "UPDATE battle " +
                 "SET `Phase` = ? " +
                 "WHERE (`idBattle` = ?)";
         //statement
@@ -563,5 +564,52 @@ public class BattleDAO {
                 throw new RuntimeException();
             }
         }
+    }
+
+    public ArrayList<Ranking> showRanking(int battleId) throws SQLException {
+        //search query
+        String query = "select teamName, points " +
+                "from new_schema.team " +
+                "where battleId = ? " +
+                "order by points desc";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Ranking> result=new ArrayList<>();
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            resultSet = preparedStatement.executeQuery();
+
+            int i=1;
+            while (resultSet.next()){
+                Ranking ranking = new Ranking();
+                ranking.setName(resultSet.getString("teamName"));
+                ranking.setPoints(resultSet.getInt("points"));
+                ranking.setPosition(i);
+                i++;
+                result.add(ranking);
+            }
+        }
+        catch (SQLException e){
+            return null;
+        }
+        finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+        return result;
     }
 }
