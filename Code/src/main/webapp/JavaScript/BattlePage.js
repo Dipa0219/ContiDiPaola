@@ -241,15 +241,7 @@ function BattlePage(user){
         battleId=id
         battleInfo.style.display=""
         battlePageDiv.style.display=""
-        if (user.role===1){
-            joinBattleAloneButton.style.display=""
-            joinBattleAsTeamButton.style.display=""
-            selectTeamButton.style.display=""
-        }
-        else if (user.role===0) {
-            modifyGradeButton.style.display = ""
-        }
-        makeCall("GET","ShowBattleInfo?BattleId="+ battleId, null,
+        makeCall("GET","ShowBattleInfo?BattleId=" + battleId, null,
             function (x){
                 if (x.readyState === XMLHttpRequest.DONE) {
                     var message = x.responseText;
@@ -265,6 +257,10 @@ function BattlePage(user){
                 }
             }
         )
+
+        //TODO se non ci sono possibili teammates non mostrare il bottone
+        //TODO se non ci sono possibili team a cui iscriversi non mostrare il bottone
+        //TODO se non ci sono team che partecipano alla battaglia non mostrare il bottone
     }
 
     //This function is used to update the tournament information
@@ -281,12 +277,16 @@ function BattlePage(user){
         battleSubmissionDeadlineLabel.innerHTML="Submission Deadline: "+battle.subDeadline
         battleNumberTeamMemberLabel.innerHTML="Number of Team Member: between "+battle.minNumStudent +" to "+battle.maxNumStudent
 
+        hideAllButton()
         if (user.role === 1){
-            if (battle.minNumStudent === 1){
-                joinBattleAloneButton.style.display=""
-            }
-            else {
-                joinBattleAloneButton.style.display="none"
+            if (battle.phase === "Not Started") {
+                if (battle.minNumStudent === 1){
+                    joinBattleAloneButton.style.display=""
+                }
+                else {
+                    joinBattleAloneButton.style.display="none"
+                }
+                joinBattleAsTeamButton.style.display = ""
             }
         }
         else if (user.role === 0){
@@ -297,10 +297,7 @@ function BattlePage(user){
                 modifyGradeButton.style.display = "none"
             }
         }
-
-
     }
-
 
     /*This function is used to hide all the element contained in this page*/
     this.hide=function (){
