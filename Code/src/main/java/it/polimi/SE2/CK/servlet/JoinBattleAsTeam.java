@@ -160,17 +160,10 @@ public class JoinBattleAsTeam extends HttpServlet {
         TeamDAO teamDAO = new TeamDAO(connection);
         for (Integer integer : teammate) {
             //check if all teammates are student
-            //500 error
-            try {
-                //406 error
-                if (userDAO.getUserRole(integer) != UserRole.STUDENT) {
-                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                    response.getWriter().println("You have to choose a student as teammate");
-                    return;
-                }
-            } catch (SQLException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().println("The server do not respond");
+            //406 error
+            if (user.getRole() != UserRole.STUDENT.getValue()) {
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("You have to choose a student as teammate");
                 return;
             }
 

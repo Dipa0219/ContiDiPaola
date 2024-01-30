@@ -308,60 +308,6 @@ public class UserDAO {
         return result;
     }
 
-    /**
-     * Retrieves the user's role from the database.
-     *
-     * @param userID the interested user id.
-     * @return the user role.
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    public UserRole getUserRole(int userID) throws SQLException {
-        //select query
-        String query = "SELECT Role " +
-                "FROM user " +
-                "WHERE idUser = ?";
-        //statement
-        PreparedStatement preparedStatement = null;
-        ResultSet result = null;
-
-        try{
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, userID);
-            result = preparedStatement.executeQuery();
-
-            while (result.next()){
-                switch (result.getInt("Role")) {
-                    case 0 -> {
-                        return UserRole.EDUCATOR;
-                    }
-                    case 1 -> {
-                        return UserRole.STUDENT;
-                    }
-                }
-            }
-        }
-        catch (SQLException e){
-            throw new SQLException();
-        }
-        finally {
-            try {
-                if (result != null) {
-                    result.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-        }
-        return null;
-    }
-
     public int createUser(User user) throws SQLException {
         String query1="SELECT * " +
                 "from user " +

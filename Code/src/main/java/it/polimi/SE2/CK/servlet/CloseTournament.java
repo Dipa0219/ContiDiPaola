@@ -115,16 +115,10 @@ public class CloseTournament extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
         UserDAO userDAO = new UserDAO(connection);
         //500 error
-        try {
-            //401 error
-            if (userDAO.getUserRole(user.getId()) != UserRole.EDUCATOR){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
-                return;
-            }
-        } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
+        //401 error
+        if (user.getRole() != UserRole.EDUCATOR.getValue()){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't access to this page");
             return;
         }
 
