@@ -90,7 +90,13 @@ public class SearchTournament extends HttpServlet {
         }
         TournamentDAO tournamentDAO= new TournamentDAO(connection);
         String keyword = StringEscapeUtils.escapeHtml4(request.getParameter("searchTournament"));
-        ArrayList<Tournament> tournaments = null;
+
+        if(keyword==null||keyword.isEmpty()){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must search something");
+            return;
+        }
+        ArrayList<Tournament> tournaments;
         try {
             tournaments= tournamentDAO.showAllTournamentsByString(keyword);
         } catch (SQLException e) {

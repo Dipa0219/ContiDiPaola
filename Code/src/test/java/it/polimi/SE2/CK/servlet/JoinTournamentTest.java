@@ -137,6 +137,9 @@ public class JoinTournamentTest {
             }
         });
 
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
         // Set up the request parameters
         when(request.getParameter("TournamentId")).thenReturn("1");
 

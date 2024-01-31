@@ -135,7 +135,7 @@ public class ShowTournamentInfoTest {
         tournament.setCreatorId(3);
         tournament.setCreatorUsername("Gary_97");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-31 12:00:00").getTime())));
+        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2025-01-31 12:00:00").getTime())));
         tournament.setPhase("Not Started");
 
         // Create an instance of ShowBattles and invoke the doGet method

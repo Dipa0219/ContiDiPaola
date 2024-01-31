@@ -165,7 +165,7 @@ public class SearchTournamentTest {
         tournament.setCreatorId(3);
         tournament.setCreatorUsername("Gary_97");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-31 12:00:00").getTime())));
+        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2025-01-31 12:00:00").getTime())));
         tournaments.add(tournament);
 
         // Verify that the response status, content type, and character encoding are set correctly

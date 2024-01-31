@@ -84,8 +84,8 @@ public class JoinTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(4);
-                user.setUsername("ValeTuttoPane");
+                user.setId(10);
+                user.setUsername("Piero87");
                 user.setRole(1);
                 return user;
             }

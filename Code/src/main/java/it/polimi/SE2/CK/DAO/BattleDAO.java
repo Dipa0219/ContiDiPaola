@@ -68,7 +68,7 @@ public class BattleDAO {
 
     public Battle showBattleById(int battleId) throws SQLException {
         Battle battle = null;
-        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent, t.Name as tournamentName, b.Phase " +
+        String query = "select idBattle, b.Name, b.Description, b.RegDeadline,b.SubDeadline,b.CodeKata,b.MinNumStudent,b.MaxNumStudent,b.TournamentId, t.Name as tournamentName, b.Phase " +
                 "from battle as b join tournament as t on t.idTournament = b.TournamentId " +
                 "where Idbattle = ?";
         ResultSet result = null;
@@ -86,6 +86,7 @@ public class BattleDAO {
                 battle.setSubDeadline(result.getTimestamp("SubDeadline"));
                 battle.setMinNumStudent(result.getInt("MinNumStudent"));
                 battle.setMaxNumStudent(result.getInt("MaxNumStudent"));
+                battle.setTournamentId(result.getInt("TournamentId"));
                 battle.setTournamentName(result.getString("tournamentName"));
                 switch (result.getString("Phase")) {
                     case "Not Started" -> battle.setPhase(TournamentState.NOTSTARTED);

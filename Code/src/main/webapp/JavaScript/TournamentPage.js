@@ -137,7 +137,7 @@ function TournamentPage(user) {
         else {
             form.reportValidity()
         }
-        clearForm("createBattleSubmit")
+        clearForm("createBattleForm")
     })
 
     //Function that perform the closure of a tournament
