@@ -261,10 +261,12 @@ public class TeamDAO {
      * @param userId the student that creates the team.
      * @param battleId the battle to join.
      * @param teammateId the teammates.
+     * @param teamName the team name.
+     * @param phase the phase of the team.
      * @return true is the team is created correctly.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName) throws SQLException {
+    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName, String phase) throws SQLException {
         //insert query
         String queryTeam = "INSERT INTO team " +
                 "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`, `teamName`) " +
@@ -285,7 +287,7 @@ public class TeamDAO {
             preparedStatement = con.prepareStatement(queryTeam, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, teammateId.size());
             preparedStatement.setInt(2, battleId);
-            preparedStatement.setString(3, TeamState.INCOMPLETE.getValue());
+            preparedStatement.setString(3, phase);
             preparedStatement.setInt(4, userId);
             preparedStatement.setInt(5, 0);
             preparedStatement.setString(6, teamName);

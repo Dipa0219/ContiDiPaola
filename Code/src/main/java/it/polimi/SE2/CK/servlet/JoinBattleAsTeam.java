@@ -5,6 +5,7 @@ import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
+import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -240,7 +241,12 @@ public class JoinBattleAsTeam extends HttpServlet {
         //join battle as a team
         boolean result;
         try {
-            result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName);
+            if (battle.getMinNumStudent() == 1){
+                result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.PARTIAL.getValue());
+            }
+            else {
+                result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.INCOMPLETE.getValue());
+            }
         }
         catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
