@@ -1,5 +1,9 @@
 package it.polimi.SE2.CK.DAO;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,10 +13,15 @@ import java.util.List;
 
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
+import it.polimi.SE2.CK.utils.EncryptorTripleDES;
 import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class UserDAO {
     private final Connection con;
@@ -29,20 +38,22 @@ public class UserDAO {
         try {
             pstatement = con.prepareStatement(query);
             pstatement.setString(1, username);
-            pstatement.setString(2, password);
+            EncryptorTripleDES encryptorTripleDES = new EncryptorTripleDES();
+            pstatement.setString(2, encryptorTripleDES.encrypt(password));
             result = pstatement.executeQuery();
             while (result.next()) {
-                if (result.getString("username").equals(username)&& result.getString("password").equals(password)) {
+                if (result.getString("username").equals(username)&& result.getString("password").equals(encryptorTripleDES.encrypt(password))) {
                     user = new SessionUser();
                     user.setId(result.getInt("idUser"));
                     user.setUsername(result.getString("Username"));
                     user.setRole(result.getInt("Role"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | InvalidAlgorithmParameterException | UnsupportedEncodingException |
+                 NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException |
+                 InvalidKeyException e) {
             throw new SQLException(e);
-        }
-        finally {
+        } finally {
             try {
                 if (result != null) {
                     result.close();
