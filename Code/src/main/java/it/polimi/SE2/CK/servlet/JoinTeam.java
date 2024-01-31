@@ -177,6 +177,21 @@ public class JoinTeam extends HttpServlet {
             return;
         }
 
+        //check if student has the team invitation
+        //500 error
+        try {
+            //406 error
+            if (!teamDAO.checkStudentHasTeamInvitation(teamId, user.getId())){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The team did not invite you");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
         //subscribe into the team
         boolean result;
         try {

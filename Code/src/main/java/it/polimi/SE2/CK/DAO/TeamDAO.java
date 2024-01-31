@@ -702,4 +702,55 @@ public class TeamDAO {
 
         return true;
     }
+
+    /**
+     * Check if student has a team invitation.
+     *
+     * @param teamId the team that should have made the invitation.
+     * @param studentId the student to check.
+     * @return true if the student has the team invitation.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkStudentHasTeamInvitation(int teamId, int studentId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM team_student " +
+                "WHERE teamId = ? and studentId = ? and phase = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, teamId);
+            preparedStatement.setInt(2, studentId);
+            preparedStatement.setString(3, TeamStudentState.NOTACCEPT.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()){
+                result = true;
+            }
+        }
+        catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
+    }
 }
