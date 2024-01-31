@@ -92,6 +92,12 @@ public class SignInManager extends HttpServlet {
         user.setName(StringEscapeUtils.escapeHtml4(request.getParameter("name")));
         user.setSurname(StringEscapeUtils.escapeHtml4(request.getParameter("surname")));
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+        //400 error
+        if (StringEscapeUtils.escapeHtml4(request.getParameter("birthdate")).length()>10){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must insert a valid date");
+            return;
+        }
         try {
             user.setBirthdate(new Date(date.parse(StringEscapeUtils.escapeHtml4(request.getParameter("birthdate"))).getTime()));
         } catch (ParseException e) {
@@ -119,9 +125,12 @@ public class SignInManager extends HttpServlet {
         UserDAO userDAO= new UserDAO(connection);
         int res;
         try {
+            System.out.println(user.getBirthdate());
             res= userDAO.createUser(user);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         if (res==1){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

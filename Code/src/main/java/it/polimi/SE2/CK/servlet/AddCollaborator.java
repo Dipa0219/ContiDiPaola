@@ -24,17 +24,8 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import static java.lang.System.in;
 
 /**
  * Servlet that manage the addition of collaborator to a tournament.

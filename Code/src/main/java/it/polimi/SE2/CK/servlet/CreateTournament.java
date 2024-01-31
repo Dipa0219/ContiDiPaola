@@ -132,6 +132,14 @@ public class CreateTournament extends HttpServlet {
             return;
         }
 
+        //valid date
+        //400 error
+        if (registrationDeadline.length()>16){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must insert a valid date");
+            return;
+        }
+
         //transform string in date
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date parseDate;
