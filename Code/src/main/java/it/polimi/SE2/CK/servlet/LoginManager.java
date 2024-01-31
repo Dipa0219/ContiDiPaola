@@ -1,9 +1,6 @@
 package it.polimi.SE2.CK.servlet;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
+import javax.servlet.*;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -57,6 +54,14 @@ public class LoginManager extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

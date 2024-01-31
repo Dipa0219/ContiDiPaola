@@ -525,7 +525,7 @@ public class BattleDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.CLOSED.getValue());
             preparedStatement.setInt(2, battleId);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -559,7 +559,7 @@ public class BattleDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.ONGOING.getValue());
             preparedStatement.setInt(2, battleId);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

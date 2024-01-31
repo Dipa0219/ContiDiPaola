@@ -7,6 +7,7 @@ import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -102,5 +103,13 @@ public class ShowTournamentInfo extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

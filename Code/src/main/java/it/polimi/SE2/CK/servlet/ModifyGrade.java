@@ -12,9 +12,11 @@ import it.polimi.SE2.CK.utils.folder.FolderManager;
 import it.polimi.SE2.CK.utils.folder.ZipFolderManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
+import okhttp3.Dispatcher;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -84,6 +86,14 @@ public class ModifyGrade extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

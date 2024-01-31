@@ -321,7 +321,7 @@ public class TournamentDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.CLOSED.getValue());
             preparedStatement.setInt(2, tournamentID);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
         }
         catch (SQLException e){
         }
@@ -653,7 +653,7 @@ public class TournamentDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.ONGOING.getValue());
             preparedStatement.setInt(2, tournamentId);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -687,7 +687,7 @@ public class TournamentDAO {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TournamentState.CLOSED.getValue());
             preparedStatement.setInt(2, tournamentId);
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

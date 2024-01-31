@@ -7,6 +7,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -64,6 +65,14 @@ public class SearchTournament extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
