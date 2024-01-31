@@ -97,6 +97,13 @@ public class JoinTeam extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
+        if (battleId<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         int teamId;
         try {
              teamId = Integer.parseInt(request.getParameter("teamInput"));
@@ -106,6 +113,12 @@ public class JoinTeam extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+        if (teamId<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
 
         //user is a student
         //401 error
@@ -120,7 +133,13 @@ public class JoinTeam extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle has already begun");
                 return;
@@ -133,22 +152,6 @@ public class JoinTeam extends HttpServlet {
         }
 
         TeamDAO teamDAO = new TeamDAO(connection);
-        //check if user has already creates a team
-        //500 error
-        try {
-            //401 error
-            if (teamDAO.checkStudentHasCreatedATeam(user.getId(), battleId)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
-                return;
-            }
-        }
-        catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
         //check if user is in another team
         //500 error
         try {
@@ -165,18 +168,10 @@ public class JoinTeam extends HttpServlet {
         }
 
         //subscribe into the team
-        boolean result;
         try {
-            result = teamDAO.joinTeam(teamId, user.getId());
+            teamDAO.joinTeam(teamId, user.getId());
         }
         catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //500 error
-        if (!result){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

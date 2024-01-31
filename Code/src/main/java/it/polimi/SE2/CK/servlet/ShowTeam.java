@@ -111,9 +111,15 @@ public class ShowTeam extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                response.getWriter().println("The battle doesn't exist or has already begun");
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle has already begun");
                 return;
             }
         } catch (SQLException e) {

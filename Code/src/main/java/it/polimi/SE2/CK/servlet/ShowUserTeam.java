@@ -81,6 +81,12 @@ public class ShowUserTeam extends HttpServlet {
             return;
         }
 
+        if (battleId<0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //user is a student
         //401 error
         if (user.getRole() != UserRole.STUDENT.getValue()){
@@ -94,7 +100,13 @@ public class ShowUserTeam extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle has already begun");
                 return;
@@ -107,7 +119,7 @@ public class ShowUserTeam extends HttpServlet {
 
 
         TeamDAO teamDAO = new TeamDAO(connection);
-        ArrayList<SessionUser> studentNotInBattle = new ArrayList<>();
+        ArrayList<SessionUser> studentNotInBattle ;
         //500 error
         try {
             studentNotInBattle = (ArrayList<SessionUser>) teamDAO.showStudentNotInBattle(user.getId(), battleId);

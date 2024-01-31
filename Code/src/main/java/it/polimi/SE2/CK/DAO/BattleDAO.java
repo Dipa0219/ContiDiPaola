@@ -214,12 +214,7 @@ public class BattleDAO {
             preparedStatement.setInt(1, battleId);
             resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
-                if(!resultSet.getString("phase").equals(TournamentState.NOTSTARTED.getValue())){
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return !resultSet.getString("phase").equals(TournamentState.NOTSTARTED.getValue());
             }
         }
         catch (SQLException e) {
@@ -233,7 +228,7 @@ public class BattleDAO {
                 throw new SQLException(e);
             }
         }
-        return true;
+        return null;
     }
 
     /**
@@ -243,20 +238,22 @@ public class BattleDAO {
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean checkBattleOngoing(int battleId) throws SQLException {
+    public Boolean checkBattleOngoing(int battleId) throws SQLException {
         //search query
         String query = "SELECT * " +
-                "FROM battle as b, tournament as t " +
-                "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? and b.idbattle = ?";
+                "FROM battle " +
+                "WHERE idbattle = ?";
         //statement
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
             preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, TournamentState.ONGOING.getValue());
-            preparedStatement.setString(2, TournamentState.ONGOING.getValue());
-            preparedStatement.setInt(3, battleId);
-            return preparedStatement.execute();
+            preparedStatement.setInt(1, battleId);
+            resultSet=preparedStatement.executeQuery();
+            while (resultSet.next()){
+                return !resultSet.getString("phase").equals(TournamentState.ONGOING.getValue());
+            }
         }
         catch (SQLException e) {
             return false;
@@ -269,6 +266,7 @@ public class BattleDAO {
                 throw new SQLException(e);
             }
         }
+        return null;
     }
 
     /**
@@ -279,7 +277,7 @@ public class BattleDAO {
      * @return false if there is no result.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean checkEducatorManageBattle(int battleId, int userId) throws SQLException {
+    public Boolean checkEducatorManageBattle(int battleId, int userId) throws SQLException {
         //search query
         String query = "SELECT * " +
                 "FROM battle as b, t_subscription as tsub " +
@@ -287,12 +285,16 @@ public class BattleDAO {
                 "   and b.idbattle = ? and tsub.UserId = ?";
         //statement
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet;
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, battleId);
             preparedStatement.setInt(2, userId);
-            return preparedStatement.execute();
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                return false;
+            }
         }
         catch (SQLException e) {
             return false;
@@ -305,6 +307,7 @@ public class BattleDAO {
                 throw new SQLException(e);
             }
         }
+        return true;
     }
 
     /**

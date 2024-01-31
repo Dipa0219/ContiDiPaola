@@ -701,7 +701,120 @@ public class ShowTeamTest {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        assertEquals(writer.toString(),"The battle doesn't exist or has already begun\r\n");
+        assertEquals("The battle doesn't exist\r\n",writer.toString());
+    }
+
+    @Test
+    public void test_battle_is_started() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ShowTeam showTeam = new ShowTeam();
+        ServletConfig servletConfig =setUp();
+        showTeam.init(servletConfig);
+
+        showTeam.doGet(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        assertEquals("The battle has already begun\r\n",writer.toString());
     }
 
     @Test

@@ -310,7 +310,7 @@ public class TournamentDAO {
      * @return true if the tournament has been closed.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean closeTournament(int tournamentID) throws SQLException {
+    public void closeTournament(int tournamentID) throws SQLException {
         //update query
         String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
@@ -324,7 +324,6 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            return false;
         }
         finally {
             try {
@@ -336,7 +335,6 @@ public class TournamentDAO {
                 throw new SQLException();
             }
         }
-        return true;
     }
 
     /**
@@ -777,8 +775,7 @@ public class TournamentDAO {
             preparedStatement.setInt(1, tournamentId);
             preparedStatement.setString(2, TournamentState.CLOSED.getValue());
             resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.first()){
+            if (resultSet.next()){
                 result = true;
             }
 

@@ -145,8 +145,8 @@ public class ShowBattlesTest {
         battle.setName("Introduction");
         battle.setDescription("First exercises");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-03-12 10:00:00").getTime())));
-        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-04-01 11:00:00").getTime()));
+        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-27 10:00:00").getTime())));
+        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-02-19 10:00:00").getTime()));
         battle.setMinNumStudent(1);
         battle.setMaxNumStudent(3);
         battles.add(battle);
