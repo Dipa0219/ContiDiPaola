@@ -236,7 +236,9 @@ function TournamentPage(user) {
                                 battleTableType.style.display=""
                                 battleTableType.innerHTML="It hasn't been created any battle for this tournament"
                             }
-                            self.updateBattleTable(message)
+                            else {
+                                self.updateBattleTable(message)
+                            }
                             break;
                         default:
                             pageOrchestrator.showError(message);
