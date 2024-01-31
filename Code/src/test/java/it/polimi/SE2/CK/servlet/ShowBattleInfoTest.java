@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -131,11 +132,12 @@ public class ShowBattleInfoTest  {
         battle.setName("Introduction");
         battle.setDescription("First exercises");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-03-12 10:00:00").getTime())));
-        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-04-01 11:00:00").getTime()));
+        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-27 10:00:00").getTime())));
+        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-02-19 10:00:00").getTime()));
         battle.setMinNumStudent(1);
         battle.setMaxNumStudent(3);
         battle.setTournamentName("C_Start1");
+        battle.setPhase(TournamentState.ONGOING);
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowBattleInfo showBattleInfo = new ShowBattleInfo();
@@ -597,7 +599,7 @@ public class ShowBattleInfoTest  {
     }
 
     @Test
-    public void test_show_battle_info_doGet() throws IOException, ServletException {
+    public void test_show_battle_info_doPost() throws IOException, ServletException {
         // Mock HttpServletRequest and HttpServletResponse
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);

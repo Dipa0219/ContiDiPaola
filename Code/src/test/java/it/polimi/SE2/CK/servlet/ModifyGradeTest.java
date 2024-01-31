@@ -1,7 +1,7 @@
 package it.polimi.SE2.CK.servlet;
 
-
 import it.polimi.SE2.CK.bean.SessionUser;
+import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -14,16 +14,16 @@ import javax.servlet.http.HttpSessionContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-public class AddCollaboratorTest {
+public class ModifyGradeTest {
 
     @Test
-    public void test_getUser_doGet() throws IOException {
+    public void test_show_team_doGet() throws IOException{
         // Mock HttpServletRequest and HttpServletResponse
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -33,9 +33,9 @@ public class AddCollaboratorTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Create an instance of LoginManager and invoke the doPost method
-        AddCollaborator addCollaborator = new AddCollaborator();
+        ModifyGrade modifyGrade = new ModifyGrade();
 
-        addCollaborator.doGet(request, response);
+        modifyGrade.doGet(request, response);
 
         // Verify that the response status is 400
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
@@ -44,7 +44,7 @@ public class AddCollaboratorTest {
     }
 
     @Test
-    public void test_add_collaborator() throws IOException, ServletException {
+    public void test_modify_grade() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -86,8 +86,8 @@ public class AddCollaboratorTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(3);
-                user.setUsername("Gary_97");
+                user.setId(2);
+                user.setUsername("MarielloBello");
                 user.setRole(0);
                 return user;
             }
@@ -137,27 +137,30 @@ public class AddCollaboratorTest {
                 return false;
             }
         });
-
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        String[] collaborators = new String[1];
-        collaborators[0]="9";
-        when(request.getParameter("TournamentId")).thenReturn("2");
-        when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("7");
 
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+        ServletConfig servletConfig =setUp();
+        modifyGrade.init(servletConfig);
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_OK);
         verify(response).setContentType("application/json");
         verify(response).setCharacterEncoding("UTF-8");
     }
 
     @Test
-    public void test_add_collaborator_with_empty_session() throws IOException {
+    public void test_search_tournament_with_empty_session() throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -251,15 +254,15 @@ public class AddCollaboratorTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
+        ModifyGrade modifyGrade = new ModifyGrade();
 
-        addCollaborator.doPost(request, response);
+        modifyGrade.doPost(request, response);
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         assertEquals(writer.toString(),"You can't access to this page\r\n");
     }
 
     @Test
-    public void test_add_collaborator_with_wrong_role() throws IOException {
+    public void test_battle_id_is_not_number() throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -352,20 +355,810 @@ public class AddCollaboratorTest {
                 return false;
             }
         });
-
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("a");
 
-        addCollaborator.doPost(request, response);
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+    }
+
+    @Test
+    public void test_battle_id_is_0_or_less() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("-1");
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+    }
+
+    @Test
+    public void test_team_id_is_not_number() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("TeamId")).thenReturn("a");
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+    }
+
+    @Test
+    public void test_team_id_is_0_or_less() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("TeamId")).thenReturn("-1");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+    }
+
+    @Test
+    public void test_team_points_is_not_number() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("a");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Points must be a number\r\n");
+    }
+
+    @Test
+    public void test_team_points_is_0_or_less() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("-1");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Points must be between 0 and 100\r\n");
+    }
+
+    @Test
+    public void test_team_points_is_101_or_more() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("101");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals(writer.toString(),"Points must be between 0 and 100\r\n");
+    }
+
+    @Test
+    public void test_modify_grade_user_is_not_educator() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("5");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertEquals(writer.toString(),"You can't do this action\r\n");
+        assertEquals("You can't access to this page\r\n",writer.toString());
     }
 
     @Test
-    public void test_add_collaborator_with_tournamentId_not_int() throws IOException {
+    public void test_battle_id_not_exists() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -458,239 +1251,29 @@ public class AddCollaboratorTest {
                 return false;
             }
         });
-
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("a");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        addCollaborator.doPost(request, response);
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("45");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("5");
 
 
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_tournamentId_less_0() throws IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        when(request.getParameter("TournamentId")).thenReturn("-1");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        addCollaborator.doPost(request, response);
-
-
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_tournament_closed() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        when(request.getParameter("TournamentId")).thenReturn("4");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
         ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
+        modifyGrade.init(servletConfig);
 
-        response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        response.getWriter().println("The tournament has already been closed");
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        assertEquals("The battle doesn't exist\r\n",writer.toString());
     }
 
     @Test
-    public void test_add_collaborator_unauthorized() throws IOException, ServletException {
+    public void test_battle_is_started() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -783,23 +1366,29 @@ public class AddCollaboratorTest {
                 return false;
             }
         });
-
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("2");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("5");
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().println("You can't do this action");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+        ServletConfig servletConfig =setUp();
+        modifyGrade.init(servletConfig);
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        assertEquals("This action is not possible in this moment\r\n",writer.toString());
     }
 
     @Test
-    public void test_add_collaborator_with_user_not_collaborator() throws IOException, ServletException {
+    public void test_user_is_not_a_collaborator() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -892,465 +1481,25 @@ public class AddCollaboratorTest {
                 return false;
             }
         });
-
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("4");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("teamGradeInput")).thenReturn("1");
+        when(request.getParameter("teamGraduationInput")).thenReturn("5");
 
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ModifyGrade modifyGrade = new ModifyGrade();
+        ServletConfig servletConfig =setUp();
+        modifyGrade.init(servletConfig);
+
+        modifyGrade.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        assertEquals(writer.toString(),"The tournament has already been closed\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_no_collaborator() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        when(request.getParameter("TournamentId")).thenReturn("3");
-        when(request.getParameterValues("collaboratorInput")).thenReturn(null);
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"You have to choose a collaborator\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_collaborator_is_user() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        String[] collaborators = new String[1];
-        collaborators[0]="1";
-        when(request.getParameter("TournamentId")).thenReturn("3");
-        when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertEquals(writer.toString(),"The chosen user must be an educator\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_collaborator_not_existing() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        String[] collaborators = new String[1];
-        collaborators[0]="444";
-        when(request.getParameter("TournamentId")).thenReturn("3");
-        when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertEquals(writer.toString(),"The user you have choose doesn't exist\r\n");
-    }
-
-    @Test
-    public void test_add_collaborator_with_collaborator_already_in() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        String[] collaborators = new String[1];
-        collaborators[0]="2";
-        when(request.getParameter("TournamentId")).thenReturn("3");
-        when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertEquals(writer.toString(),"You have selected an educator already in the tournament\r\n");
+        assertEquals("You must be a collaborator to modify grade\r\n",writer.toString());
     }
 
     private ServletConfig setUp() {

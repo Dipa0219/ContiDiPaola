@@ -89,11 +89,16 @@ public class ShowTeamInBattle extends HttpServlet {
 
         SessionUser user = (SessionUser) session.getAttribute("user");
         int battleId;
-        //400 error
         try {
-            battleId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("BattleId")));
+            battleId = Integer.parseInt(request.getParameter("BattleId"));
         }
         catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
+        if (battleId<0){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Internal error with the page, please try again");
             return;
@@ -112,9 +117,15 @@ public class ShowTeamInBattle extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleOngoing(battleId)){
+            Boolean res= battleDAO.checkBattleOngoing(battleId);
+            if (res==null){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                response.getWriter().println("The battle is not started yet");
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("This action is not possible in this moment");
                 return;
             }
         } catch (SQLException e) {
@@ -150,7 +161,7 @@ public class ShowTeamInBattle extends HttpServlet {
         }
 
         TeamDAO teamDAO = new TeamDAO(connection);
-        ArrayList<Team> teamRequest = new ArrayList<>();
+        ArrayList<Team> teamRequest ;
         //500 error
         try {
             teamRequest = (ArrayList<Team>) teamDAO.showTeamInBattle(battleId);

@@ -361,7 +361,7 @@ public class TeamDAO {
             preparedStatement.setInt(3, battleId);
             resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.first()){
+            while (resultSet.next()){
                 result = true;
             }
         }
@@ -610,37 +610,24 @@ public class TeamDAO {
      * @return true if the student is joined.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean joinTeam(int teamId, int studentId) throws SQLException {
+    public void joinTeam(int teamId, int studentId) throws SQLException {
         //update query
         String query = "UPDATE team_student " +
                 "SET `phase` = ? " +
                 "WHERE (`teamId` = ?) and (`studentId` = ?)";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        boolean result = false;
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, TeamStudentState.ACCEPT.getValue());
             preparedStatement.setInt(2, teamId);
             preparedStatement.setInt(3, studentId);
-            resultSet = preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
-            if (resultSet.first()){
-                result = true;
-            }
         }
         catch (SQLException e) {
-            result = false;
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
             try {
                 if (preparedStatement != null) {
                     preparedStatement.close();
@@ -650,7 +637,6 @@ public class TeamDAO {
             }
         }
 
-        return result;
     }
 
     /**
@@ -668,29 +654,17 @@ public class TeamDAO {
                 "WHERE (`idteam` = ?)";
         //statement
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         boolean result = false;
 
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, point);
             preparedStatement.setInt(2, teamId);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.first()){
-                result = true;
-            }
+            preparedStatement.executeUpdate();
         }
         catch (SQLException e) {
-            result = false;
+            return false;
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
             try {
                 if (preparedStatement != null) {
                     preparedStatement.close();
@@ -699,7 +673,6 @@ public class TeamDAO {
                 throw new SQLException(e1);
             }
         }
-
         return true;
     }
 

@@ -134,11 +134,14 @@ public class TournamentDAO {
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
-
+        ResultSet resultSet = null;
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, name);
-            return preparedStatement.execute();
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                return false;
+            }
         }
         catch (SQLException e){
             return false;
@@ -153,6 +156,7 @@ public class TournamentDAO {
                 throw new SQLException(e);
             }
         }
+        return true;
     }
 
     /**
@@ -268,7 +272,7 @@ public class TournamentDAO {
      * @return true if the tournament has been added to the database.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean createTournament(Tournament tournament) throws SQLException {
+    public void createTournament(Tournament tournament) throws SQLException {
         //insert query
         String query = "INSERT INTO `tournament` " +
                 "(`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) " +
@@ -286,7 +290,6 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            return false;
         }
         finally {
             try {
@@ -298,7 +301,6 @@ public class TournamentDAO {
                 throw new SQLException();
             }
         }
-        return true;
     }
 
     /**
@@ -308,7 +310,7 @@ public class TournamentDAO {
      * @return true if the tournament has been closed.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean closeTournament(int tournamentID) throws SQLException {
+    public void closeTournament(int tournamentID) throws SQLException {
         //update query
         String query = "UPDATE tournament " +
                 "SET `Phase` = ? " +
@@ -322,7 +324,6 @@ public class TournamentDAO {
             preparedStatement.execute();
         }
         catch (SQLException e){
-            return false;
         }
         finally {
             try {
@@ -334,7 +335,6 @@ public class TournamentDAO {
                 throw new SQLException();
             }
         }
-        return true;
     }
 
     /**
@@ -775,8 +775,7 @@ public class TournamentDAO {
             preparedStatement.setInt(1, tournamentId);
             preparedStatement.setString(2, TournamentState.CLOSED.getValue());
             resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.first()){
+            if (resultSet.next()){
                 result = true;
             }
 

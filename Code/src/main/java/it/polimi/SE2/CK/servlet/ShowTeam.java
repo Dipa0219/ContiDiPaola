@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TeamDAO;
 import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Team;
 import it.polimi.SE2.CK.bean.Tournament;
@@ -97,6 +98,12 @@ public class ShowTeam extends HttpServlet {
             return;
         }
 
+        if (battleId<0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //user is a student
         //401 error
         if (user.getRole() != UserRole.STUDENT.getValue()){
@@ -107,10 +114,17 @@ public class ShowTeam extends HttpServlet {
 
         //battle exists and is in Not Started phase
         BattleDAO battleDAO = new BattleDAO(connection);
+        Battle battle;
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle has already begun");
                 return;
@@ -122,7 +136,7 @@ public class ShowTeam extends HttpServlet {
         }
 
         TeamDAO teamDAO = new TeamDAO(connection);
-        ArrayList<Team> teamRequest = new ArrayList<>();
+        ArrayList<Team> teamRequest;
         //500 error
         try {
             teamRequest = (ArrayList<Team>) teamDAO.showTeamRequest(user.getId(), battleId);

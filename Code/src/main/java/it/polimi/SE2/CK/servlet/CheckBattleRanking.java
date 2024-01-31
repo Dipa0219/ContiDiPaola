@@ -49,6 +49,7 @@ public class CheckBattleRanking extends HttpServlet {
             throw new UnavailableException("Couldn't get db connection");
         }
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
@@ -116,7 +117,6 @@ public class CheckBattleRanking extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(rankings);
-        System.out.println(json);
         response.getWriter().write(json);
     }
 

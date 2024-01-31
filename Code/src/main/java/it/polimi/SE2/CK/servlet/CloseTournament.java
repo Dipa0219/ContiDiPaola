@@ -115,6 +115,12 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
+        if (tournament.getId()<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournament.getId());
@@ -124,10 +130,14 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
+        if(tournament==null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("The chosen tournament doesn't exists");
+            return;
+        }
+
         //user is an educator
         SessionUser user = (SessionUser) session.getAttribute("user");
-        UserDAO userDAO = new UserDAO(connection);
-        //500 error
         //401 error
         if (user.getRole() != UserRole.EDUCATOR.getValue()){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -141,7 +151,7 @@ public class CloseTournament extends HttpServlet {
             //401 error
             if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
+                response.getWriter().println("Only collaborator can close a tournament");
                 return;
             }
         } catch (SQLException e) {
@@ -150,11 +160,11 @@ public class CloseTournament extends HttpServlet {
             return;
         }
 
-        //tournament is in Ongoing phase
+        //tournament is already been closed phase
         //406 error
         if (!tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.getWriter().println("The tournament has already been closed");
+            response.getWriter().println("The tournament is not closable now");
             return;
         }
 
@@ -175,18 +185,10 @@ public class CloseTournament extends HttpServlet {
 
 
         //close tournament
-        boolean result;
         //500 error
         try {
-            result = tournamentDAO.closeTournament(tournament.getId());
+            tournamentDAO.closeTournament(tournament.getId());
         } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //500 error
-        if (!result){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

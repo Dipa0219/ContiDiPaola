@@ -118,6 +118,13 @@ public class ModifyGrade extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
+        if (battleId<0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         int teamId;
         try {
             teamId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("teamGradeInput")));
@@ -127,13 +134,26 @@ public class ModifyGrade extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
+        if (teamId<0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         int teamPoint;
         try {
             teamPoint = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("teamGraduationInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
+            response.getWriter().println("Points must be a number");
+            return;
+        }
+
+        if (teamPoint < 1 || teamPoint > 100){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Points must be between 0 and 100");
             return;
         }
 
@@ -150,9 +170,15 @@ public class ModifyGrade extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleOngoing(battleId)){
+            Boolean res= battleDAO.checkBattleOngoing(battleId);
+            if (res==null){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                response.getWriter().println("The battle is not started yet");
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("This action is not possible in this moment");
                 return;
             }
         } catch (SQLException e) {
@@ -161,21 +187,13 @@ public class ModifyGrade extends HttpServlet {
             return;
         }
 
-        //point is between 1, 100
-        //406 error
-        if (teamPoint < 1 || teamPoint > 100){
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.getWriter().println("he points that can be assigned are between 1 and 100.");
-            return;
-        }
 
         //educator is a collaborator for the battle and so for the tournament
         //500 error
         try {
-            //401 error
-            if (!battleDAO.checkEducatorManageBattle(battleId, user.getId())){
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
+            if (battleDAO.checkEducatorManageBattle(battleId, user.getId())){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("You must be a collaborator to modify grade");
                 return;
             }
         } catch (SQLException e) {
@@ -186,18 +204,10 @@ public class ModifyGrade extends HttpServlet {
 
         //update point
         TeamDAO teamDAO = new TeamDAO(connection);
-        boolean result;
         //500 error
         try {
-            result = teamDAO.updatePointTeam(teamId, teamPoint);
+            teamDAO.updatePointTeam(teamId, teamPoint);
         } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //500 error
-        if (!result){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
