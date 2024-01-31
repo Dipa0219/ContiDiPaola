@@ -20,6 +20,8 @@ import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
 
 @WebServlet ("/LoginManager")
 @MultipartConfig
@@ -47,15 +49,27 @@ public class LoginManager extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         String usrn;
         String pwd;
-        usrn = request.getParameter("LoginUsername");
-        pwd = request.getParameter("LoginPassword");
+        usrn = StringEscapeUtils.escapeHtml4(request.getParameter("LoginUsername"));
+        pwd = StringEscapeUtils.escapeHtml4(request.getParameter("LoginPassword"));
         if (StringUtils.isAnyEmpty(usrn,pwd)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Credentials must be not null");

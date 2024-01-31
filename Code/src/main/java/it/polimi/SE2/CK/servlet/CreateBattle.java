@@ -12,6 +12,7 @@ import it.polimi.SE2.CK.utils.folder.ZipFolderManager;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -74,6 +75,12 @@ public class CreateBattle extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
     }
@@ -86,6 +93,12 @@ public class CreateBattle extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         HttpSession session = request.getSession();
         //the user is authorized or not - 401 error
         if(session.isNew() || session.getAttribute("user")==null) {
@@ -94,13 +107,13 @@ public class CreateBattle extends HttpServlet {
             return;
         }
 
-        String battleName = request.getParameter("battleNameInput");
-        String battleDescription = request.getParameter("battleDescriptionInput");
-        String registrationDeadline = request.getParameter("battleRegistrationDeadlineInput");
-        String submissionDeadline = request.getParameter("battleSubmissionDeadlineInput");
+        String battleName = StringEscapeUtils.escapeHtml4(request.getParameter("battleNameInput"));
+        String battleDescription = StringEscapeUtils.escapeHtml4(request.getParameter("battleDescriptionInput"));
+        String registrationDeadline = StringEscapeUtils.escapeHtml4(request.getParameter("battleRegistrationDeadlineInput"));
+        String submissionDeadline = StringEscapeUtils.escapeHtml4(request.getParameter("battleSubmissionDeadlineInput"));
         int tournamentId;
         try {
-             tournamentId = Integer.parseInt(request.getParameter("TournamentId"));
+             tournamentId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("TournamentId")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -109,7 +122,7 @@ public class CreateBattle extends HttpServlet {
         }
         int minStudentPerTeam;
         try {
-            minStudentPerTeam = Integer.parseInt(request.getParameter("minStudentPerTeamInput"));
+            minStudentPerTeam = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("minStudentPerTeamInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -118,7 +131,7 @@ public class CreateBattle extends HttpServlet {
         }
         int maxStudentPerTeam;
         try {
-            maxStudentPerTeam = Integer.parseInt(request.getParameter("maxStudentPerTeamInput"));
+            maxStudentPerTeam = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("maxStudentPerTeamInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
