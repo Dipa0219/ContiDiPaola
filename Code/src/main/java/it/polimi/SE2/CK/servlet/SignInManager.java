@@ -2,8 +2,11 @@ package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.User;
+import it.polimi.SE2.CK.utils.EmailManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -20,7 +23,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static java.lang.Integer.getInteger;
 
 @WebServlet("/SignInManager")
 @MultipartConfig
@@ -46,11 +48,31 @@ public class SignInManager extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         if (StringUtils.isAnyEmpty(request.getParameter("role"),request.getParameter("name"),request.getParameter("surname"),
                 request.getParameter("birthdate"),request.getParameter("SignInUsername"), request.getParameter("email"),
                 request.getParameter("SignInPassword"), request.getParameter("userGH"))) {
@@ -60,39 +82,53 @@ public class SignInManager extends HttpServlet {
         }
         User user= new User();
         try {
-            user.setRole(Integer.parseInt(request.getParameter("role")));
+            user.setRole(Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("role"))));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("An error occurred with the data sent, please retry");
             return;
         }
-        user.setName(request.getParameter("name"));
-        user.setSurname(request.getParameter("surname"));
+        user.setName(StringEscapeUtils.escapeHtml4(request.getParameter("name")));
+        user.setSurname(StringEscapeUtils.escapeHtml4(request.getParameter("surname")));
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+        //400 error
+        if (StringEscapeUtils.escapeHtml4(request.getParameter("birthdate")).length()>10){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must insert a valid date");
+            return;
+        }
         try {
-            user.setBirthdate(new Date(date.parse(request.getParameter("birthdate")).getTime()));
+            user.setBirthdate(new Date(date.parse(StringEscapeUtils.escapeHtml4(request.getParameter("birthdate"))).getTime()));
         } catch (ParseException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("You must insert a date in the field birthdate, please retry");
             return;
         }
-        user.setUsername(request.getParameter("SignInUsername"));
-        user.setEmail(request.getParameter("email"));
-        user.setPassword(request.getParameter("SignInPassword"));
-        if (!user.getPassword().equals(request.getParameter("ConfirmPassword"))){
+        user.setUsername(StringEscapeUtils.escapeHtml4(request.getParameter("SignInUsername")));
+
+        //check if the email structure is correct
+        if (!EmailManager.isValidEmail(StringEscapeUtils.escapeHtml4(request.getParameter("email")))) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must insert a valid email, please retry");
+            return;
+        }
+
+        user.setEmail(StringEscapeUtils.escapeHtml4(request.getParameter("email")));
+        user.setPassword(StringEscapeUtils.escapeHtml4(request.getParameter("SignInPassword")));
+        if (!user.getPassword().equals(StringEscapeUtils.escapeHtml4(request.getParameter("ConfirmPassword")))){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("The two password must be the same, please retry");
             return;
         }
-        user.setGitHubUser(request.getParameter("userGH"));
+        user.setGitHubUser(StringEscapeUtils.escapeHtml4(request.getParameter("userGH")));
         UserDAO userDAO= new UserDAO(connection);
         int res;
         try {
             res= userDAO.createUser(user);
         } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Server not respond");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
             return;
         }
         if (res==1){

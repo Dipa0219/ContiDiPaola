@@ -270,7 +270,7 @@ function BattlePage(user){
                                 }
                                 break
                             default:
-                                pageOrchestrator.showError(message);
+                                joinBattleAsTeamButton.style.display = "none"
                                 break
                         }
                     }
@@ -292,7 +292,7 @@ function BattlePage(user){
                                 }
                                 break
                             default:
-                                pageOrchestrator.showError(message);
+                                selectTeamButton.style.display = "none"
                                 break
                         }
                     }
@@ -317,7 +317,7 @@ function BattlePage(user){
                                 }
                                 break
                             default:
-                                pageOrchestrator.showError(message);
+                                modifyGradeButton.style.display = "none"
                                 break
                         }
                     }

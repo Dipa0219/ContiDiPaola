@@ -21,6 +21,7 @@ function PersonalHomePage(user) {
     let tournamentTableType= document.getElementById("tournamentTableType")
 
     let search_submit =document.getElementById("search_submit")
+    let searchTournament = document.getElementById("searchTournament")
 
     search_submit.addEventListener("click",(e)=>{
         pageOrchestrator.showPersonalHomePage()
@@ -29,8 +30,25 @@ function PersonalHomePage(user) {
         }
         tournamentTableDiv.style.display = ""
         var form = e.target.closest("form")
+        search(form)
+    })
+
+    searchTournament.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter'){
+            pageOrchestrator.showPersonalHomePage()
+            if (user.role !== 1) {
+                homePageButton.style.display = "";
+            }
+            tournamentTableDiv.style.display = ""
+            var form = e.target.closest("form")
+            search(form)
+        }
+    })
+
+    //Function that search a tournament
+    function search(form) {
         if (form.checkValidity()) {
-            makeCall("POST","SearchTournament", e.target.closest("form"), function(x) {
+            makeCall("POST","SearchTournament", form, function(x) {
                     if (x.readyState === XMLHttpRequest.DONE) {
                         var message = x.responseText;
                         switch (x.status) {
@@ -47,7 +65,7 @@ function PersonalHomePage(user) {
             )
             clearForm("searchForm")
         }
-    })
+    }
 
     //Function that perform the creation of a tournament
     function creationTournament(form){

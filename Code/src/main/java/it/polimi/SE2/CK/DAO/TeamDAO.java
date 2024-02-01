@@ -261,10 +261,12 @@ public class TeamDAO {
      * @param userId the student that creates the team.
      * @param battleId the battle to join.
      * @param teammateId the teammates.
+     * @param teamName the team name.
+     * @param phase the phase of the team.
      * @return true is the team is created correctly.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName) throws SQLException {
+    public boolean joinBattleAsTeam(int userId, int battleId, List<Integer> teammateId, String teamName, String phase) throws SQLException {
         //insert query
         String queryTeam = "INSERT INTO team " +
                 "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`, `teamName`) " +
@@ -285,7 +287,7 @@ public class TeamDAO {
             preparedStatement = con.prepareStatement(queryTeam, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, teammateId.size());
             preparedStatement.setInt(2, battleId);
-            preparedStatement.setString(3, TeamState.INCOMPLETE.getValue());
+            preparedStatement.setString(3, phase);
             preparedStatement.setInt(4, userId);
             preparedStatement.setInt(5, 0);
             preparedStatement.setString(6, teamName);
@@ -675,5 +677,56 @@ public class TeamDAO {
             }
         }
         return true;
+    }
+
+    /**
+     * Check if student has a team invitation.
+     *
+     * @param teamId the team that should have made the invitation.
+     * @param studentId the student to check.
+     * @return true if the student has the team invitation.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public boolean checkStudentHasTeamInvitation(int teamId, int studentId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM team_student " +
+                "WHERE teamId = ? and studentId = ? and phase = ?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean result = false;
+
+        try{
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, teamId);
+            preparedStatement.setInt(2, studentId);
+            preparedStatement.setString(3, TeamStudentState.NOTACCEPT.getValue());
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()){
+                result = true;
+            }
+        }
+        catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+        }
+
+        return result;
     }
 }

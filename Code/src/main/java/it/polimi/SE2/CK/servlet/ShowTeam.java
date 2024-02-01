@@ -11,7 +11,9 @@ import it.polimi.SE2.CK.bean.Team;
 import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
+import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -70,6 +72,12 @@ public class ShowTeam extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         HttpSession session = request.getSession();
 
         //the user is authorized or not
@@ -83,7 +91,7 @@ public class ShowTeam extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
         int battleId;
         try {
-            battleId = Integer.parseInt(request.getParameter("BattleId"));
+            battleId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("BattleId")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -156,7 +164,21 @@ public class ShowTeam extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

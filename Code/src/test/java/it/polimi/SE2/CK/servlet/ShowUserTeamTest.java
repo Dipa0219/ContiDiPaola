@@ -136,9 +136,8 @@ public class ShowUserTeamTest {
 
         ArrayList<SessionUser> users= new ArrayList<>();
         SessionUser user = new SessionUser();
-        user.setId(8);
-        user.setUsername("David86");
-        user.setRole(0);
+        user.setId(11);
+        user.setUsername("Casa");
         users.add(user);
 
         // Verify that the response status, content type, and character encoding are set correctly

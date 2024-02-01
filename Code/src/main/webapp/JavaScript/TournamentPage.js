@@ -137,7 +137,7 @@ function TournamentPage(user) {
         else {
             form.reportValidity()
         }
-        clearForm("createBattleSubmit")
+        clearForm("createBattleForm")
     })
 
     //Function that perform the closure of a tournament
@@ -236,7 +236,9 @@ function TournamentPage(user) {
                                 battleTableType.style.display=""
                                 battleTableType.innerHTML="It hasn't been created any battle for this tournament"
                             }
-                            self.updateBattleTable(message)
+                            else {
+                                self.updateBattleTable(message)
+                            }
                             break;
                         default:
                             pageOrchestrator.showError(message);

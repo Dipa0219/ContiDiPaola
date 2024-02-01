@@ -6,7 +6,9 @@ import it.polimi.SE2.CK.bean.Tournament;
 import it.polimi.SE2.CK.utils.EmailManager;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -69,8 +71,22 @@ public class CreateTournament extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -81,6 +97,12 @@ public class CreateTournament extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         HttpSession session = request.getSession();
         //the user is authorized or not - 401 error
         if(session.isNew() || session.getAttribute("user")==null) {
@@ -89,9 +111,9 @@ public class CreateTournament extends HttpServlet {
             return;
         }
 
-        String tournamentName = request.getParameter("tournamentNameInput");
-        String tournamentDescription = request.getParameter("tournamentDescriptionInput");
-        String registrationDeadline = request.getParameter("tournamentRegistrationDeadlineInput");
+        String tournamentName = StringEscapeUtils.escapeHtml4(request.getParameter("tournamentNameInput"));
+        String tournamentDescription = StringEscapeUtils.escapeHtml4(request.getParameter("tournamentDescriptionInput"));
+        String registrationDeadline = StringEscapeUtils.escapeHtml4(request.getParameter("tournamentRegistrationDeadlineInput"));
 
         //400 error
         if (StringUtils.isAnyEmpty(tournamentName, registrationDeadline)) {
@@ -107,6 +129,14 @@ public class CreateTournament extends HttpServlet {
         if (tournamentDescription.length()>200){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("The max length of tournament name is 200 character");
+            return;
+        }
+
+        //valid date
+        //400 error
+        if (registrationDeadline.length()>16){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You must insert a valid date");
             return;
         }
 

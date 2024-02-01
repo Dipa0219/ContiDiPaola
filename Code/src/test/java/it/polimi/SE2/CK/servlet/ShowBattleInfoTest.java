@@ -136,6 +136,7 @@ public class ShowBattleInfoTest  {
         battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-03-12 11:00:00").getTime()));
         battle.setMinNumStudent(1);
         battle.setMaxNumStudent(3);
+        battle.setTournamentId(1);
         battle.setTournamentName("C_Start1");
         battle.setPhase(TournamentState.ONGOING);
 

@@ -91,6 +91,13 @@
       <artifactId>org.eclipse.jgit</artifactId>
       <version>1.0.0.201106090707-r</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.9</version>
+    </dependency>
+
   </dependencies>
 
 

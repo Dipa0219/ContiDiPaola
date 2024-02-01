@@ -6,7 +6,9 @@ import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
+import org.apache.commons.text.StringEscapeUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -67,8 +69,22 @@ public class JoinTeam extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.getWriter().println("Request non acceptable");
+
+        String path = "ErrorPage.html";
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -79,6 +95,12 @@ public class JoinTeam extends HttpServlet {
      * @throws IOException if an input or output error is detected when the servlet handles the GET request
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
+        response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
+        response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
+        response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
+
         HttpSession session = request.getSession();
         //the user is authorized or not - 401 error
         if(session.isNew() || session.getAttribute("user")==null) {
@@ -90,7 +112,7 @@ public class JoinTeam extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
         int battleId;
         try {
-             battleId = Integer.parseInt(request.getParameter("BattleId"));
+             battleId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("BattleId")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -106,7 +128,7 @@ public class JoinTeam extends HttpServlet {
 
         int teamId;
         try {
-             teamId = Integer.parseInt(request.getParameter("teamInput"));
+             teamId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("teamInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -159,6 +181,21 @@ public class JoinTeam extends HttpServlet {
             if (teamDAO.checkStudentInOtherTeam(user.getId(), battleId)){
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
                 response.getWriter().println("You are already signed up to another team");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
+        //check if student has the team invitation
+        //500 error
+        try {
+            //406 error
+            if (!teamDAO.checkStudentHasTeamInvitation(teamId, user.getId())){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The team did not invite you");
                 return;
             }
         } catch (SQLException e) {
