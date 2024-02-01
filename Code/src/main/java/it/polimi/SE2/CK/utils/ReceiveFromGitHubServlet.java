@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.SE2.CK.DAO.BattleDAO;
 import it.polimi.SE2.CK.DAO.TeamDAO;
+import it.polimi.SE2.CK.bean.Battle;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -92,12 +94,25 @@ public class ReceiveFromGitHubServlet extends HttpServlet {
         String battleName = resultArray[0];
         String teamName = resultArray[1];
 
+        //check the existence of battle in the database
         BattleDAO battleDAO = new BattleDAO(connection);
         int battleId;
         try {
             battleId = battleDAO.getBattleId(battleName);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+        Battle battle;
+        try {
+            battle = battleDAO.showBattleById(battleId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        //the battle is not in Ongoing phase
+        if (battle.getPhase() != TournamentState.ONGOING) {
+            throw new RuntimeException();
         }
 
         TeamDAO teamDAO = new TeamDAO(connection);
