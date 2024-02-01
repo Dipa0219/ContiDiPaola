@@ -364,7 +364,7 @@ public class UserDAO {
         } catch (SQLException e) {
             throw new SQLException(e);
         }
-        String query2="INSERT INTO `new_schema`.`user` " +
+        String query2="INSERT INTO `user` " +
                 "(`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         try {

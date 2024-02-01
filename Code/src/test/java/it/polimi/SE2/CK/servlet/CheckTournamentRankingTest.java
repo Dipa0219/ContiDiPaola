@@ -7,9 +7,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -139,20 +137,14 @@ public class CheckTournamentRankingTest  {
         Ranking ranking = new Ranking();
         ranking.setPosition(1);
         ranking.setName("Bob99");
-        ranking.setPoints(7);
+        ranking.setPoints(5);
         rankings.add(ranking);
-        Ranking ranking2 = new Ranking();
-        ranking2.setPosition(2);
-        ranking2.setName("ValeTuttoPane");
-        ranking2.setPoints(0);
-        rankings.add(ranking2);
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(rankings);
-        response.getWriter().write(json);
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_OK);
-        assertEquals(json+json,writer.toString());
+        assertEquals(json,writer.toString());
     }
 
     @Test
@@ -254,7 +246,7 @@ public class CheckTournamentRankingTest  {
 
         checkTournamentRanking.doGet(request, response);
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertEquals(writer.toString(),"You can't access to this page\r\n");
+        assertEquals("You can't access to this page\r\n", writer.toString());
     }
 
     @Test
@@ -367,7 +359,7 @@ public class CheckTournamentRankingTest  {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+        assertEquals("Internal error with the page, please try again\r\n", writer.toString());
     }
 
     @Test
@@ -480,7 +472,7 @@ public class CheckTournamentRankingTest  {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+        assertEquals("Internal error with the page, please try again\r\n", writer.toString());
     }
 
     @Test
@@ -581,7 +573,7 @@ public class CheckTournamentRankingTest  {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("TournamentId")).thenReturn("45");
+        when(request.getParameter("TournamentId")).thenReturn("445");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -595,11 +587,10 @@ public class CheckTournamentRankingTest  {
         res.put("NotStarted","There isn't any tournament with the given id, please try with an other one");
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(res);
-        response.getWriter().write(json);
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
-        assertEquals(json+json,writer.toString());
+        assertEquals(json,writer.toString());
     }
 
     @Test
@@ -700,7 +691,7 @@ public class CheckTournamentRankingTest  {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("TournamentId")).thenReturn("2");
+        when(request.getParameter("TournamentId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -714,11 +705,10 @@ public class CheckTournamentRankingTest  {
         res.put("NotStarted","1");
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(res);
-        response.getWriter().write(json);
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
-        assertEquals(json+json,writer.toString());
+        assertEquals(json,writer.toString());
     }
 
     @Test
@@ -730,6 +720,17 @@ public class CheckTournamentRankingTest  {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         CheckTournamentRanking checkTournamentRanking = new CheckTournamentRanking();
@@ -748,7 +749,7 @@ public class CheckTournamentRankingTest  {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

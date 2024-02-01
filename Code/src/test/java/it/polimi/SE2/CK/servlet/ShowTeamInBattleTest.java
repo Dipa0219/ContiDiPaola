@@ -7,9 +7,7 @@ import it.polimi.SE2.CK.bean.Team;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -69,8 +67,8 @@ public class ShowTeamInBattleTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setId(4);
+                user.setUsername("Ted69");
                 user.setRole(0);
                 return user;
             }
@@ -124,7 +122,7 @@ public class ShowTeamInBattleTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("BattleId")).thenReturn("2");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -137,7 +135,7 @@ public class ShowTeamInBattleTest {
         ArrayList<Team> teams= new ArrayList<>();
         Team team = new Team();
         team.setIdTeam(1);
-        team.setTeamName("Ciccio");
+        team.setTeamName("Bombers");
         teams.add(team);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -706,7 +704,7 @@ public class ShowTeamInBattleTest {
     }
 
     @Test
-    public void test_battle_is_started() throws IOException, ServletException {
+    public void test_battle_is_not_started() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -803,7 +801,7 @@ public class ShowTeamInBattleTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -827,6 +825,17 @@ public class ShowTeamInBattleTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
@@ -845,9 +854,9 @@ public class ShowTeamInBattleTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }

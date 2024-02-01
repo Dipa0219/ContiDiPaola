@@ -6,9 +6,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -67,7 +65,7 @@ public class ShowAddCollaboratorTest{
             @Override
             public Object getAttribute(String s) {
                 SessionUser user =new SessionUser();
-                user.setId(3);
+                user.setId(2);
                 user.setUsername("Gary_97");
                 user.setRole(0);
                 return user;
@@ -122,12 +120,12 @@ public class ShowAddCollaboratorTest{
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("3");
+        when(request.getParameter("TournamentId")).thenReturn("1");
 
         ArrayList<SessionUser> collaborators = new ArrayList<>();
         SessionUser user = new SessionUser();
-        user.setId(9);
-        user.setUsername("VivaVerdi");
+        user.setId(3);
+        user.setUsername("Josh78");
         user.setRole(0);
         collaborators.add(user);
         // Invoke doGet method
@@ -625,8 +623,8 @@ public class ShowAddCollaboratorTest{
             @Override
             public Object getAttribute(String s) {
                 SessionUser user =new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setId(3);
+                user.setUsername("Josh78");
                 user.setRole(0);
                 return user;
             }
@@ -680,7 +678,7 @@ public class ShowAddCollaboratorTest{
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("2");
+        when(request.getParameter("TournamentId")).thenReturn("1");
 
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
@@ -790,7 +788,7 @@ public class ShowAddCollaboratorTest{
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("4");
+        when(request.getParameter("TournamentId")).thenReturn("2");
 
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
@@ -811,6 +809,17 @@ public class ShowAddCollaboratorTest{
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
@@ -829,7 +838,7 @@ public class ShowAddCollaboratorTest{
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

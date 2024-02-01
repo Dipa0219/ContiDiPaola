@@ -7,9 +7,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -71,9 +69,9 @@ public class ShowTournamentTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(1);
-                user.setUsername("Bob99");
-                user.setRole(1);
+                user.setId(2);
+                user.setUsername("David87");
+                user.setRole(0);
                 return user;
             }
 
@@ -137,11 +135,11 @@ public class ShowTournamentTest {
         Tournament tournament = new Tournament();
         tournament.setId(1);
         tournament.setName("C_Start1");
-        tournament.setDescription(null);
+        tournament.setDescription("Basic course of C language");
         tournament.setCreatorId(2);
-        tournament.setCreatorUsername("MarielloBello");
+        tournament.setCreatorUsername("David87");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-02-09 10:00:00").getTime())));
+        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-19 20:00:00").getTime())));
         tournaments.add(tournament);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -265,6 +263,17 @@ public class ShowTournamentTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         ShowTournament showTournament = new ShowTournament();
@@ -283,7 +292,7 @@ public class ShowTournamentTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

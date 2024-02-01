@@ -125,7 +125,6 @@ public class SignInManager extends HttpServlet {
         UserDAO userDAO= new UserDAO(connection);
         int res;
         try {
-            System.out.println(user.getBirthdate());
             res= userDAO.createUser(user);
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

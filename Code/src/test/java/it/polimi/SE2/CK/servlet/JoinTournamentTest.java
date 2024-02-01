@@ -3,9 +3,7 @@ package it.polimi.SE2.CK.servlet;
 import it.polimi.SE2.CK.bean.SessionUser;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,6 +28,17 @@ public class JoinTournamentTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         JoinTournament joinTournament = new JoinTournament();
@@ -85,8 +94,8 @@ public class JoinTournamentTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(4);
-                user.setUsername("ValeTuttoPane");
+                user.setId(5);
+                user.setUsername("Jean00");
                 user.setRole(1);
                 return user;
             }
@@ -141,7 +150,7 @@ public class JoinTournamentTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("TournamentId")).thenReturn("1");
+        when(request.getParameter("TournamentId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -201,7 +210,7 @@ public class JoinTournamentTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -716,7 +725,7 @@ public class JoinTournamentTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

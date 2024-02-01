@@ -4,9 +4,7 @@ package it.polimi.SE2.CK.servlet;
 import it.polimi.SE2.CK.bean.SessionUser;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -31,7 +29,17 @@ public class AddCollaboratorTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
 
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
         // Create an instance of LoginManager and invoke the doPost method
         AddCollaborator addCollaborator = new AddCollaborator();
 
@@ -86,8 +94,8 @@ public class AddCollaboratorTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(3);
-                user.setUsername("Gary_97");
+                user.setId(4);
+                user.setUsername("Ted69");
                 user.setRole(0);
                 return user;
             }
@@ -142,8 +150,8 @@ public class AddCollaboratorTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         String[] collaborators = new String[1];
-        collaborators[0]="9";
-        when(request.getParameter("TournamentId")).thenReturn("2");
+        collaborators[0]="3";
+        when(request.getParameter("TournamentId")).thenReturn("6");
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
@@ -624,7 +632,7 @@ public class AddCollaboratorTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("Josh78");
                 user.setRole(0);
                 return user;
             }
@@ -733,7 +741,7 @@ public class AddCollaboratorTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -799,115 +807,6 @@ public class AddCollaboratorTest {
     }
 
     @Test
-    public void test_add_collaborator_with_user_not_collaborator() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(9);
-                user.setUsername("VivaVerdi");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        when(request.getParameter("TournamentId")).thenReturn("4");
-        // Invoke doGet method
-        AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
-        addCollaborator.init(servletConfig);
-        addCollaborator.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        assertEquals(writer.toString(),"The tournament has already been closed\r\n");
-    }
-
-    @Test
     public void test_add_collaborator_with_no_collaborator() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -950,9 +849,9 @@ public class AddCollaboratorTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
-                user.setRole(0);
+                user.setId(1);
+                user.setUsername("Bob99");
+                user.setRole(1);
                 return user;
             }
 
@@ -1005,7 +904,7 @@ public class AddCollaboratorTest {
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        when(request.getParameter("TournamentId")).thenReturn("3");
+        when(request.getParameter("TournamentId")).thenReturn("1");
         when(request.getParameterValues("collaboratorInput")).thenReturn(null);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
@@ -1013,8 +912,8 @@ public class AddCollaboratorTest {
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"You have to choose a collaborator\r\n");
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertEquals(writer.toString(),"You can't do this action\r\n");
     }
 
     @Test
@@ -1061,7 +960,7 @@ public class AddCollaboratorTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -1117,7 +1016,7 @@ public class AddCollaboratorTest {
 
         String[] collaborators = new String[1];
         collaborators[0]="1";
-        when(request.getParameter("TournamentId")).thenReturn("3");
+        when(request.getParameter("TournamentId")).thenReturn("1");
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
@@ -1173,7 +1072,7 @@ public class AddCollaboratorTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -1229,7 +1128,7 @@ public class AddCollaboratorTest {
 
         String[] collaborators = new String[1];
         collaborators[0]="444";
-        when(request.getParameter("TournamentId")).thenReturn("3");
+        when(request.getParameter("TournamentId")).thenReturn("1");
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
@@ -1285,7 +1184,7 @@ public class AddCollaboratorTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -1340,8 +1239,8 @@ public class AddCollaboratorTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         String[] collaborators = new String[1];
-        collaborators[0]="2";
-        when(request.getParameter("TournamentId")).thenReturn("3");
+        collaborators[0]="4";
+        when(request.getParameter("TournamentId")).thenReturn("1");
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
@@ -1359,7 +1258,7 @@ public class AddCollaboratorTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

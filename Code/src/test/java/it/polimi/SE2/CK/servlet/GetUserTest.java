@@ -11,9 +11,7 @@ import it.polimi.SE2.CK.servlet.GetUser;
 import okhttp3.Connection;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -141,7 +139,7 @@ public class GetUserTest {
         user.setName("Bob");
         user.setSurname("Ross");
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-        user.setBirthdate(new Date(date.parse("1999-03-04").getTime()));
+        user.setBirthdate(new Date(date.parse("1999-02-03").getTime()));
         user.setUsername("Bob99");
         user.setEmail("BobRoss@gmail.com");
         user.setRole(1);
@@ -384,6 +382,17 @@ public class GetUserTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         GetUser loginManager = new GetUser();
@@ -402,7 +411,7 @@ public class GetUserTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

@@ -159,7 +159,7 @@ public class CreateTournament extends HttpServlet {
         //400 error
         if (tournamentRegistrationDeadline.before(currentTimestamp)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
+            response.getWriter().println("You must insert a date after now");
             return;
         }
 

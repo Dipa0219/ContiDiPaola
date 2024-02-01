@@ -9,9 +9,7 @@ import it.polimi.SE2.CK.servlet.LoginManager;
 
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.*;
 
 import java.io.IOException;
@@ -125,7 +123,7 @@ public class LoginManagerTest {
             }
         });
         when(request.getParameter("LoginUsername")).thenReturn("Bob99");
-        when(request.getParameter("LoginPassword")).thenReturn("1");
+        when(request.getParameter("LoginPassword")).thenReturn("password");
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Mock the UserDAO and SessionUser objects
@@ -227,6 +225,17 @@ public class LoginManagerTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         LoginManager loginManager = new LoginManager();
@@ -245,7 +254,7 @@ public class LoginManagerTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

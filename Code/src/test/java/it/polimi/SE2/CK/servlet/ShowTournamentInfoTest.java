@@ -8,9 +8,7 @@ import it.polimi.SE2.CK.bean.Tournament;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -126,17 +124,17 @@ public class ShowTournamentInfoTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("TournamentId")).thenReturn("2");
+        when(request.getParameter("TournamentId")).thenReturn("1");
 
         Tournament tournament = new Tournament();
-        tournament.setId(2);
-        tournament.setName("Java_1");
-        tournament.setDescription("First tournament to start with the base element with java");
-        tournament.setCreatorId(3);
-        tournament.setCreatorUsername("Gary_97");
+        tournament.setId(1);
+        tournament.setName("C_Start1");
+        tournament.setDescription("Basic course of C language");
+        tournament.setCreatorId(2);
+        tournament.setCreatorUsername("David87");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2025-01-31 12:00:00").getTime())));
-        tournament.setPhase("Not Started");
+        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-19 20:00:00").getTime())));
+        tournament.setPhase("Ongoing");
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
@@ -606,6 +604,17 @@ public class ShowTournamentInfoTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
@@ -624,7 +633,7 @@ public class ShowTournamentInfoTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

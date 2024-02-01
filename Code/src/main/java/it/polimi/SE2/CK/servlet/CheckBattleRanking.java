@@ -90,7 +90,7 @@ public class CheckBattleRanking extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             Map<String,String> res= new HashMap<>();
-            res.put("NotStarted","There isn't any tournament with the given id, please try with an other one");
+            res.put("NotStarted","There isn't any battle with the given id, please try with an other one");
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(res);
             response.getWriter().write(json);

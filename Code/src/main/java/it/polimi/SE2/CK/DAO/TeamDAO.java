@@ -4,6 +4,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Team;
 import it.polimi.SE2.CK.utils.enumeration.TeamState;
 import it.polimi.SE2.CK.utils.enumeration.TeamStudentState;
+import it.polimi.SE2.CK.utils.enumeration.TournamentState;
 import it.polimi.SE2.CK.utils.enumeration.UserRole;
 
 import java.sql.*;
@@ -400,8 +401,8 @@ public class TeamDAO {
                 "   and u.Role = ? " +
                 "   and tsub.UserId not in( " +
                 "       SELECT ts.studentId " +
-                "       FROM team_student as ts " +
-                "       WHERE ts.phase = ?)";
+                "       FROM team_student as ts join team as t on ts.teamId= t.idteam" +
+                "       WHERE ts.phase = ? and t.battleid=?)";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -413,6 +414,8 @@ public class TeamDAO {
             preparedStatement.setInt(2, userId);
             preparedStatement.setInt(3, UserRole.STUDENT.getValue());
             preparedStatement.setString(4, TeamStudentState.ACCEPT.getValue());
+            preparedStatement.setInt(5, battleId);
+            System.out.println(preparedStatement);
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
@@ -560,7 +563,7 @@ public class TeamDAO {
         String query = "SELECT t.idteam, t.teamName " +
                 "FROM team as t, team_student as ts " +
                 "WHERE ts.teamId = t.idteam " +
-                "   and t.battleId = ? and ts.phase = ? and not (t.phase = ?) and not (ts.studentId = ?)";
+                "   and t.battleId = ? and ts.phase = ? and not (t.phase = ?) and ts.studentId=? and not (t.teamLeader = ?)";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -572,6 +575,7 @@ public class TeamDAO {
             preparedStatement.setString(2, TeamStudentState.NOTACCEPT.getValue());
             preparedStatement.setString(3, TeamState.COMPLETE.getValue());
             preparedStatement.setInt(4, userId);
+            preparedStatement.setInt(5, userId);
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
@@ -727,5 +731,37 @@ public class TeamDAO {
         }
 
         return result;
+    }
+
+    public Boolean checkTeamIsInABattle(int battleId, int teamId) throws SQLException {
+        //search query
+        String query = "SELECT * " +
+                "FROM team " +
+                "WHERE battleid = ? and idteam=?";
+        //statement
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, battleId);
+            preparedStatement.setInt(2, teamId);
+            resultSet=preparedStatement.executeQuery();
+            while (resultSet.next()){
+                return false;
+            }
+        }
+        catch (SQLException e) {
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
+        return true;
     }
 }
