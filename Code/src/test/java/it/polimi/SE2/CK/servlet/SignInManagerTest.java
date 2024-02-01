@@ -5,9 +5,7 @@ import it.polimi.SE2.CK.servlet.SignInManager;
 
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,15 +32,18 @@ public class SignInManagerTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
+        Random random = new Random();
+
+        // Generazione di un numero intero casuale
+        Integer numeroInteroCasuale = random.nextInt();
         String generatedString = new String(array, Charset.forName("UTF-8"));
         // Set the necessary parameters for the request
         when(request.getParameter("role")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("John");
         when(request.getParameter("surname")).thenReturn("Doe");
         when(request.getParameter("birthdate")).thenReturn("1990-01-01");
-        when(request.getParameter("SignInUsername")).thenReturn(generatedString);
-        when(request.getParameter("email")).thenReturn(generatedString+ "@example.com");
+        when(request.getParameter("SignInUsername")).thenReturn(numeroInteroCasuale.toString());
+        when(request.getParameter("email")).thenReturn(numeroInteroCasuale+ "@example.com");
         when(request.getParameter("SignInPassword")).thenReturn("password");
         when(request.getParameter("ConfirmPassword")).thenReturn("password");
         when(request.getParameter("userGH")).thenReturn("johndoe");
@@ -321,7 +322,7 @@ public class SignInManagerTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

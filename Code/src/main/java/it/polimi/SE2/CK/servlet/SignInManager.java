@@ -91,7 +91,9 @@ public class SignInManager extends HttpServlet {
         try {
             res= userDAO.createUser(user);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Server not respond");
+            return;
         }
         if (res==1){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

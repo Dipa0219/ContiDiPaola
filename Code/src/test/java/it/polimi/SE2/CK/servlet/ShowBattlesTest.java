@@ -142,11 +142,11 @@ public class ShowBattlesTest {
         ArrayList <Battle> battles= new ArrayList<>();
         Battle battle= new Battle();
         battle.setId(1);
-        battle.setName("Introduction");
-        battle.setDescription("First exercises");
+        battle.setName("S_Out");
+        battle.setDescription("First practice of scanf and printf");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-27 10:00:00").getTime())));
-        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-02-19 10:00:00").getTime()));
+        battle.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-15 11:00:00").getTime())));
+        battle.setSubDeadline(new Timestamp(dateTimeFormatter.parse("2024-03-12 11:00:00").getTime()));
         battle.setMinNumStudent(1);
         battle.setMaxNumStudent(3);
         battles.add(battle);
@@ -517,7 +517,7 @@ public class ShowBattlesTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

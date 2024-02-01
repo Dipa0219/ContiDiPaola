@@ -46,6 +46,7 @@ public class CloseTournamentTest {
     public void test_close_tournament() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+
         when(request.getSession()).thenReturn(new HttpSession() {
             @Override
             public long getCreationTime() {

@@ -137,11 +137,11 @@ public class ShowTournamentTest {
         Tournament tournament = new Tournament();
         tournament.setId(1);
         tournament.setName("C_Start1");
-        tournament.setDescription(null);
+        tournament.setDescription("Basic course of C language");
         tournament.setCreatorId(2);
-        tournament.setCreatorUsername("MarielloBello");
+        tournament.setCreatorUsername("David87");
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-02-09 10:00:00").getTime())));
+        tournament.setRegDeadline(new Timestamp((dateTimeFormatter.parse("2024-01-19 20:00:00").getTime())));
         tournaments.add(tournament);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -283,7 +283,7 @@ public class ShowTournamentTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

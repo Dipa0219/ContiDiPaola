@@ -125,7 +125,7 @@ public class LoginManagerTest {
             }
         });
         when(request.getParameter("LoginUsername")).thenReturn("Bob99");
-        when(request.getParameter("LoginPassword")).thenReturn("1");
+        when(request.getParameter("LoginPassword")).thenReturn("password");
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Mock the UserDAO and SessionUser objects
@@ -245,7 +245,7 @@ public class LoginManagerTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
