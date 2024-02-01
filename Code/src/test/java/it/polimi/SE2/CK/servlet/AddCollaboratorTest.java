@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.servlet;
 
 
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import org.junit.Test;
 
@@ -19,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class AddCollaboratorTest {
+
+    TestUtils testUtils = new TestUtils();
 
     @Test
     public void test_getUser_doGet() throws IOException {
@@ -155,7 +158,7 @@ public class AddCollaboratorTest {
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -689,7 +692,7 @@ public class AddCollaboratorTest {
         when(request.getParameter("TournamentId")).thenReturn("4");
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -798,7 +801,7 @@ public class AddCollaboratorTest {
         when(request.getParameter("TournamentId")).thenReturn("2");
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -908,7 +911,7 @@ public class AddCollaboratorTest {
         when(request.getParameterValues("collaboratorInput")).thenReturn(null);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -1020,7 +1023,7 @@ public class AddCollaboratorTest {
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -1132,7 +1135,7 @@ public class AddCollaboratorTest {
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -1244,7 +1247,7 @@ public class AddCollaboratorTest {
         when(request.getParameterValues("collaboratorInput")).thenReturn(collaborators);
         // Invoke doGet method
         AddCollaborator addCollaborator = new AddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         addCollaborator.init(servletConfig);
         addCollaborator.doPost(request, response);
 
@@ -1252,16 +1255,4 @@ public class AddCollaboratorTest {
         assertEquals(writer.toString(),"You have selected an educator already in the tournament\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

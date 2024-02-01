@@ -4,6 +4,7 @@ package it.polimi.SE2.CK.servlet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.UserDAO;
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.User;
 import it.polimi.SE2.CK.servlet.GetUser;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.*;
 
 public class GetUserTest {
 
+    TestUtils testUtils = new TestUtils();
 
     // doGet method returns user information in JSON format
     @Test
@@ -146,7 +148,7 @@ public class GetUserTest {
 
         // Invoke doGet method
         GetUser getUser = new GetUser();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         getUser.init(servletConfig);
         getUser.doGet(request, response);
     
@@ -260,7 +262,7 @@ public class GetUserTest {
 
         // Invoke doGet method
         GetUser getUser = new GetUser();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         getUser.init(servletConfig);
         getUser.doGet(request, response);
 
@@ -365,7 +367,7 @@ public class GetUserTest {
 
         // Invoke doGet method
         GetUser getUser = new GetUser();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         getUser.init(servletConfig);
         getUser.doGet(request, response);
 
@@ -405,16 +407,4 @@ public class GetUserTest {
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

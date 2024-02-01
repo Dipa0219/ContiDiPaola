@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.servlet;
 
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -18,6 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class JoinTeamTest {
+
+    TestUtils testUtils = new TestUtils();
+
     @Test
     public void test_join_team_doGet() throws IOException {
         // Mock HttpServletRequest and HttpServletResponse
@@ -152,7 +156,7 @@ public class JoinTeamTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTeam joinTeam = new JoinTeam();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         joinTeam.init(servletConfig);
         joinTeam.doPost(request, response);
 
@@ -922,7 +926,7 @@ public class JoinTeamTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTeam joinTeam = new JoinTeam();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         joinTeam.init(servletConfig);
         joinTeam.doPost(request, response);
 
@@ -1034,7 +1038,7 @@ public class JoinTeamTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTeam joinTeam = new JoinTeam();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         joinTeam.init(servletConfig);
         joinTeam.doPost(request, response);
 
@@ -1146,7 +1150,7 @@ public class JoinTeamTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTeam joinTeam = new JoinTeam();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         joinTeam.init(servletConfig);
         joinTeam.doPost(request, response);
 
@@ -1258,7 +1262,7 @@ public class JoinTeamTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTeam joinTeam = new JoinTeam();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         joinTeam.init(servletConfig);
         joinTeam.doPost(request, response);
 
@@ -1267,16 +1271,4 @@ public class JoinTeamTest {
         assertEquals(writer.toString(),"The team did not invite you\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

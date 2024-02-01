@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
+import it.polimi.SE2.CK.TestUtils;
 import org.junit.Test;
 
 import javax.servlet.*;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class SearchTournamentTest {
+    TestUtils testUtils = new TestUtils();
 
     @Test
     public void test_getUser_doGet() throws IOException, ServletException {
@@ -161,7 +163,7 @@ public class SearchTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         SearchTournament searchTournament = new SearchTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         searchTournament.init(servletConfig);
         searchTournament.doPost(request, response);
 
@@ -289,16 +291,4 @@ public class SearchTournamentTest {
         assertEquals(writer.toString(),"You can't access to this page\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

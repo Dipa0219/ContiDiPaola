@@ -3,7 +3,7 @@ package it.polimi.SE2.CK.servlet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.bean.SessionUser;
-import junit.framework.TestCase;
+import it.polimi.SE2.CK.TestUtils;
 import org.junit.Test;
 
 import javax.servlet.*;
@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ShowAddCollaboratorTest{
+    TestUtils testUtils = new TestUtils();
 
     @Test
     public void test_show_collaborator() throws IOException,ServletException{
@@ -130,7 +131,7 @@ public class ShowAddCollaboratorTest{
         collaborators.add(user);
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -349,7 +350,7 @@ public class ShowAddCollaboratorTest{
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -462,7 +463,7 @@ public class ShowAddCollaboratorTest{
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -572,7 +573,7 @@ public class ShowAddCollaboratorTest{
 
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -682,7 +683,7 @@ public class ShowAddCollaboratorTest{
 
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -792,7 +793,7 @@ public class ShowAddCollaboratorTest{
 
         // Invoke doGet method
         ShowAddCollaborator showAddCollaborator = new ShowAddCollaborator();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showAddCollaborator.init(servletConfig);
 
         showAddCollaborator.doGet(request, response);
@@ -832,16 +833,4 @@ public class ShowAddCollaboratorTest{
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

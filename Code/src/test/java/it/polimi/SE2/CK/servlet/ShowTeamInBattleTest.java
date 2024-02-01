@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Team;
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import javax.servlet.*;
@@ -21,9 +20,10 @@ import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import it.polimi.SE2.CK.TestUtils;
 
 public class ShowTeamInBattleTest {
-
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_show_team_in_battle() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -127,7 +127,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -354,7 +354,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();;
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -467,7 +467,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();;
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -580,7 +580,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();;
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -693,7 +693,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();;
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -806,7 +806,7 @@ public class ShowTeamInBattleTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();;
         showTeamInBattle.init(servletConfig);
 
         showTeamInBattle.doGet(request, response);
@@ -848,16 +848,4 @@ public class ShowTeamInBattleTest {
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

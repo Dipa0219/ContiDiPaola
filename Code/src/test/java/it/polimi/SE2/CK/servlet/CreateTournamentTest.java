@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.servlet;
 
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -24,6 +25,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class CreateTournamentTest {
+
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_getUser_doGet() throws IOException {
         // Mock HttpServletRequest and HttpServletResponse
@@ -163,7 +166,7 @@ public class CreateTournamentTest {
 
         // Invoke doGet method
         CreateTournament createTournament = new CreateTournament();
-        ServletConfig config=setUp();
+        ServletConfig config=testUtils.setUp();
         createTournament.init(config);
         createTournament.doPost(request, response);
 
@@ -278,7 +281,7 @@ public class CreateTournamentTest {
 
         // Invoke doGet method
         CreateTournament createTournament = new CreateTournament();
-        ServletConfig config=setUp();
+        ServletConfig config=testUtils.setUp();
         createTournament.init(config);
         createTournament.doPost(request, response);
 
@@ -1150,7 +1153,7 @@ public class CreateTournamentTest {
         when(request.getParameter("tournamentRegistrationDeadlineInput")).thenReturn("2024-03-01T17:42");
         // Invoke doGet method
         CreateTournament createTournament = new CreateTournament();
-        ServletConfig config=setUp();
+        ServletConfig config=testUtils.setUp();
         createTournament.init(config);
         createTournament.doPost(request, response);
 
@@ -1158,16 +1161,4 @@ public class CreateTournamentTest {
         assertEquals(writer.toString(),"Existing tournament name, choose another one\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

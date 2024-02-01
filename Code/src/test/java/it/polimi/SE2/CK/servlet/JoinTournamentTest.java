@@ -1,6 +1,7 @@
 package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.bean.SessionUser;
+import it.polimi.SE2.CK.TestUtils;
 import org.junit.Test;
 
 import javax.servlet.*;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpSessionContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 public class JoinTournamentTest {
 
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_getUser_doGet() throws ServletException, IOException {
         // Mock HttpServletRequest and HttpServletResponse
@@ -155,7 +156,7 @@ public class JoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTournament joinTournament = new JoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         joinTournament.init(servletConfig);
 
         joinTournament.doPost(request, response);
@@ -269,7 +270,7 @@ public class JoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTournament joinTournament = new JoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         joinTournament.init(servletConfig);
 
         joinTournament.doPost(request, response);
@@ -381,7 +382,7 @@ public class JoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTournament joinTournament = new JoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         joinTournament.init(servletConfig);
 
         joinTournament.doPost(request, response);
@@ -494,7 +495,7 @@ public class JoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTournament joinTournament = new JoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         joinTournament.init(servletConfig);
 
         joinTournament.doPost(request, response);
@@ -607,7 +608,7 @@ public class JoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         JoinTournament joinTournament = new JoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         joinTournament.init(servletConfig);
 
         joinTournament.doPost(request, response);
@@ -717,18 +718,5 @@ public class JoinTournamentTest {
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         assertEquals(writer.toString(),"You can't access to this page\r\n");
-    }
-
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
     }
 }

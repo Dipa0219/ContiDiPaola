@@ -24,9 +24,11 @@ import java.util.Enumeration;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import it.polimi.SE2.CK.TestUtils;
 
 public class ShowBattlesTest {
 
+    TestUtils testUtils = new TestUtils();
 
     // Successfully retrieve battles by tournament ID
     @Test
@@ -132,7 +134,7 @@ public class ShowBattlesTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowBattles showBattles = new ShowBattles();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showBattles.init(servletConfig);
 
         showBattles.doGet(request, response);
@@ -263,7 +265,7 @@ public class ShowBattlesTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowBattles showBattles = new ShowBattles();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showBattles.init(servletConfig);
 
         showBattles.doGet(request, response);
@@ -376,7 +378,7 @@ public class ShowBattlesTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowBattles showBattles = new ShowBattles();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showBattles.init(servletConfig);
 
         showBattles.doGet(request, response);
@@ -518,18 +520,5 @@ public class ShowBattlesTest {
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         // Verify that the error message is written to the response
         assertEquals (writer.toString(),"Request non acceptable\r\n");
-    }
-
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
     }
 }

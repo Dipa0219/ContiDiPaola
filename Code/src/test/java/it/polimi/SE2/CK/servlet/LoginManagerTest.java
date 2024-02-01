@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.SessionUser;
-import it.polimi.SE2.CK.servlet.LoginManager;
+import it.polimi.SE2.CK.TestUtils;
 
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 public class LoginManagerTest {
 
-
+    TestUtils testUtils = new TestUtils();
     // Login with correct credentials returns status 200 and user info in JSON format
     @Test
     public void test_login_with_correct_credentials() throws ServletException, IOException {
@@ -137,7 +137,7 @@ public class LoginManagerTest {
         // Create an instance of LoginManager and invoke the doPost method
         LoginManager loginManager = new LoginManager();
         // Mock servlet config
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         loginManager.init(servletConfig);
         loginManager.doPost(request, response);
     
@@ -177,7 +177,7 @@ public class LoginManagerTest {
 
         // Create an instance of LoginManager and invoke the doPost method
         LoginManager loginManager = new LoginManager();
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         loginManager.init(servletConfig);
         loginManager.doPost(request, response);
     
@@ -206,7 +206,7 @@ public class LoginManagerTest {
         LoginManager loginManager = new LoginManager();
 
         // Mock servlet config
-        ServletConfig servletConfig = setUp();
+        ServletConfig servletConfig = testUtils.setUp();
         loginManager.init(servletConfig);
         loginManager.doPost(request, response);
     
@@ -248,16 +248,4 @@ public class LoginManagerTest {
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

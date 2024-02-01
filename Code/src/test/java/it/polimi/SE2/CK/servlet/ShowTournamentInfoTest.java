@@ -2,6 +2,7 @@ package it.polimi.SE2.CK.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.Battle;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 public class ShowTournamentInfoTest {
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_show_tournament_info() throws IOException, ServletException, ParseException {
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -138,7 +140,7 @@ public class ShowTournamentInfoTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showTournamentInfo.init(servletConfig);
 
         showTournamentInfo.doGet(request, response);
@@ -359,7 +361,7 @@ public class ShowTournamentInfoTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showTournamentInfo.init(servletConfig);
 
         showTournamentInfo.doGet(request, response);
@@ -472,7 +474,7 @@ public class ShowTournamentInfoTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showTournamentInfo.init(servletConfig);
 
         showTournamentInfo.doGet(request, response);
@@ -585,7 +587,7 @@ public class ShowTournamentInfoTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowTournamentInfo showTournamentInfo = new ShowTournamentInfo();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showTournamentInfo.init(servletConfig);
 
         showTournamentInfo.doGet(request, response);
@@ -627,16 +629,4 @@ public class ShowTournamentInfoTest {
         assertEquals (writer.toString(),"Request non acceptable\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.servlet;
 
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -19,6 +20,8 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 public class CloseTournamentTest {
+
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_close_tournament_doGet() throws IOException{
         // Mock HttpServletRequest and HttpServletResponse
@@ -28,7 +31,17 @@ public class CloseTournamentTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
 
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
         // Create an instance of LoginManager and invoke the doPost method
         CloseTournament closeTournament = new CloseTournament();
 
@@ -144,7 +157,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -360,7 +373,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -473,7 +486,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -586,7 +599,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -699,7 +712,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -812,7 +825,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -925,7 +938,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -1038,7 +1051,7 @@ public class CloseTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         closeTournament.init(servletConfig);
 
         closeTournament.doPost(request, response);
@@ -1048,16 +1061,4 @@ public class CloseTournamentTest {
         assertEquals(writer.toString(),"The tournament has battle not Closed\r\n");
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

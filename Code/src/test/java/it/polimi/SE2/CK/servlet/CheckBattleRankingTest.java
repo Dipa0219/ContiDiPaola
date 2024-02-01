@@ -2,6 +2,7 @@ package it.polimi.SE2.CK.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.Ranking;
 import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 public class CheckBattleRankingTest {
+
+    TestUtils testUtils = new TestUtils();
 
     @Test
     public void test_check_battle_ranking() throws IOException, ServletException {
@@ -129,7 +132,7 @@ public class CheckBattleRankingTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CheckBattleRanking checkBattleRanking = new CheckBattleRanking();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         checkBattleRanking.init(servletConfig);
 
         checkBattleRanking.doGet(request, response);
@@ -353,7 +356,7 @@ public class CheckBattleRankingTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CheckBattleRanking checkBattleRanking = new CheckBattleRanking();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         checkBattleRanking.init(servletConfig);
 
         checkBattleRanking.doGet(request, response);
@@ -466,7 +469,7 @@ public class CheckBattleRankingTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CheckBattleRanking checkBattleRanking = new CheckBattleRanking();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         checkBattleRanking.init(servletConfig);
 
         checkBattleRanking.doGet(request, response);
@@ -579,7 +582,7 @@ public class CheckBattleRankingTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CheckBattleRanking checkBattleRanking = new CheckBattleRanking();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         checkBattleRanking.init(servletConfig);
 
         checkBattleRanking.doGet(request, response);
@@ -697,7 +700,7 @@ public class CheckBattleRankingTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         CheckBattleRanking checkBattleRanking = new CheckBattleRanking();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         checkBattleRanking.init(servletConfig);
 
         checkBattleRanking.doGet(request, response);
@@ -743,16 +746,4 @@ public class CheckBattleRankingTest {
         assertEquals ("Request non acceptable\r\n", writer.toString());
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }

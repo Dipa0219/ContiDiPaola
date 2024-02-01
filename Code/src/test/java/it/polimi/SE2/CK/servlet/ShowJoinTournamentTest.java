@@ -2,6 +2,7 @@ package it.polimi.SE2.CK.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.polimi.SE2.CK.TestUtils;
 import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import junit.framework.TestCase;
@@ -22,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ShowJoinTournamentTest {
+
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_show_join_tournament() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -126,7 +129,7 @@ public class ShowJoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowJoinTournament showJoinTournament = new ShowJoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showJoinTournament.init(servletConfig);
 
         showJoinTournament.doGet(request, response);
@@ -485,7 +488,7 @@ public class ShowJoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowJoinTournament showJoinTournament = new ShowJoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showJoinTournament.init(servletConfig);
 
         showJoinTournament.doGet(request, response);
@@ -598,7 +601,7 @@ public class ShowJoinTournamentTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ShowJoinTournament showJoinTournament = new ShowJoinTournament();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         showJoinTournament.init(servletConfig);
 
         showJoinTournament.doGet(request, response);
@@ -606,18 +609,5 @@ public class ShowJoinTournamentTest {
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
         assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
-    }
-
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
     }
 }

@@ -1,7 +1,7 @@
 package it.polimi.SE2.CK.servlet;
 
 import it.polimi.SE2.CK.bean.SessionUser;
-import junit.framework.TestCase;
+import it.polimi.SE2.CK.TestUtils;
 import org.junit.Test;
 
 import javax.servlet.*;
@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 public class ModifyGradeTest {
 
+    TestUtils testUtils = new TestUtils();
     @Test
     public void test_show_team_doGet() throws IOException{
         // Mock HttpServletRequest and HttpServletResponse
@@ -156,7 +157,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1270,7 +1271,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1385,7 +1386,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1500,7 +1501,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1615,7 +1616,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1730,7 +1731,7 @@ public class ModifyGradeTest {
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();
-        ServletConfig servletConfig =setUp();
+        ServletConfig servletConfig =testUtils.setUp();
         modifyGrade.init(servletConfig);
 
         modifyGrade.doPost(request, response);
@@ -1740,16 +1741,4 @@ public class ModifyGradeTest {
         assertEquals("You can't modify this team evaluation or this team doesn't exists\r\n",writer.toString());
     }
 
-    private ServletConfig setUp() {
-        ServletContext servletContext = mock(ServletContext.class);
-
-        // Mock servlet config
-        ServletConfig servletConfig = mock(ServletConfig.class);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
-        when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
-        when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
-        return  servletConfig;
-    }
 }
