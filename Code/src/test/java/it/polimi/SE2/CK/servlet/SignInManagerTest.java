@@ -299,6 +299,17 @@ public class SignInManagerTest {
 
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create a new instance of SignInManager
         SignInManager signInManager = new SignInManager();

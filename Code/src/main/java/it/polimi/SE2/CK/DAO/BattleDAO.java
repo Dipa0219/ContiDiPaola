@@ -579,7 +579,7 @@ public class BattleDAO {
     public ArrayList<Ranking> showRanking(int battleId) throws SQLException {
         //search query
         String query = "select teamName, points " +
-                "from new_schema.team " +
+                "from team " +
                 "where battleId = ? " +
                 "order by points desc";
         //statement

@@ -214,6 +214,21 @@ public class ModifyGrade extends HttpServlet {
 
         //update point
         TeamDAO teamDAO = new TeamDAO(connection);
+
+        try {
+            //406 error
+            Boolean res= teamDAO.checkTeamIsInABattle(battleId, teamId);
+             if (res){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("You can't modify this team evaluation or this team doesn't exists");
+                return;
+            }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
+        }
+
         //500 error
         try {
             teamDAO.updatePointTeam(teamId, teamPoint);

@@ -7,9 +7,7 @@ import it.polimi.SE2.CK.bean.Team;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -69,8 +67,8 @@ public class ShowUserTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(1);
-                user.setUsername("Bob99");
+                user.setId(5);
+                user.setUsername("Jean00");
                 user.setRole(1);
                 return user;
             }
@@ -124,7 +122,7 @@ public class ShowUserTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -136,8 +134,8 @@ public class ShowUserTeamTest {
 
         ArrayList<SessionUser> users= new ArrayList<>();
         SessionUser user = new SessionUser();
-        user.setId(11);
-        user.setUsername("Casa");
+        user.setId(6);
+        user.setUsername("Tim98");
         users.add(user);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -522,8 +520,8 @@ public class ShowUserTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setId(5);
+                user.setUsername("Ted69");
                 user.setRole(0);
                 return user;
             }
@@ -690,7 +688,7 @@ public class ShowUserTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("45");
+        when(request.getParameter("BattleId")).thenReturn("445");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -827,6 +825,17 @@ public class ShowUserTeamTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         ShowUserTeam showUserTeam = new ShowUserTeam();
@@ -844,9 +853,9 @@ public class ShowUserTeamTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }

@@ -4,9 +4,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -35,6 +33,17 @@ public class CreateTournamentTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         CreateTournament createTournament = new CreateTournament();
@@ -113,10 +122,6 @@ public class CreateTournamentTest {
 
             @Override
             public void setAttribute(String s, Object o) {
-                SessionUser user =new SessionUser();
-                user.setId(1);
-                user.setUsername("Bob99");
-                user.setRole(1);
             }
 
             @Override
@@ -929,7 +934,7 @@ public class CreateTournamentTest {
         createTournament.doPost(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Insert a valid data\r\n");
+        assertEquals("You must insert a valid date\r\n",writer.toString());
     }
 
     @Test
@@ -1032,14 +1037,14 @@ public class CreateTournamentTest {
 
         when(request.getParameter("tournamentNameInput")).thenReturn("Ciaofgsdgff");
         when(request.getParameter("tournamentDescriptionInput")).thenReturn("ikbk");
-        when(request.getParameter("tournamentRegistrationDeadlineInput")).thenReturn("2024-01-27 10:00:00");
+        when(request.getParameter("tournamentRegistrationDeadlineInput")).thenReturn("2024-01-27T10:00");
 
         // Invoke doGet method
         CreateTournament createTournament = new CreateTournament();
         createTournament.doPost(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Insert a valid data\r\n");
+        assertEquals("You must insert a date after now\r\n",writer.toString());
     }
 
     @Test

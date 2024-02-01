@@ -4,9 +4,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -21,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 public class JoinTeamTest {
     @Test
-    public void test_close_tournament_doGet() throws IOException {
+    public void test_join_team_doGet() throws IOException {
         // Mock HttpServletRequest and HttpServletResponse
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -29,7 +27,17 @@ public class JoinTeamTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
 
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
         // Create an instance of LoginManager and invoke the doPost method
         JoinTeam joinTeam = new JoinTeam();
 
@@ -84,8 +92,8 @@ public class JoinTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(10);
-                user.setUsername("Piero87");
+                user.setId(5);
+                user.setUsername("Jean00");
                 user.setRole(1);
                 return user;
             }
@@ -139,7 +147,7 @@ public class JoinTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("5");
         when(request.getParameter("teamInput")).thenReturn("3");
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -744,7 +752,7 @@ public class JoinTeamTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David86");
                 user.setRole(0);
                 return user;
             }
@@ -1078,8 +1086,8 @@ public class JoinTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(8);
-                user.setUsername("David86");
+                user.setId(6);
+                user.setUsername("Tim98");
                 user.setRole(1);
                 return user;
             }
@@ -1133,7 +1141,7 @@ public class JoinTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("5");
         when(request.getParameter("teamInput")).thenReturn("3");
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -1147,13 +1155,125 @@ public class JoinTeamTest {
         assertEquals(writer.toString(),"You are already signed up to another team\r\n");
     }
 
+    @Test
+    public void test_user_has_an_invitation() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(6);
+                user.setUsername("Tim98");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("4");
+        when(request.getParameter("teamInput")).thenReturn("2");
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        JoinTeam joinTeam = new JoinTeam();
+        ServletConfig servletConfig = setUp();
+        joinTeam.init(servletConfig);
+        joinTeam.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        assertEquals(writer.toString(),"The team did not invite you\r\n");
+    }
+
     private ServletConfig setUp() {
         ServletContext servletContext = mock(ServletContext.class);
 
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");

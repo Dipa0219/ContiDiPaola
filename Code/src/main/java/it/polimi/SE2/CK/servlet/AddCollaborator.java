@@ -217,10 +217,9 @@ public class AddCollaborator extends HttpServlet {
         }
 
         //add collaborator
-        boolean result;
         //500 error
         try {
-            result = tournamentDAO.addCollaborator(tournament.getId(), collaborators);
+            tournamentDAO.addCollaborator(tournament.getId(), collaborators);
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");

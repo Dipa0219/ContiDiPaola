@@ -7,9 +7,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import it.polimi.SE2.CK.bean.Tournament;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -37,6 +35,17 @@ public class SearchTournamentTest {
         // Set the parameters for the request
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(request.getRequestDispatcher("ErrorPage.html")).thenReturn(new RequestDispatcher() {
+            @Override
+            public void forward(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+
+            @Override
+            public void include(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+
+            }
+        });
 
         // Create an instance of LoginManager and invoke the doPost method
         SearchTournament searchTournament = new SearchTournament();

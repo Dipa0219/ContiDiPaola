@@ -4,9 +4,7 @@ import it.polimi.SE2.CK.bean.SessionUser;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -1035,7 +1033,7 @@ public class CloseTournamentTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("TournamentID")).thenReturn("1");
+        when(request.getParameter("TournamentID")).thenReturn("6");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
