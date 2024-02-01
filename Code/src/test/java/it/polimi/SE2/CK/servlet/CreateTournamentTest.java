@@ -91,7 +91,7 @@ public class CreateTournamentTest {
             public Object getAttribute(String s) {
                 SessionUser user =new SessionUser();
                 user.setId(3);
-                user.setUsername("Gary_97");
+                user.setUsername("Josh78");
                 user.setRole(0);
                 return user;
             }
@@ -147,12 +147,13 @@ public class CreateTournamentTest {
 
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        String generatedString = new String(array, StandardCharsets.UTF_8);
+        Random random = new Random();
+
+        // Generazione di un numero intero casuale
+        int numeroInteroCasuale = random.nextInt();
         // Invoke doGet method
-        when(request.getParameter("tournamentNameInput")).thenReturn(generatedString);
-        when(request.getParameter("tournamentDescriptionInput")).thenReturn("ikbk");
+        when(request.getParameter("tournamentNameInput")).thenReturn(Integer.toString(numeroInteroCasuale));
+        when(request.getParameter("tournamentDescriptionInput")).thenReturn("New tournament about general programming");
         when(request.getParameter("tournamentRegistrationDeadlineInput")).thenReturn("2024-03-01T17:42");
 
         // Invoke doGet method
@@ -1032,7 +1033,6 @@ public class CreateTournamentTest {
         when(request.getParameter("tournamentNameInput")).thenReturn("Ciaofgsdgff");
         when(request.getParameter("tournamentDescriptionInput")).thenReturn("ikbk");
         when(request.getParameter("tournamentRegistrationDeadlineInput")).thenReturn("2024-01-27 10:00:00");
-        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         // Invoke doGet method
         CreateTournament createTournament = new CreateTournament();

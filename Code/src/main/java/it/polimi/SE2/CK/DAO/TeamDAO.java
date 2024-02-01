@@ -558,7 +558,7 @@ public class TeamDAO {
         String query = "SELECT t.idteam, t.teamName " +
                 "FROM team as t, team_student as ts " +
                 "WHERE ts.teamId = t.idteam " +
-                "   and t.battleId = ? and ts.phase = ? and not (t.phase = ?) and not (ts.studentId = ?)";
+                "   and t.battleId = ? and ts.phase = ? and not (t.phase = ?) and ts.studentId=? and not (t.teamLeader = ?)";
         //statement
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -570,6 +570,7 @@ public class TeamDAO {
             preparedStatement.setString(2, TeamStudentState.NOTACCEPT.getValue());
             preparedStatement.setString(3, TeamState.COMPLETE.getValue());
             preparedStatement.setInt(4, userId);
+            preparedStatement.setInt(5, userId);
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){

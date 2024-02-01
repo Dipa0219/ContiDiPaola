@@ -31,12 +31,10 @@ public class SignInManagerTest {
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
-        byte[] array = new byte[7]; // length is bounded by 7
         Random random = new Random();
 
         // Generazione di un numero intero casuale
         Integer numeroInteroCasuale = random.nextInt();
-        String generatedString = new String(array, Charset.forName("UTF-8"));
         // Set the necessary parameters for the request
         when(request.getParameter("role")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("John");
@@ -301,8 +299,6 @@ public class SignInManagerTest {
 
         StringWriter writer = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        // Set the necessary parameters for the request
 
         // Create a new instance of SignInManager
         SignInManager signInManager = new SignInManager();

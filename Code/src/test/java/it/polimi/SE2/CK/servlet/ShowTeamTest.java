@@ -68,8 +68,8 @@ public class ShowTeamTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(1);
-                user.setUsername("Bob99");
+                user.setId(5);
+                user.setUsername("Jean00");
                 user.setRole(1);
                 return user;
             }
@@ -123,7 +123,7 @@ public class ShowTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -135,8 +135,8 @@ public class ShowTeamTest {
 
         ArrayList<Team> teams= new ArrayList<>();
         Team team = new Team();
-        team.setIdTeam(3);
-        team.setTeamName("Boh");
+        team.setIdTeam(2);
+        team.setTeamName("Bombers");
         teams.add(team);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -522,7 +522,7 @@ public class ShowTeamTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
                 user.setRole(0);
                 return user;
             }
@@ -689,7 +689,7 @@ public class ShowTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("45");
+        when(request.getParameter("BattleId")).thenReturn("445");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -802,7 +802,7 @@ public class ShowTeamTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("BattleId")).thenReturn("2");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -844,9 +844,9 @@ public class ShowTeamTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }

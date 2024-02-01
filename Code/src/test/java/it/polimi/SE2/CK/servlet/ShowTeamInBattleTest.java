@@ -124,7 +124,7 @@ public class ShowTeamInBattleTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("1");
+        when(request.getParameter("BattleId")).thenReturn("2");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -137,7 +137,7 @@ public class ShowTeamInBattleTest {
         ArrayList<Team> teams= new ArrayList<>();
         Team team = new Team();
         team.setIdTeam(1);
-        team.setTeamName("Ciccio");
+        team.setTeamName("Bombers");
         teams.add(team);
 
         // Verify that the response status, content type, and character encoding are set correctly
@@ -706,7 +706,7 @@ public class ShowTeamInBattleTest {
     }
 
     @Test
-    public void test_battle_is_started() throws IOException, ServletException {
+    public void test_battle_is_not_started() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
@@ -803,7 +803,7 @@ public class ShowTeamInBattleTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
         // Set up the request parameters
-        when(request.getParameter("BattleId")).thenReturn("2");
+        when(request.getParameter("BattleId")).thenReturn("4");
 
 
         // Create an instance of ShowBattles and invoke the doGet method
@@ -845,9 +845,9 @@ public class ShowTeamInBattleTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("God_Of_W@r2022");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }

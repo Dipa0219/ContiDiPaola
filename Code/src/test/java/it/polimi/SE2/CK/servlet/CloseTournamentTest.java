@@ -86,8 +86,8 @@ public class CloseTournamentTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(3);
-                user.setUsername("Gary_97");
+                user.setId(4);
+                user.setUsername("Ted89");
                 user.setRole(0);
                 return user;
             }
@@ -755,7 +755,120 @@ public class CloseTournamentTest {
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
                 user.setId(2);
-                user.setUsername("MarielloBello");
+                user.setUsername("David87");
+                user.setRole(0);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("TournamentID")).thenReturn("5");
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        CloseTournament closeTournament = new CloseTournament();
+        ServletConfig servletConfig =setUp();
+        closeTournament.init(servletConfig);
+
+        closeTournament.doPost(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertEquals(writer.toString(),"Only collaborator can close a tournament\r\n");
+    }
+
+    @Test
+    public void test_tournament_is_already_closed() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(3);
+                user.setUsername("Josh78");
                 user.setRole(0);
                 return user;
             }
@@ -820,119 +933,6 @@ public class CloseTournamentTest {
         closeTournament.doPost(request, response);
 
         // Verify that the response status, content type, and character encoding are set correctly
-        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertEquals(writer.toString(),"Only collaborator can close a tournament\r\n");
-    }
-
-    @Test
-    public void test_tournament_is_already_closed() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getSession()).thenReturn(new HttpSession() {
-            @Override
-            public long getCreationTime() {
-                return 0;
-            }
-
-            @Override
-            public String getId() {
-                return null;
-            }
-
-            @Override
-            public long getLastAccessedTime() {
-                return 0;
-            }
-
-            @Override
-            public ServletContext getServletContext() {
-                return null;
-            }
-
-            @Override
-            public void setMaxInactiveInterval(int i) {
-
-            }
-
-            @Override
-            public int getMaxInactiveInterval() {
-                return 0;
-            }
-
-            @Override
-            public HttpSessionContext getSessionContext() {
-                return null;
-            }
-
-            @Override
-            public Object getAttribute(String s) {
-                SessionUser user= new SessionUser();
-                user.setId(9);
-                user.setUsername("VivaVerdi");
-                user.setRole(0);
-                return user;
-            }
-
-            @Override
-            public Object getValue(String s) {
-                return null;
-            }
-
-            @Override
-            public Enumeration<String> getAttributeNames() {
-                return null;
-            }
-
-            @Override
-            public String[] getValueNames() {
-                return new String[0];
-            }
-
-            @Override
-            public void setAttribute(String s, Object o) {
-
-            }
-
-            @Override
-            public void putValue(String s, Object o) {
-
-            }
-
-            @Override
-            public void removeAttribute(String s) {
-
-            }
-
-            @Override
-            public void removeValue(String s) {
-
-            }
-
-            @Override
-            public void invalidate() {
-
-            }
-
-            @Override
-            public boolean isNew() {
-                return false;
-            }
-        });
-        StringWriter writer = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(writer));
-
-        // Set up the request parameters
-        when(request.getParameter("TournamentID")).thenReturn("4");
-
-
-        // Create an instance of ShowBattles and invoke the doGet method
-        CloseTournament closeTournament = new CloseTournament();
-        ServletConfig servletConfig =setUp();
-        closeTournament.init(servletConfig);
-
-        closeTournament.doPost(request, response);
-
-        // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         assertEquals(writer.toString(),"The tournament is not closable now\r\n");
     }
@@ -980,8 +980,8 @@ public class CloseTournamentTest {
             @Override
             public Object getAttribute(String s) {
                 SessionUser user= new SessionUser();
-                user.setId(3);
-                user.setUsername("Gary_97");
+                user.setId(4);
+                user.setUsername("Ted69");
                 user.setRole(0);
                 return user;
             }
@@ -1056,7 +1056,7 @@ public class CloseTournamentTest {
         // Mock servlet config
         ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/new_schema?serverTimezone=UTC");
+        when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
         when(servletContext.getInitParameter("dbPassword")).thenReturn("");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
