@@ -129,24 +129,48 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
+        if (tournamentId<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         int minStudentPerTeam;
         try {
             minStudentPerTeam = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("minStudentPerTeamInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
+            response.getWriter().println("You must insert a number in minimum number of student");
             return;
         }
+
         int maxStudentPerTeam;
         try {
             maxStudentPerTeam = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("maxStudentPerTeamInput")));
         }
         catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Internal error with the page, please try again");
+            response.getWriter().println("You must insert a number in maximum number of student");
             return;
         }
+
+        //number student per team
+        //400 error
+        if (minStudentPerTeam < 1 || maxStudentPerTeam < 1) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Minimum and maximum number of student bust be greater than 0");
+            return;
+        }
+
+        //400 error
+        if (minStudentPerTeam > maxStudentPerTeam) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Minimum number of student can't be greater than maximum");
+            return;
+        }
+
         Part battleProject = null;
         //400 error
         try {
@@ -157,6 +181,7 @@ public class CreateBattle extends HttpServlet {
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+
         Part battleTestCase = null;
         //400 error
         try {
@@ -169,17 +194,19 @@ public class CreateBattle extends HttpServlet {
         }
 
         //400 error
-        if (StringUtils.isAnyEmpty(battleName, registrationDeadline)){
+        if (StringUtils.isAnyEmpty(battleName, registrationDeadline, submissionDeadline)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+
         //400 error
         if (FolderManager.getFileName(battleProject)==null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("All fields with an asterisk are required");
             return;
         }
+
         //400 error
         if (battleName.length()>45){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -187,10 +214,12 @@ public class CreateBattle extends HttpServlet {
             return;
         }
         //400 error
-        if (battleDescription.length()>200){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("The max length of battle description is 200 character");
-            return;
+        if (battleDescription!=null) {
+            if (battleDescription.length() > 200) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().println("The max length of battle description is 200 character");
+                return;
+            }
         }
 
         //valid date
@@ -218,7 +247,7 @@ public class CreateBattle extends HttpServlet {
         }
         catch (ParseException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
+            response.getWriter().println("Insert a valid date");
             return;
         }
         Timestamp battleRegistrationDeadline = new Timestamp(parseDateRegistrationDeadline.getTime());
@@ -231,33 +260,19 @@ public class CreateBattle extends HttpServlet {
         //400 error
         if (battleRegistrationDeadline.before(currentTimestamp)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
+            response.getWriter().println("Registration deadline must be after now");
             return;
         }
         //400 error
         if (battleSubmissionDeadline.before(currentTimestamp)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
+            response.getWriter().println("Submission deadline must be after now");
             return;
         }
         //400 error
         if (battleSubmissionDeadline.before(battleRegistrationDeadline)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
-            return;
-        }
-
-        //number student per team
-        //400 error
-        if (minStudentPerTeam < 1 || maxStudentPerTeam < 1) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
-            return;
-        }
-        //400 error
-        if (minStudentPerTeam > maxStudentPerTeam) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Insert a valid data");
+            response.getWriter().println("Registration deadline must be before submission deadline");
             return;
         }
 
@@ -267,9 +282,9 @@ public class CreateBattle extends HttpServlet {
         //500 error
         try {
             //409 error
-            if (!battleDAO.checkBattleByName(battleName)){
+            if (battleDAO.checkBattleByName(battleName)){
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
-                response.getWriter().println("Existing tournament name, choose another one");
+                response.getWriter().println("Existing battle name, choose another one");
                 return;
             }
         }
@@ -312,6 +327,12 @@ public class CreateBattle extends HttpServlet {
             return;
         }
 
+        if (tournament==null){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The chosen tournament doesn't exist");
+            return;
+        }
+
         //tournament in Ongoing phase
         //406 error
         if (!tournament.getPhase().equals(TournamentState.ONGOING.getValue())){
@@ -333,7 +354,7 @@ public class CreateBattle extends HttpServlet {
             //401 error
             if (!tournamentDAO.checkUserInTournament(tournament.getId(), user.getId())){
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("You can't access to this page");
+                response.getWriter().println("Only collaborator can create battles");
                 return;
             }
         }
