@@ -3,9 +3,13 @@ package it.polimi.SE2.CK.servlet;
 import it.polimi.SE2.CK.DAO.UserDAO;
 import it.polimi.SE2.CK.bean.User;
 import it.polimi.SE2.CK.utils.EmailManager;
+import it.polimi.SE2.CK.utils.EncryptorTripleDES;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -16,6 +20,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -115,11 +122,25 @@ public class SignInManager extends HttpServlet {
         }
 
         user.setEmail(StringEscapeUtils.escapeHtml4(request.getParameter("email")));
-        user.setPassword(StringEscapeUtils.escapeHtml4(request.getParameter("SignInPassword")));
-        if (!user.getPassword().equals(StringEscapeUtils.escapeHtml4(request.getParameter("ConfirmPassword")))){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("The two password must be the same, please retry");
+        EncryptorTripleDES encryptorTripleDES = new EncryptorTripleDES();
+        try {
+            user.setPassword(encryptorTripleDES.encrypt(StringEscapeUtils.escapeHtml4(request.getParameter("SignInPassword"))));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
+                 InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
             return;
+        }
+        try {
+            if (!user.getPassword().equals(encryptorTripleDES.encrypt(StringEscapeUtils.escapeHtml4(request.getParameter("ConfirmPassword"))))){
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().println("The two password must be the same, please retry");
+                return;
+            }
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
+                 InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
         }
         user.setGitHubUser(StringEscapeUtils.escapeHtml4(request.getParameter("userGH")));
         UserDAO userDAO= new UserDAO(connection);
@@ -127,6 +148,7 @@ public class SignInManager extends HttpServlet {
         try {
             res= userDAO.createUser(user);
         } catch (SQLException e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
