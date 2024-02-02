@@ -703,7 +703,7 @@ public class ModifyGradeTest {
 
         // Set up the request parameters
         when(request.getParameter("BattleId")).thenReturn("1");
-        when(request.getParameter("TeamId")).thenReturn("-1");
+        when(request.getParameter("teamGradeInput")).thenReturn("-1");
 
         // Create an instance of ShowBattles and invoke the doGet method
         ModifyGrade modifyGrade = new ModifyGrade();

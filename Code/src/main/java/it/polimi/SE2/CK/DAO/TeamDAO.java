@@ -272,7 +272,7 @@ public class TeamDAO {
         String queryTeam = "INSERT INTO team " +
                 "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `points`, `teamName`) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
-        String queryTeamStudent = "INSERT INTO `new_schema`.`team_student` " +
+        String queryTeamStudent = "INSERT INTO `team_student` " +
                 "(`teamId`, `studentId`, `phase`) " +
                 "VALUES (?, ?, ?)";
         //statement
@@ -318,6 +318,7 @@ public class TeamDAO {
         catch (SQLException e){
             try {
                 //transaction error ==> rollback
+                System.out.println("Entrato");
                 con.rollback();
             }
             catch (SQLException e1){
@@ -523,7 +524,7 @@ public class TeamDAO {
             preparedStatement.setString(2, teamName);
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.first()){
+            if (resultSet.next()){
                 result = true;
             }
 

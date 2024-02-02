@@ -117,6 +117,12 @@ public class JoinBattleAlone extends HttpServlet {
             return;
         }
 
+        if (battleId<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         //user is a student
         //401 error
         if (user.getRole() != UserRole.STUDENT.getValue()){
@@ -130,7 +136,13 @@ public class JoinBattleAlone extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle has already begun");
                 return;
@@ -174,22 +186,16 @@ public class JoinBattleAlone extends HttpServlet {
         }
 
         //join battle alone
-        boolean result;
+
         //500 error
         try {
-            result = teamDAO.joinBattleAlone(user.getId(), battleId, user.getUsername());
+            teamDAO.joinBattleAlone(user.getId(), battleId, user.getUsername());
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
         }
 
-        //500 error
-        if (!result){
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
 
         //200 ok
         response.setStatus(HttpServletResponse.SC_OK);

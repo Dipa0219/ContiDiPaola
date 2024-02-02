@@ -190,6 +190,119 @@ public class SearchTournamentTest {
     }
 
     @Test
+    public void test_search_tournament_with_null_keyword() throws IOException, ServletException, ParseException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(4);
+                user.setUsername("ValeTuttoPane");
+                user.setRole(1);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("searchTournament")).thenReturn(null);
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        SearchTournament searchTournament = new SearchTournament();
+        ServletConfig servletConfig =testUtils.setUp();
+        searchTournament.init(servletConfig);
+        searchTournament.doPost(request, response);
+
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals("You must search something\r\n", writer.toString());
+    }
+
+    @Test
     public void test_search_tournament_with_empty_session() throws IOException, ServletException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);

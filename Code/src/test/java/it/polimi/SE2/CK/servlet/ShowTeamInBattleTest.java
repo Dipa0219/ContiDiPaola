@@ -817,6 +817,119 @@ public class ShowTeamInBattleTest {
     }
 
     @Test
+    public void test_user_is_not_subscribed() throws IOException, ServletException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getSession()).thenReturn(new HttpSession() {
+            @Override
+            public long getCreationTime() {
+                return 0;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public long getLastAccessedTime() {
+                return 0;
+            }
+
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+
+            @Override
+            public void setMaxInactiveInterval(int i) {
+
+            }
+
+            @Override
+            public int getMaxInactiveInterval() {
+                return 0;
+            }
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getAttribute(String s) {
+                SessionUser user= new SessionUser();
+                user.setId(2);
+                user.setUsername("MarielloBello");
+                user.setRole(0);
+                return user;
+            }
+
+            @Override
+            public Object getValue(String s) {
+                return null;
+            }
+
+            @Override
+            public Enumeration<String> getAttributeNames() {
+                return null;
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void setAttribute(String s, Object o) {
+
+            }
+
+            @Override
+            public void putValue(String s, Object o) {
+
+            }
+
+            @Override
+            public void removeAttribute(String s) {
+
+            }
+
+            @Override
+            public void removeValue(String s) {
+
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public boolean isNew() {
+                return false;
+            }
+        });
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set up the request parameters
+        when(request.getParameter("BattleId")).thenReturn("2");
+
+
+        // Create an instance of ShowBattles and invoke the doGet method
+        ShowTeamInBattle showTeamInBattle = new ShowTeamInBattle();
+        ServletConfig servletConfig =testUtils.setUp();;
+        showTeamInBattle.init(servletConfig);
+
+        showTeamInBattle.doGet(request, response);
+
+        // Verify that the response status, content type, and character encoding are set correctly
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertEquals("You can't access to this page\r\n",writer.toString());
+    }
+
+    @Test
     public void test_show_team_doPost() throws IOException, ServletException {
         // Mock HttpServletRequest and HttpServletResponse
         HttpServletRequest request = mock(HttpServletRequest.class);

@@ -167,7 +167,7 @@ public class JoinTeamTest {
     }
 
     @Test
-    public void test_search_tournament_with_empty_session() throws IOException {
+    public void test_join_tournament_with_empty_session() throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getSession()).thenReturn(new HttpSession() {
