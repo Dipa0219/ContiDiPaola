@@ -120,6 +120,13 @@ public class JoinBattleAsTeam extends HttpServlet {
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+
+        if (battleId<=0){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Internal error with the page, please try again");
+            return;
+        }
+
         String[] teammateList = request.getParameterValues("teamMateInput");
         String teamName = StringEscapeUtils.escapeHtml4(request.getParameter("teamNameInput"));
 
@@ -136,7 +143,13 @@ public class JoinBattleAsTeam extends HttpServlet {
         //500 error
         try {
             //406 error
-            if (!battleDAO.checkBattleNotStarted(battleId)){
+            Boolean res= battleDAO.checkBattleNotStarted(battleId);
+            if (res==null){
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.getWriter().println("The battle doesn't exist");
+                return;
+            }
+            else if (res){
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.getWriter().println("The battle has already begun");
                 return;
@@ -184,10 +197,14 @@ public class JoinBattleAsTeam extends HttpServlet {
         for (Integer integer : teammate) {
             //check if all teammates are student
             //406 error
-            if (user.getRole() != UserRole.STUDENT.getValue()) {
-                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                response.getWriter().println("You have to choose a student as teammate");
-                return;
+            try {
+                if (userDAO.checkStudent(integer)) {
+                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    response.getWriter().println("You have to choose a student as teammate");
+                    return;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
 
             //check if all teammates are not in a team
@@ -210,7 +227,7 @@ public class JoinBattleAsTeam extends HttpServlet {
         //500 error
         try {
             //401 error
-            if (teamDAO.checkStudentHasCreatedATeam(user.getId(), battleId)) {
+            if (teamDAO.checkStudentInOtherTeam(user.getId(), battleId)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().println("You can't access to this page");
                 return;
@@ -222,6 +239,11 @@ public class JoinBattleAsTeam extends HttpServlet {
             return;
         }
 
+        if(teamName==null||teamName.isEmpty()){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You have to choose a name for the team");
+            return;
+        }
         //check if the team name is already in use
         //500 error
         try {
@@ -237,25 +259,16 @@ public class JoinBattleAsTeam extends HttpServlet {
             response.getWriter().println("The server do not respond");
             return;
         }
-
         //join battle as a team
-        boolean result;
         try {
             if (battle.getMinNumStudent() == 1){
-                result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.PARTIAL.getValue());
+                teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.PARTIAL.getValue());
             }
             else {
-                result = teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.INCOMPLETE.getValue());
+                teamDAO.joinBattleAsTeam(user.getId(), battleId, teammate, teamName, TeamState.INCOMPLETE.getValue());
             }
         }
         catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
-        }
-
-        //500 error
-        if (!result){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

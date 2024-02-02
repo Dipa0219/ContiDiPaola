@@ -292,6 +292,72 @@ public class SignInManagerTest {
         assertEquals (writer.toString(),"You must insert a date in the field birthdate, please retry\r\n");
     }
 
+    @Test
+    public void test_too_long_date() throws ServletException, IOException {
+        // Mock the HttpServletRequest and HttpServletResponse objects
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set the necessary parameters for the request
+        when(request.getParameter("role")).thenReturn("1");
+        when(request.getParameter("name")).thenReturn("Bob");
+        when(request.getParameter("surname")).thenReturn("Doe");
+        when(request.getParameter("birthdate")).thenReturn("19999-12-01");
+        when(request.getParameter("SignInUsername")).thenReturn("Bob");
+        when(request.getParameter("email")).thenReturn("BobRoss@gmail.com");
+        when(request.getParameter("SignInPassword")).thenReturn("password");
+        when(request.getParameter("ConfirmPassword")).thenReturn("password");
+        when(request.getParameter("userGH")).thenReturn("johndoe");
+
+        // Create a new instance of SignInManager
+        SignInManager signInManager = new SignInManager();
+        ServletConfig servletConfig = testUtils.setUp();
+        signInManager.init(servletConfig);
+
+        // Call the doPost method with the mocked request and response objects
+        signInManager.doPost(request, response);
+
+        // Verify that the response status is BAD_REQUEST
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals ("You must insert a valid date\r\n", writer.toString());
+    }
+
+    @Test
+    public void test_wrong_mail() throws ServletException, IOException {
+        // Mock the HttpServletRequest and HttpServletResponse objects
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set the necessary parameters for the request
+        when(request.getParameter("role")).thenReturn("1");
+        when(request.getParameter("name")).thenReturn("Bob");
+        when(request.getParameter("surname")).thenReturn("Doe");
+        when(request.getParameter("birthdate")).thenReturn("1999-12-01");
+        when(request.getParameter("SignInUsername")).thenReturn("Bob");
+        when(request.getParameter("email")).thenReturn("aaaaaa");
+        when(request.getParameter("SignInPassword")).thenReturn("password");
+        when(request.getParameter("ConfirmPassword")).thenReturn("password");
+        when(request.getParameter("userGH")).thenReturn("johndoe");
+
+        // Create a new instance of SignInManager
+        SignInManager signInManager = new SignInManager();
+        ServletConfig servletConfig = testUtils.setUp();
+        signInManager.init(servletConfig);
+
+        // Call the doPost method with the mocked request and response objects
+        signInManager.doPost(request, response);
+
+        // Verify that the response status is BAD_REQUEST
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals ("You must insert a valid email, please retry\r\n", writer.toString());
+    }
+
 
     // UserDAO.createUser() returns 0
     @Test
