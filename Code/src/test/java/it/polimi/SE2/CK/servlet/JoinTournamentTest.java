@@ -502,7 +502,7 @@ public class JoinTournamentTest {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+        assertEquals("Internal error with the page, please try again\r\n", writer.toString());
     }
 
     @Test
@@ -615,7 +615,7 @@ public class JoinTournamentTest {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
+        assertEquals("Internal error with the page, please try again\r\n", writer.toString());
     }
 
     @Test
@@ -717,6 +717,6 @@ public class JoinTournamentTest {
         joinTournament.doPost(request,response);
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        assertEquals(writer.toString(),"You can't access to this page\r\n");
+        assertEquals("You can't access to this page\r\n", writer.toString());
     }
 }

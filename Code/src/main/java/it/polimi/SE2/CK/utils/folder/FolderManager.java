@@ -17,7 +17,7 @@ public class FolderManager {
     /**
      * A private static field that holds the directory path where files are saved.
      */
-    private static String directory = ""; //TODO you have to add your directory - DISK:/path/to/your//directory/
+    private static String directory = "C:\\Users\\antod\\OneDrive\\Documenti\\"; //TODO you have to add your directory - DISK:/path/to/your//directory/
 
     /**
      * A private static field that holds the path separator for Windows operating system.
@@ -54,7 +54,7 @@ public class FolderManager {
      * @return the path separator.
      */
     public static String getPath() {
-        return getPathUnix(); //TODO select your OS
+        return getPathWindows(); //TODO select your OS
     }
 
     /**
@@ -74,10 +74,12 @@ public class FolderManager {
      */
     public static String getFileName(Part part) {
         String partHeader = part.getHeader("content-disposition");
-        for (String content : partHeader.split(";")) {
-            if (content.trim().startsWith("filename")) {
-                String fullFileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
-                return removeFileExtension(fullFileName);
+        if(partHeader!=null) {
+            for (String content : partHeader.split(";")) {
+                if (content.trim().startsWith("filename")) {
+                    String fullFileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
+                    return removeFileExtension(fullFileName);
+                }
             }
         }
         return null;
@@ -146,7 +148,7 @@ public class FolderManager {
     public static void saveFile(Part part, String directoryToSave){
         String fileName = getFileName(part) + "." + getFileExtension(part);
 
-        String filePath = directoryToSave + FolderManager.getPathUnix() + fileName; //TODO select your OS
+        String filePath = directoryToSave + FolderManager.getPath() + fileName;
 
         File directoryFinal = new File(directoryToSave);
         if (!directoryFinal.exists()){
