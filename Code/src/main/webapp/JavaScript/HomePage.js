@@ -9,7 +9,7 @@
                         var message = x.responseText;
                         switch (x.status) {
                             case 200:
-                                sessionStorage.setItem('username',message);
+                                sessionStorage.setItem('user',message);
                                 window.location.href = "StudentHomePage.html";
                                 break;
                             case 400: // bad request
@@ -40,9 +40,11 @@
                         var message = x.responseText;
                         switch (x.status) {
                             case 200:
+                                closeModal()
+                                openModal("otherInformation")
                                 let p= document.createElement("p")
                                 let p1= document.createElement("p")
-                                let signinmessage= document.getElementById("errormessagesignin")
+                                let signinmessage= document.getElementById("otherInformation")
                                 p.textContent="We are sending you a confirmation email"
                                 signinmessage.append(p);
                                 p1.textContent="Please check your email"
@@ -61,9 +63,9 @@
                     }
                 }
             );
+            clearForm("signinForm")
         } else {
             form.reportValidity();
         }
-        clearForm("signinForm")
     });
 })();

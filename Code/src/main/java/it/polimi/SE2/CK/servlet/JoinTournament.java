@@ -1,9 +1,8 @@
 package it.polimi.SE2.CK.servlet;
 
-import it.polimi.SE2.CK.DAO.UserDAO;
-import it.polimi.SE2.CK.bean.User;
-import it.polimi.SE2.CK.utils.EmailManager;
-import org.apache.commons.lang3.StringUtils;
+import it.polimi.SE2.CK.DAO.TournamentDAO;
+import it.polimi.SE2.CK.bean.SessionUser;
+import it.polimi.SE2.CK.utils.enumeration.UserRole;
 import org.apache.commons.text.StringEscapeUtils;
 
 import javax.servlet.RequestDispatcher;
@@ -15,25 +14,31 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 
-
-@WebServlet("/SignInManager")
+@WebServlet("/JoinTournament")
 @MultipartConfig
-public class SignInManager extends HttpServlet {
+public class JoinTournament extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * A connection (session) with a specific database.
+     */
     private Connection connection = null;
 
+
+    /**
+     * A convenience method which can be overridden so that there's no need to call super.init(config).
+     *
+     * @throws ServletException if an exception occurs that interrupts the servlet's normal operation
+     */
     public void init() throws ServletException {
         try {
-            ServletContext context = getServletContext();
+            ServletContext context=getServletContext();
             String driver = context.getInitParameter("dbDriver");
             String url = context.getInitParameter("dbUrl");
             String user = context.getInitParameter("dbUser");
@@ -67,78 +72,48 @@ public class SignInManager extends HttpServlet {
         }
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("X-Frame-Options", "DENY"); //do not allow the page to be included in any frame or iframe
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains"); //your application should only be accessible via a secure connection (HTTPS)
         response.setHeader("Content-Security-Policy", "default-src 'self'"); //resources must come from the same source
         response.setHeader("X-Content-Type-Options", "nosniff"); //prevents browsers from interpreting files as anything other than their declared MIME type
         response.setHeader("X-XSS-Protection", "1; mode=block"); //block the page if an XSS attack is detected
 
-        if (StringUtils.isAnyEmpty(request.getParameter("role"),request.getParameter("name"),request.getParameter("surname"),
-                request.getParameter("birthdate"),request.getParameter("SignInUsername"), request.getParameter("email"),
-                request.getParameter("SignInPassword"), request.getParameter("userGH"))) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("All fields are required");
+        HttpSession session = request.getSession();
+        if(session.isNew() || session.getAttribute("user")==null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("You can't access to this page");
             return;
         }
-        User user= new User();
+        TournamentDAO tournamentDAO= new TournamentDAO(connection);
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user.getRole()!= UserRole.STUDENT.getValue()){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Educator are not allowed to join tournament in this way, please try again");
+            return;
+        }
+        int tournamentId;
         try {
-            user.setRole(Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("role"))));
-        }
-        catch (Exception e){
+            tournamentId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("TournamentId")));
+        }catch (Exception e){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("An error occurred with the data sent, please retry");
+            response.getWriter().println("Internal error with the page, please try again");
             return;
         }
-        user.setName(StringEscapeUtils.escapeHtml4(request.getParameter("name")));
-        user.setSurname(StringEscapeUtils.escapeHtml4(request.getParameter("surname")));
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-        //400 error
-        if (StringEscapeUtils.escapeHtml4(request.getParameter("birthdate")).length()>10){
+        if (tournamentId<=0){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You must insert a valid date");
+            response.getWriter().println("Internal error with the page, please try again");
             return;
         }
+        Boolean resp;
         try {
-            user.setBirthdate(new Date(date.parse(StringEscapeUtils.escapeHtml4(request.getParameter("birthdate"))).getTime()));
-        } catch (ParseException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You must insert a date in the field birthdate, please retry");
-            return;
-        }
-        user.setUsername(StringEscapeUtils.escapeHtml4(request.getParameter("SignInUsername")));
-
-        //check if the email structure is correct
-        if (!EmailManager.isValidEmail(StringEscapeUtils.escapeHtml4(request.getParameter("email")))) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("You must insert a valid email, please retry");
-            return;
-        }
-
-        user.setEmail(StringEscapeUtils.escapeHtml4(request.getParameter("email")));
-        user.setPassword(StringEscapeUtils.escapeHtml4(request.getParameter("SignInPassword")));
-        if (!user.getPassword().equals(StringEscapeUtils.escapeHtml4(request.getParameter("ConfirmPassword")))){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("The two password must be the same, please retry");
-            return;
-        }
-        user.setGitHubUser(StringEscapeUtils.escapeHtml4(request.getParameter("userGH")));
-        UserDAO userDAO= new UserDAO(connection);
-        int res;
-        try {
-            res= userDAO.createUser(user);
+            resp=tournamentDAO.joinTournament(user.getId(),tournamentId);
         } catch (SQLException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("The server do not respond");
-            return;
+            throw new RuntimeException(e);
         }
-        if (res==1){
+        if(!resp){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Username already used");
-            return;
-        } else if (res==2) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Email already used");
+            response.getWriter().println("You have already joined this tournament");
             return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
@@ -146,3 +121,4 @@ public class SignInManager extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
     }
 }
+

@@ -99,17 +99,25 @@
                     <input type="password" id="ConfirmPassword" name="ConfirmPassword" required><br><br>
                 <br><br>
                 <!--User GitHub-->
-                    <label for="userGH">Insert your GitHub link:</label><br>
+                    <label for="userGH">Insert your GitHub username:</label><br>
                     <input type="text" id="userGH" name="userGH" placeholder="User GitHub..." required><br><br>
                 <br><br>
                 <!--Acceptance of privacy policy
                     Submit registration-->
                     <input type="checkbox" id="privacyPolicy" name="privacyPolicy" value="acceptePrivacyPolicy" required>
-                    <a href="" style="color: white;">Accepte Privacy Policy</a> <!--TODO DA MODIFICARE-->
+                    <a href="" style="color: white;">Accept Privacy Policy</a> <!--TODO DA MODIFICARE-->
                     <br><br>
                     <input type="button" id="signinsubmit" value="Sign In" class="submit">
                 </form>
                 <br>
+            </div>
+        </div>
+
+        <div id="otherInformationModal" class="modal">
+            <div class="modal-content">
+                <button class="closemodalbutton" onclick="closeModal()">Close</button>
+                <br>
+                <div id="otherInformation"></div>
             </div>
         </div>
     </body>

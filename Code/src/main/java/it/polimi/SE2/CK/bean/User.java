@@ -4,9 +4,9 @@ import java.sql.Date;
 
 public class User {
     private int id;
-    private String Name;
-    private String Surname;
-    private Date Birthdate;
+    private String name;
+    private String surname;
+    private Date birthdate;
     private String username;
     private String email;
     private String password;
@@ -18,15 +18,15 @@ public class User {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public String getSurname() {
-        return Surname;
+        return surname;
     }
 
     public Date getBirthdate() {
-        return Birthdate;
+        return birthdate;
     }
 
     public String getUsername() {
@@ -54,15 +54,15 @@ public class User {
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public void setSurname(String surname) {
-        Surname = surname;
+        this.surname = surname;
     }
 
     public void setBirthdate(Date birthdate) {
-        Birthdate = birthdate;
+        this.birthdate = birthdate;
     }
 
     public void setUsername(String username) {
