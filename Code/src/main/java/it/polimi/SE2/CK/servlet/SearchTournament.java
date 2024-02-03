@@ -100,7 +100,9 @@ public class SearchTournament extends HttpServlet {
         try {
             tournaments= tournamentDAO.showAllTournamentsByString(keyword);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");

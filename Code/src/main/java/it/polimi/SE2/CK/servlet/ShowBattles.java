@@ -65,7 +65,7 @@ public class ShowBattles extends HttpServlet {
         try {
             tournamentId = Integer.parseInt(StringEscapeUtils.escapeHtml4(request.getParameter("TournamentId")));
         }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Internal error with the page, please try again");
             return;
         }
@@ -79,7 +79,9 @@ public class ShowBattles extends HttpServlet {
         try {
             battles= battleDAO.showBattlesByTournamentId(tournamentId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");

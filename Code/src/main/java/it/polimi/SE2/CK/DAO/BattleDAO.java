@@ -129,11 +129,14 @@ public class BattleDAO {
                 "WHERE Name = ?";
         //statement
         PreparedStatement preparedStatement = null;
-
+        ResultSet result = null;
         try {
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setString(1, name);
-            return preparedStatement.execute();
+            result = preparedStatement.executeQuery();
+            if(result.next()){
+                return true;
+            }
         } catch (SQLException e) {
             return false;
         } finally {
@@ -145,6 +148,7 @@ public class BattleDAO {
                 throw new SQLException(e);
             }
         }
+        return false;
     }
 
     /**
