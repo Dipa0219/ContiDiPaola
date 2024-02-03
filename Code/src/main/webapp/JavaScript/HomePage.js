@@ -41,10 +41,11 @@
                         switch (x.status) {
                             case 200:
                                 closeModal()
+                                let signinmessage= document.getElementById("otherInformation")
+                                signinmessage.innerHTML=""
                                 openModal("otherInformation")
                                 let p= document.createElement("p")
                                 let p1= document.createElement("p")
-                                let signinmessage= document.getElementById("otherInformation")
                                 p.textContent="We are sending you a confirmation email"
                                 signinmessage.append(p);
                                 p1.textContent="Please check your email"

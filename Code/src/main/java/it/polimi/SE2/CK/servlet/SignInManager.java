@@ -24,7 +24,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -105,13 +105,23 @@ public class SignInManager extends HttpServlet {
             response.getWriter().println("You must insert a valid date");
             return;
         }
+        Date birthdate;
         try {
-            user.setBirthdate(new Date(date.parse(StringEscapeUtils.escapeHtml4(request.getParameter("birthdate"))).getTime()));
+            birthdate = new Date(date.parse(StringEscapeUtils.escapeHtml4(request.getParameter("birthdate"))).getTime());
         } catch (ParseException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("You must insert a date in the field birthdate, please retry");
             return;
         }
+
+        Date currentDate = new Date();
+        if (currentDate.before(birthdate)){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("You have to choose a date before today, please retry");
+            return;
+        }
+        user.setBirthdate(new java.sql.Date(birthdate.getTime()));
+
         user.setUsername(StringEscapeUtils.escapeHtml4(request.getParameter("SignInUsername")));
 
         //check if the email structure is correct
@@ -127,7 +137,6 @@ public class SignInManager extends HttpServlet {
             user.setPassword(encryptorTripleDES.encrypt(StringEscapeUtils.escapeHtml4(request.getParameter("SignInPassword"))));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
                  InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;
@@ -148,7 +157,6 @@ public class SignInManager extends HttpServlet {
         try {
             res= userDAO.createUser(user);
         } catch (SQLException e) {
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("The server do not respond");
             return;

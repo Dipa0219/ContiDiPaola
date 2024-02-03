@@ -91,7 +91,7 @@ public class SignInManagerTest {
     
         // Verify that the response status is OK
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"The two password must be the same, please retry\r\n");
+        assertEquals ("The two password must be the same, please retry\r\n", writer.toString());
     }
 
     // Empty role field
@@ -125,7 +125,7 @@ public class SignInManagerTest {
     
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"All fields are required\r\n");
+        assertEquals ("All fields are required\r\n", writer.toString());
     }
 
     // Empty name field
@@ -157,7 +157,7 @@ public class SignInManagerTest {
     
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"All fields are required\r\n");
+        assertEquals ("All fields are required\r\n", writer.toString());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class SignInManagerTest {
 
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"Username already used\r\n");
+        assertEquals ("Username already used\r\n", writer.toString());
     }
 
     @Test
@@ -223,7 +223,7 @@ public class SignInManagerTest {
 
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"Email already used\r\n");
+        assertEquals ("Email already used\r\n", writer.toString());
     }
 
     @Test
@@ -256,7 +256,7 @@ public class SignInManagerTest {
 
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"An error occurred with the data sent, please retry\r\n");
+        assertEquals ("An error occurred with the data sent, please retry\r\n", writer.toString());
     }
 
     @Test
@@ -289,7 +289,40 @@ public class SignInManagerTest {
 
         // Verify that the response status is BAD_REQUEST
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertEquals (writer.toString(),"You must insert a date in the field birthdate, please retry\r\n");
+        assertEquals ("You must insert a date in the field birthdate, please retry\r\n", writer.toString());
+    }
+
+    @Test
+    public void test_late_date() throws ServletException, IOException {
+        // Mock the HttpServletRequest and HttpServletResponse objects
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        StringWriter writer = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(writer));
+
+        // Set the necessary parameters for the request
+        when(request.getParameter("role")).thenReturn("1");
+        when(request.getParameter("name")).thenReturn("Bob");
+        when(request.getParameter("surname")).thenReturn("Doe");
+        when(request.getParameter("birthdate")).thenReturn("2222-12-01");
+        when(request.getParameter("SignInUsername")).thenReturn("Bob");
+        when(request.getParameter("email")).thenReturn("BobRoss@gmail.com");
+        when(request.getParameter("SignInPassword")).thenReturn("password");
+        when(request.getParameter("ConfirmPassword")).thenReturn("password");
+        when(request.getParameter("userGH")).thenReturn("johndoe");
+
+        // Create a new instance of SignInManager
+        SignInManager signInManager = new SignInManager();
+        ServletConfig servletConfig = testUtils.setUp();
+        signInManager.init(servletConfig);
+
+        // Call the doPost method with the mocked request and response objects
+        signInManager.doPost(request, response);
+
+        // Verify that the response status is BAD_REQUEST
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertEquals ("You have to choose a date before today, please retry\r\n", writer.toString());
     }
 
     @Test
@@ -389,6 +422,6 @@ public class SignInManagerTest {
         // Verify that the response status is SC_NOT_ACCEPTABLE
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         // Verify that the error message is written to the response
-        assertEquals (writer.toString(),"Request non acceptable\r\n");
+        assertEquals ("Request non acceptable\r\n", writer.toString());
     }
 }
