@@ -250,7 +250,7 @@ public class JoinBattleAsTeam extends HttpServlet {
             //409 error
             if (teamDAO.checkTeamName(teamName, battleId)){
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
-                response.getWriter().println("The name is already in use for the battle");
+                response.getWriter().println("The team name is already in use for the battle");
                 return;
             }
         }
