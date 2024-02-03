@@ -78,7 +78,9 @@ public class ShowBattleInfo extends HttpServlet {
         try {
             battle= battleDAO.showBattleById(battleId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         if (battle==null){
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
