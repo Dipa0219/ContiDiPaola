@@ -271,7 +271,7 @@ public class ShowBattlesTest {
         showBattles.doGet(request, response);
 
         // Verify that the response status, content type, and character encoding are set correctly
-        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertEquals(writer.toString(),"Internal error with the page, please try again\r\n");
     }
 

@@ -1739,7 +1739,7 @@ public class JoinBattleAsTeamTest {
 
         // Verify that the response status, content type, and character encoding are set correctly
         verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertEquals("The name is already in use for the battle\r\n", writer.toString());
+        assertEquals("The team name is already in use for the battle\r\n", writer.toString());
     }
 
 }

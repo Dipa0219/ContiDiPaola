@@ -316,7 +316,7 @@ public class CreateBattle extends HttpServlet {
         //get session user
         SessionUser user = (SessionUser) session.getAttribute("user");
         TournamentDAO tournamentDAO = new TournamentDAO(connection);
-        Tournament tournament = null;
+        Tournament tournament;
         //500 error
         try {
             tournament = tournamentDAO.showTournamentById(tournamentId);
