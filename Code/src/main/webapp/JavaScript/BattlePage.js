@@ -315,7 +315,7 @@ function BattlePage(user){
 
         hideAllButton()
         if (user.role === 1){
-            if (battle.phase === "Not Started") {
+            if (battle.phase === "NOTSTARTED") {
                 if (battle.minNumStudent === 1){
                     joinBattleAloneButton.style.display=""
                 }
@@ -326,7 +326,7 @@ function BattlePage(user){
             }
         }
         else if (user.role === 0){
-            if (battle.phase === "Ongoing"){
+            if (battle.phase === "ONGOING"){
                 modifyGradeButton.style.display = ""
             }
             else {

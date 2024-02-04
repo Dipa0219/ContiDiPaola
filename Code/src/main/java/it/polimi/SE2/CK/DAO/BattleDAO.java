@@ -363,7 +363,7 @@ public class BattleDAO {
      */
     public void startBattle() throws SQLException {
         //search query
-        String query = "SELECT idbattle, RegDeadline, CodeKata " +
+        String query = "SELECT idbattle, b.RegDeadline, CodeKata " +
                 "FROM battle as b, tournament as t\n" +
                 "WHERE b.TournamentId = t.idTournament and b.Phase = ? and t.Phase = ? " +
                 "ORDER BY b.RegDeadline ASC;";
@@ -380,7 +380,6 @@ public class BattleDAO {
             preparedStatement.setString(1, TournamentState.NOTSTARTED.getValue());
             preparedStatement.setString(2, TournamentState.ONGOING.getValue());
             resultSet = preparedStatement.executeQuery();
-
             ExecutorService executor = Executors.newSingleThreadExecutor();
             while (resultSet.next()) {
                 //if submission deadline < now
@@ -412,7 +411,6 @@ public class BattleDAO {
                         //create a repository per team
                         ExecutorService executorTeam = Executors.newFixedThreadPool(teamInBattle.size());
                         List<Future<?>> futures = new ArrayList<>();
-
                         //real creation repository
                         for (Integer teamId : teamInBattle){
                             futures.add(executorTeam.submit(() ->
@@ -427,21 +425,21 @@ public class BattleDAO {
             executor.shutdown();
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             try {
                 if (resultSet != null) {
                     resultSet.close();
                 }
             } catch (Exception e1) {
-                throw new RuntimeException();
+                e1.printStackTrace();
             }
             try {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
             } catch (SQLException e2) {
-                throw new RuntimeException();
+                e2.printStackTrace();
             }
         }
     }

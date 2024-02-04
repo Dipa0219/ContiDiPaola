@@ -15,7 +15,7 @@ public class TestUtils {
         when(servletConfig.getServletContext()).thenReturn(servletContext);
         when(servletContext.getInitParameter("dbUrl")).thenReturn("jdbc:mysql://localhost:3306/ckbtest?serverTimezone=UTC");
         when(servletContext.getInitParameter("dbUser")).thenReturn("root");
-        when(servletContext.getInitParameter("dbPassword")).thenReturn("");
+        when(servletContext.getInitParameter("dbPassword")).thenReturn("Password123*#");
         when(servletContext.getInitParameter("dbDriver")).thenReturn("com.mysql.cj.jdbc.Driver");
         return  servletConfig;
     }

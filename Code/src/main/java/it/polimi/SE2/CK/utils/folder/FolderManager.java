@@ -17,7 +17,7 @@ public class FolderManager {
     /**
      * A private static field that holds the directory path where files are saved.
      */
-    private static String directory = ""; //TODO you have to add your directory - DISK:/path/to/your//directory/
+    private static String directory = "/home/alessandro-conti/Documenti/ingegneria_del_software_2/"; //TODO you have to add your directory - DISK:/path/to/your//directory/
 
     /**
      * A private static field that holds the path separator for Windows operating system.
@@ -54,7 +54,7 @@ public class FolderManager {
      * @return the path separator.
      */
     public static String getPath() {
-        return getPathWindows(); //TODO select your OS
+        return getPathUnix(); //TODO select your OS
     }
 
     /**

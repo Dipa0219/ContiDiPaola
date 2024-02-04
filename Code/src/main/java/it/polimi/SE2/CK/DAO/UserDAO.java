@@ -197,7 +197,7 @@ public class UserDAO {
      */
     public List<String> allStudentTournamentEmail(int tournamentID) throws SQLException {
         //search query
-        String query="Select Email" +
+        String query="Select Email " +
                 "FROM user as u join t_subscription as ts on u.idUser=ts.UserId " +
                 "WHERE u.Role = ? and ts.TournamentId = ?;";
         //statemente
@@ -367,7 +367,7 @@ public class UserDAO {
             }
         }
         catch (SQLException e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         finally {
             try {

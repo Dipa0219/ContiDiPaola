@@ -22,7 +22,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 
-//ssh -R 80:localhost:8080 nokey@localhost.run - tunneling
+//ssh -R 80:localhost:8080 nokey@localhost.run
+//ngrok http http://localhost:8080
 
 /**
  * Class that manage the interacting with the GitHub API.
@@ -78,7 +79,6 @@ public class GitHubManager {
                 .post(RequestBody.create(mediaType, requestBody))
                 .header("Authorization", "Bearer " + gitHubToken)
                 .build();
-
         //create the repository
         try{
             client.newCall(request).execute();
@@ -144,7 +144,7 @@ public class GitHubManager {
      * @param repositoryName the name of the repository.
      */
     private static void pullGitHubRepository(String repositoryURL, String repositoryName) {
-        File destinationRepository = new File(FolderManager.getDirectory() + repositoryName + "\\");
+        File destinationRepository = new File(FolderManager.getDirectory() + repositoryName + FolderManager.getPath());
         Git git = null;
 
         try {
@@ -215,7 +215,6 @@ public class GitHubManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         //get the battle name and CodeKata
         String battleName = null;
 
@@ -225,51 +224,20 @@ public class GitHubManager {
         else {
             battleName = codeKata.substring(getRepoURL().length());
         }
-
         //GitHub pull from CodeKata
         pullGitHubRepository(codeKata, battleName);
-        //add readme
-        File readme = new File(FolderManager.getDirectory() + battleName + FolderManager.getPath() + "README.md");
-        FolderManager.writeFile(readme, "To notify the server, you need to configure a workflow so that a notification is sent to the CKB application whenever a change occurs in the repository.\n" +
-                "\n" +
-                "\n" +
-                "If you do not know how to do this below you will find an example:" +
-                "\n" +
-                "name: Notification\n" +
-                "\n" +
-                "on:\n" +
-                "  push:\n" +
-                "    branches:\n" +
-                "      - main\n" +
-                "\n" +
-                "jobs:\n" +
-                "  invia-notifica:\n" +
-                "    runs-on: ubuntu-latest\n" +
-                "\n" +
-                "    steps:\n" +
-                "    - name: Configura Git\n" +
-                "      uses: actions/setup-node@v4\n" +
-                "      with:\n" +
-                "        node-version: '14'\n" +
-                "    - name: Check out the code\n" +
-                "      uses: actions/checkout@v2\n" +
-                "\n" +
-                "    - name: Invia notifica al server\n" +
-                "      run: |\n" +
-                "        curl -X POST -H \"Content-Type: application/json\" \\\n" +
-                "          -d '{\"repository\": \"${{ github.repository }}\", \"commit\": \"${{ github.sha }}\", \"author\": \"${{ github.actor }}\"}' \\\n" +
-                "          https://URLCODEKATA/receive-from-github");
+
 
         //GitHub repository creation
-        createGitHubRepository(battleName + "_" + teamName, true);
+        createGitHubRepository(battleName + teamName, true);
 
         //upload folder on GitHub
-        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName + FolderManager.getPath(),
-                GitHubManager.getRepoURL() + battleName + teamId);
+        uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName,
+                GitHubManager.getRepoURL() + battleName + teamName);
 
         //add teammate
         for (String s : ghUsername) {
-            addCollaboratorOnGitHubRepository(battleName + teamId, s);
+            addCollaboratorOnGitHubRepository(battleName + teamName, s);
         }
 
         //delete folder pull repository

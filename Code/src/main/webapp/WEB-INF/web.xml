@@ -22,7 +22,7 @@ http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value></param-value> <!-- TODO you have to add your password -->
+    <param-value>Password123*#</param-value> <!-- TODO you have to add your password -->
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>

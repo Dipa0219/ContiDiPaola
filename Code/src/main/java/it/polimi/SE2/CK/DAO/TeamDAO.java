@@ -46,7 +46,7 @@ public class TeamDAO {
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             try {
                 if (resultSet != null) {
@@ -140,7 +140,7 @@ public class TeamDAO {
             preparedStatement.setInt(1, teamId);
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.first()){
+            if (resultSet.next()){
                 result = resultSet.getString(1);
             }
         }
@@ -227,7 +227,7 @@ public class TeamDAO {
     public boolean joinBattleAlone(int userId, int battleId, String username) throws SQLException {
         //insert query
         String query = "INSERT INTO team " +
-                "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `teamLeader`) " +
+                "(`numberStudent`, `battleId`, `phase`, `teamLeader`, `teamName`) " +
                 "VALUES (?, ?, ?, ?, ?)";
         //statement
         PreparedStatement preparedStatement = null;
@@ -318,7 +318,6 @@ public class TeamDAO {
         catch (SQLException e){
             try {
                 //transaction error ==> rollback
-                System.out.println("Entrato");
                 con.rollback();
             }
             catch (SQLException e1){
@@ -416,7 +415,6 @@ public class TeamDAO {
             preparedStatement.setInt(3, UserRole.STUDENT.getValue());
             preparedStatement.setString(4, TeamStudentState.ACCEPT.getValue());
             preparedStatement.setInt(5, battleId);
-            System.out.println(preparedStatement);
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()){
