@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 
-//TODO ssh -R 80:localhost:8080 nokey@localhost.run - tunneling
+//ssh -R 80:localhost:8080 nokey@localhost.run - tunneling
 
 /**
  * Class that manage the interacting with the GitHub API.

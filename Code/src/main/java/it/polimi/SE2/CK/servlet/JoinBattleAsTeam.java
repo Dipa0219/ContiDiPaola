@@ -204,7 +204,9 @@ public class JoinBattleAsTeam extends HttpServlet {
                     return;
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().println("The server do not respond");
+                return;
             }
 
             //check if all teammates are not in a team

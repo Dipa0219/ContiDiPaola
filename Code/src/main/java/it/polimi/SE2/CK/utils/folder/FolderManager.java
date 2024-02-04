@@ -17,7 +17,7 @@ public class FolderManager {
     /**
      * A private static field that holds the directory path where files are saved.
      */
-    private static String directory = "C:\\Users\\antod\\OneDrive\\Documenti\\"; //TODO you have to add your directory - DISK:/path/to/your//directory/
+    private static String directory = ""; //TODO you have to add your directory - DISK:/path/to/your//directory/
 
     /**
      * A private static field that holds the path separator for Windows operating system.

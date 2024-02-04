@@ -109,7 +109,9 @@ public class JoinTournament extends HttpServlet {
         try {
             resp=tournamentDAO.joinTournament(user.getId(),tournamentId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         if(!resp){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

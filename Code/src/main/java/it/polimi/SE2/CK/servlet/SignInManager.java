@@ -150,7 +150,9 @@ public class SignInManager extends HttpServlet {
             }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
                  InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         user.setGitHubUser(StringEscapeUtils.escapeHtml4(request.getParameter("userGH")));
         UserDAO userDAO= new UserDAO(connection);

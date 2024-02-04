@@ -113,7 +113,6 @@
         /*This function is used to show the error page
         * In particular it hides the actual page, and the shows the error message
         * that has just received with a button that allows to come back to the previous page*/
-        //TODO try to fix button so that he receives only one call when an error occurs in two sequential MakeCall, if we don't find a solution give only the possibility to come back to the PersonalHomePage
         this.showError=function (message){
             actualPage.hide()
             errorFlag=1

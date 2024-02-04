@@ -77,7 +77,9 @@ public class ShowTournamentInfo extends HttpServlet {
         try {
             tournament= tournamentDAO.showTournamentById(tournamentId);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("The server do not respond");
+            return;
         }
         if(tournament==null){
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
