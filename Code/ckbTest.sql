@@ -198,12 +198,12 @@ END$$
 DELIMITER ;
 
 
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Bob', 'Ross', '1999-02-03', 'Bob99', 'BobRoss@gmail.com', 'password', 'Bob99', '1');
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('David', 'Jones', '1975-08-06', 'David87', 'DavidJones@mail.polimi.it', '123456', 'David87', '0');
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Josh', 'Hart', '1978-06-03', 'Josh78', 'JoshHart@yahoo.it', 'abcdef', 'Josh78', '0');
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Ted', 'Parker', '1969-12-26', 'Ted69', 'TedParker@gmail.com', '261269', 'Ted69', '0');
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Jean', 'White', '2000-05-17', 'Jean00', 'Jean.Grey@gmail.com', 'qwerty', 'Jean00', '1');
-INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Tim', 'Grey', '1998-07-30', 'Tim98', 'Tim.Duncan@yahoo.it', 'asdfgh', 'Tim98', '1');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Bob', 'Ross', '1999-02-03', 'Bob99', 'BobRoss@gmail.com', '-60 -13 -88 37 70 12 23 -59 19 -47 27 -100 64 14 107 -18 ', 'Bob99', '1');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('David', 'Jones', '1975-08-06', 'David87', 'DavidJones@mail.polimi.it', '127 125 -121 -49 8 32 32 -93 ', 'David87', '0');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Josh', 'Hart', '1978-06-03', 'Josh78', 'JoshHart@yahoo.it', '127 125 -121 -49 8 32 32 -93 ', 'Josh78', '0');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Ted', 'Parker', '1969-12-26', 'Ted69', 'TedParker@gmail.com', '127 125 -121 -49 8 32 32 -93 ', 'Ted69', '0');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Jean', 'White', '2000-05-17', 'Jean00', 'Jean.Grey@gmail.com', '127 125 -121 -49 8 32 32 -93 ', 'Jean00', '1');
+INSERT INTO `ckbtest`.`user` (`Name`, `Surname`, `BirthDate`, `Username`, `Email`, `Password`, `GitHubUser`, `Role`) VALUES ('Tim', 'Grey', '1998-07-30', 'Tim98', 'Tim.Duncan@yahoo.it', '127 125 -121 -49 8 32 32 -93 ', 'Tim98', '1');
 
 INSERT INTO `ckbtest`.`tournament` (`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) VALUES ('C_Start1', 'Basic course of C language', '2', '2024-01-19 19:00:00', 'Ongoing');
 INSERT INTO `ckbtest`.`tournament` (`Name`, `Description`, `CreatorId`, `RegDeadline`, `Phase`) VALUES ('Java_1', 'First approach to class programming', '3', '2023-09-03 17:00:00', 'Closed');
