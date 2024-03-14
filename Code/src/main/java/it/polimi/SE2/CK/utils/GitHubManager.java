@@ -229,7 +229,7 @@ public class GitHubManager {
 
 
         //GitHub repository creation
-        createGitHubRepository(battleName + teamName, true);
+        createGitHubRepository(battleName + "_" + teamName, true);
 
         //upload folder on GitHub
         uploadFolderOnGitHubRepository(FolderManager.getDirectory() + battleName,

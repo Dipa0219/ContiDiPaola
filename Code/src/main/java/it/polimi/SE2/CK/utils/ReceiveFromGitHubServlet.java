@@ -1,5 +1,6 @@
 package it.polimi.SE2.CK.utils;
 
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.SE2.CK.DAO.BattleDAO;
@@ -20,6 +21,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+
+//tunneling --> ngrok http http://localhost:8080
 
 /**
  * Servlet that manage all information received from GitHub.
